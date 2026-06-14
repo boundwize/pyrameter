@@ -21,11 +21,11 @@ final readonly class TestUsageScanner
 
     private ScanResultCache $cache;
 
-    /** @var null|Closure(string): string|false */
+    /** @var null|Closure(string): (string|false) */
     private ?Closure $readFile;
 
     /**
-     * @param null|Closure(string): string|false $readFile
+     * @param null|Closure(string): (string|false) $readFile
      */
     public function __construct(
         ?ConsumedClassExtractor $extractor = null,

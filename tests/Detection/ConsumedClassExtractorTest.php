@@ -23,6 +23,7 @@ final class ConsumedClassExtractorTest extends TestCase
 namespace Pyrameter\Tests\Fixtures\Extractor;
 
 use Vendor\ImportedOnly;
+use Vendor\ImportedThing;
 use Vendor\Grouped\{GroupedClass, AnotherGroupedClass as RenamedGroupedClass};
 use function Vendor\Functions\{helper};
 use const Vendor\Constants\{VALUE};
@@ -39,6 +40,7 @@ final class Child extends \Vendor\BaseClass implements \Vendor\Contracts\FirstCo
     public function method(\Vendor\Params\Input $input): \Vendor\Returns\Output
     {
         new \Vendor\Constructed\Thing();
+        new ImportedThing();
         \Vendor\StaticCall\Thing::make();
         \Vendor\StaticProperty\Thing::$store;
 
@@ -68,6 +70,7 @@ PHP);
             'Vendor\Grouped\AnotherGroupedClass',
             'Vendor\Grouped\GroupedClass',
             'Vendor\ImportedOnly',
+            'Vendor\ImportedThing',
             'Vendor\Params\Input',
             'Vendor\Returns\Output',
             'Vendor\StaticCall\Thing',
