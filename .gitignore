@@ -2,3 +2,4 @@
 /.phpunit.cache/
 /.phpunit-smoke-cache/
 /composer.lock
+/coverage.xml
