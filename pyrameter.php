@@ -22,5 +22,4 @@ return PyrameterConfig::create()
         integration: 16,
         e2e: 2,
         unknown: 2,
-    )
-    ->warnOnly();
+    );

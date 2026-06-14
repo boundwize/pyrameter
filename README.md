@@ -78,11 +78,25 @@ return PyrameterConfig::create()
         integration: 8,
         e2e: 2,
         unknown: 2,
-    )
-
-    ->warnOnly();
+    );
 ```
 
 The target shape must total 100. Pyrameter treats the unit percentage as a minimum and the other percentages as maximums.
+
+By default, Pyrameter is report-only: it prints warnings but does not change PHPUnit's exit code.
+
+To make target violations fail the PHPUnit run:
+
+```php
+return PyrameterConfig::create()
+    ->targetShape(
+        unit: 70,
+        functional: 18,
+        integration: 8,
+        e2e: 2,
+        unknown: 2,
+    )
+    ->failOnViolation();
+```
 
 Pyrameter classifies tests by static usage rules in test files. It measures suite shape; it does not prove perfect test taxonomy.

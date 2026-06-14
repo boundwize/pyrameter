@@ -22,7 +22,7 @@ final class PyrameterConfig
      */
     private array $targets = [];
 
-    private bool $warnOnly = true;
+    private ViolationMode $violationMode = ViolationMode::Warn;
 
     public static function create(): self
     {
@@ -48,8 +48,7 @@ final class PyrameterConfig
                 integration: 8,
                 e2e: 2,
                 unknown: 2,
-            )
-            ->warnOnly();
+            );
     }
 
     /**
@@ -65,13 +64,6 @@ final class PyrameterConfig
     public function usesNamespace(string $namespace, TestKind $kind): self
     {
         $this->usageRules[] = new UsageRule(ltrim($namespace, '\\'), $kind);
-
-        return $this;
-    }
-
-    public function warnOnly(): self
-    {
-        $this->warnOnly = true;
 
         return $this;
     }
@@ -96,6 +88,13 @@ final class PyrameterConfig
         return $this;
     }
 
+    public function failOnViolation(): self
+    {
+        $this->violationMode = ViolationMode::Fail;
+
+        return $this;
+    }
+
     /**
      * @return list<UsageRule>
      */
@@ -112,9 +111,9 @@ final class PyrameterConfig
         return $this->targets;
     }
 
-    public function isWarnOnly(): bool
+    public function violationMode(): ViolationMode
     {
-        return $this->warnOnly;
+        return $this->violationMode;
     }
 
     private function guardShapePercentage(

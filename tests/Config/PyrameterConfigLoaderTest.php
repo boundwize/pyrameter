@@ -9,6 +9,7 @@ use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\Framework\TestCase;
 use Pyrameter\Config\PyrameterConfig;
 use Pyrameter\Config\PyrameterConfigLoader;
+use Pyrameter\Config\ViolationMode;
 
 final class PyrameterConfigLoaderTest extends TestCase
 {
@@ -95,5 +96,13 @@ PHP);
             e2e: 2,
             unknown: 2,
         );
+    }
+
+    public function test_violation_mode_defaults_to_warn_and_can_fail(): void
+    {
+        $config = PyrameterConfig::create();
+
+        self::assertSame(ViolationMode::Warn, $config->violationMode());
+        self::assertSame(ViolationMode::Fail, $config->failOnViolation()->violationMode());
     }
 }
