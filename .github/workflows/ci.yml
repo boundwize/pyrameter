@@ -42,17 +42,17 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-#      - name: Run Structarmed
-#        run: composer structarmed
+      - name: Run Structarmed
+        run: composer structarmed
 
 #      - name: Run coding standard check
 #        run: composer cs-check
 
-#      - name: Run PHPStan
-#        run: composer phpstan
+      - name: Run PHPStan
+        run: composer phpstan
 
-#      - name: Run Rector (dry-run)
-#        run: composer rector
+      - name: Run Rector (dry-run)
+        run: composer rector
 
 #      - name: Run tests with coverage
 #        if: matrix.php-versions == '8.2' && matrix.operating-system == 'ubuntu-latest'
