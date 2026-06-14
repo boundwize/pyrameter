@@ -72,7 +72,9 @@ If the `config` parameter is omitted, Pyrameter looks for `pyrameter.php` in the
 
 ## Configure
 
-Create `pyrameter.php`:
+Create `pyrameter.php`. You can start from Pyrameter's built-in configuration with `defaults()`, or build a configuration from scratch with `create()`.
+
+Use `defaults()` when you want the same baseline Pyrameter uses when no config file exists: common usage rules for PDO, mysqli, Doctrine, Redis, Symfony functional tests, Panther, and WebDriver, plus the default target shape.
 
 ```php
 <?php
@@ -82,17 +84,27 @@ declare(strict_types=1);
 use Pyrameter\Config\PyrameterConfig;
 use Pyrameter\TestKind;
 
-return PyrameterConfig::create()
+return PyrameterConfig::defaults()
+    ->usesNamespace('App\Tests\Browser\\', TestKind::E2E)
     ->targetShape(
-        unit: ['min' => 40],
+        unit: ['min' => 75],
+        functional: ['max' => 15],
+        integration: ['max' => 7],
+        e2e: ['max' => 2],
+        unknown: ['max' => 1],
     );
 ```
 
-Missing kinds default to `['min' => 0, 'max' => 100]`, so you can start with only the one target you care about.
-
-Add usage rules when you want Pyrameter to classify heavier tests:
+Use `create()` when you want full control. It starts with no usage rules and no target shape, so add every rule and target your project should use:
 
 ```php
+<?php
+
+declare(strict_types=1);
+
+use Pyrameter\Config\PyrameterConfig;
+use Pyrameter\TestKind;
+
 return PyrameterConfig::create()
     ->usesClass(PDO::class, TestKind::Integration)
     ->usesNamespace('Doctrine\DBAL\\', TestKind::Integration)
@@ -109,18 +121,14 @@ return PyrameterConfig::create()
     );
 ```
 
-Each target is a percentage range. Missing `min` means `0`; missing `max` means `100`.
+Each target is a percentage range. Missing `min` means `0`; missing `max` means `100`. When `targetShape()` is called, missing kinds default to `['min' => 0, 'max' => 100]`, which Pyrameter reports as no target.
 
 By default, Pyrameter is report-only: it prints target violations but does not change PHPUnit's exit code.
 
 To fail the PHPUnit process after a target violation:
 
 ```php
-return PyrameterConfig::create()
-    ->targetShape(
-        unit: ['min' => 70],
-        integration: ['max' => 8],
-    )
+return PyrameterConfig::defaults()
     ->failOnViolation();
 ```
 
