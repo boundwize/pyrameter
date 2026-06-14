@@ -248,7 +248,7 @@ final class ConsumedClassExtractor
                 return true;
             }
 
-            private function useName(UseUse $node): string
+            private function useName(UseItem $node): string
             {
                 $parent = $node->getAttribute('parent');
 
