@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class SymfonyFunctionalFixture extends WebTestCase
 {
-    public function test_it_uses_the_framework_runtime(): void
+    public function testItUsesTheFrameworkRuntime(): void
     {
         $this->addToAssertionCount(1);
     }

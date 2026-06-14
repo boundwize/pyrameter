@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class PdoRealUsageFixture extends TestCase
 {
-    public function test_it_consumes_pdo(): void
+    public function testItConsumesPdo(): void
     {
         new PDO('sqlite::memory:');
     }

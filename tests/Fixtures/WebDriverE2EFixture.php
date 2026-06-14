@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class WebDriverE2EFixture extends TestCase
 {
-    public function test_it_uses_webdriver(): void
+    public function testItUsesWebdriver(): void
     {
         $driver = RemoteWebDriver::create('http://localhost', []);
 

@@ -6,6 +6,6 @@ namespace Symfony\Bundle\FrameworkBundle\Test;
 
 use PHPUnit\Framework\TestCase;
 
-abstract class WebTestCase extends TestCase
+class WebTestCase extends TestCase
 {
 }

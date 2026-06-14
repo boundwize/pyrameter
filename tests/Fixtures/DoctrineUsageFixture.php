@@ -10,7 +10,7 @@ use stdClass;
 
 final class DoctrineUsageFixture extends TestCase
 {
-    public function test_it_consumes_dbal(): void
+    public function testItConsumesDbal(): void
     {
         $connection = DriverManager::getConnection([]);
 

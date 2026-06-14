@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ContainerGetHeavyFixture extends TestCase
 {
-    public function test_it_requests_a_real_container_service(): void
+    public function testItRequestsARealContainerService(): void
     {
         self::assertSame(EntityManagerInterface::class, EntityManagerInterface::class);
     }

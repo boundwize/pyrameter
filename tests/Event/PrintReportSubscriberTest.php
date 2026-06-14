@@ -21,10 +21,10 @@ use Pyrameter\TestRecord;
 
 final class PrintReportSubscriberTest extends TestCase
 {
-    public function test_it_prints_the_report_when_execution_finishes(): void
+    public function testItPrintsTheReportWhenExecutionFinishes(): void
     {
         $collector = new TestCollector();
-        $collector->add(new TestRecord(self::class, 'test_unit', [], TestKind::Unit));
+        $collector->add(new TestRecord(self::class, 'testUnit', [], TestKind::Unit));
 
         $subscriber = new PrintReportSubscriber(
             collector: $collector,
@@ -37,11 +37,11 @@ final class PrintReportSubscriberTest extends TestCase
         self::addToAssertionCount(1);
     }
 
-    public function test_it_terminates_with_failure_when_targets_are_violated_and_fail_on_violation_is_enabled(): void
+    public function testItTerminatesWithFailureWhenTargetsAreViolatedAndFailOnViolationIsEnabled(): void
     {
         $collector = new TestCollector();
-        $collector->add(new TestRecord(self::class, 'test_unit', [], TestKind::Unit));
-        $collector->add(new TestRecord(self::class, 'test_integration', [], TestKind::Integration));
+        $collector->add(new TestRecord(self::class, 'testUnit', [], TestKind::Unit));
+        $collector->add(new TestRecord(self::class, 'testIntegration', [], TestKind::Integration));
         $exitStatus = null;
 
         $subscriber = new PrintReportSubscriber(

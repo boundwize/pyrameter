@@ -10,7 +10,7 @@ use Pyrameter\Config\PyrameterConfig;
 
 final class PyrameterConfigTest extends TestCase
 {
-    public function test_target_shape_percentages_must_not_be_negative(): void
+    public function testTargetShapePercentagesMustNotBeNegative(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('must be zero or greater');
@@ -20,7 +20,7 @@ final class PyrameterConfigTest extends TestCase
         );
     }
 
-    public function test_target_shape_percentages_must_not_exceed_one_hundred(): void
+    public function testTargetShapePercentagesMustNotExceedOneHundred(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('must be 100 or less');
@@ -30,7 +30,7 @@ final class PyrameterConfigTest extends TestCase
         );
     }
 
-    public function test_target_shape_minimum_total_cannot_exceed_one_hundred(): void
+    public function testTargetShapeMinimumTotalCannotExceedOneHundred(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('minimum percentages cannot exceed 100.0');

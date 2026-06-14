@@ -15,7 +15,7 @@ use Pyrameter\TestRecord;
 
 final class SuiteShapeResolverTest extends TestCase
 {
-    public function test_it_detects_empty_suite(): void
+    public function testItDetectsEmptySuite(): void
     {
         $shape = $this->shape([]);
 
@@ -23,7 +23,7 @@ final class SuiteShapeResolverTest extends TestCase
         self::assertSame('No tests were collected.', $shape->verdict);
     }
 
-    public function test_it_detects_unknown_swamp(): void
+    public function testItDetectsUnknownSwamp(): void
     {
         $shape = $this->shape([
             TestKind::Unit->value    => 9,
@@ -34,7 +34,7 @@ final class SuiteShapeResolverTest extends TestCase
         self::assertSame('Too many tests could not be inspected.', $shape->verdict);
     }
 
-    public function test_it_detects_e2e_tower(): void
+    public function testItDetectsE2ETower(): void
     {
         $shape = $this->shape([
             TestKind::Unit->value        => 80,
@@ -47,7 +47,7 @@ final class SuiteShapeResolverTest extends TestCase
         self::assertSame('Your E2E tests are growing beyond the target.', $shape->verdict);
     }
 
-    public function test_it_detects_inverted_pyramid(): void
+    public function testItDetectsInvertedPyramid(): void
     {
         $shape = $this->shape([
             TestKind::Unit->value        => 35,
@@ -59,7 +59,7 @@ final class SuiteShapeResolverTest extends TestCase
         self::assertSame('Your heavier tests outnumber your unit tests.', $shape->verdict);
     }
 
-    public function test_it_detects_integration_mountain(): void
+    public function testItDetectsIntegrationMountain(): void
     {
         $shape = $this->shape([
             TestKind::Unit->value        => 7,
@@ -71,7 +71,7 @@ final class SuiteShapeResolverTest extends TestCase
         self::assertSame('Your suite is getting heavier.', $shape->verdict);
     }
 
-    public function test_it_detects_healthy_pyramid(): void
+    public function testItDetectsHealthyPyramid(): void
     {
         $shape = $this->shape([
             TestKind::Unit->value        => 72,
@@ -85,7 +85,7 @@ final class SuiteShapeResolverTest extends TestCase
         self::assertTrue($shape->healthy);
     }
 
-    public function test_it_detects_wide_pyramid(): void
+    public function testItDetectsWidePyramid(): void
     {
         $config = PyrameterConfig::create()
             ->targetShape(

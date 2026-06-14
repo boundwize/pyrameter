@@ -9,12 +9,12 @@ use PHPUnit\Framework\TestCase;
 
 final class PdoSmokeFixture extends TestCase
 {
-    public function test_one(): void
+    public function testOne(): void
     {
         self::assertSame(PDO::class, PDO::class);
     }
 
-    public function test_two(): void
+    public function testTwo(): void
     {
         $this->addToAssertionCount(1);
     }

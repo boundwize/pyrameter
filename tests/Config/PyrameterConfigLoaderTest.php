@@ -22,7 +22,7 @@ use function unlink;
 
 final class PyrameterConfigLoaderTest extends TestCase
 {
-    public function test_it_uses_default_configuration_when_file_is_missing(): void
+    public function testItUsesDefaultConfigurationWhenFileIsMissing(): void
     {
         $config = PyrameterConfigLoader::load(__DIR__ . '/missing-pyrameter.php');
 
@@ -30,7 +30,7 @@ final class PyrameterConfigLoaderTest extends TestCase
         self::assertSame(['min' => 70.0, 'max' => 100.0], $config->targetPercentages()['unit']);
     }
 
-    public function test_it_loads_a_configuration_file(): void
+    public function testItLoadsAConfigurationFile(): void
     {
         $path = sys_get_temp_dir() . '/pyrameter-config-test.php';
         file_put_contents($path, <<<'PHP'
@@ -62,7 +62,7 @@ PHP);
         self::assertCount(1, $config->usageRules());
     }
 
-    public function test_it_loads_a_configuration_file_from_phpunit_parameters(): void
+    public function testItLoadsAConfigurationFileFromPhpunitParameters(): void
     {
         $path = sys_get_temp_dir() . '/pyrameter-config-parameter-test.php';
         file_put_contents($path, <<<'PHP'
@@ -93,7 +93,7 @@ PHP);
         self::assertSame(['min' => 55.0, 'max' => 100.0], $config->targetPercentages()['unit']);
     }
 
-    public function test_it_loads_default_configuration_path_from_current_working_directory(): void
+    public function testItLoadsDefaultConfigurationPathFromCurrentWorkingDirectory(): void
     {
         $previousDirectory = getcwd();
         $directory         = sys_get_temp_dir() . '/pyrameter-config-cwd-' . uniqid();
@@ -125,7 +125,7 @@ PHP);
         self::assertSame(['min' => 45.0, 'max' => 100.0], $config->targetPercentages()['unit']);
     }
 
-    public function test_it_uses_relative_default_path_when_current_working_directory_is_unavailable(): void
+    public function testItUsesRelativeDefaultPathWhenCurrentWorkingDirectoryIsUnavailable(): void
     {
         $previousDirectory = getcwd();
         $directory         = sys_get_temp_dir() . '/pyrameter-config-missing-cwd-' . uniqid();
@@ -145,7 +145,7 @@ PHP);
         self::assertNotEmpty($config->usageRules());
     }
 
-    public function test_configuration_file_must_return_a_pyrameter_config(): void
+    public function testConfigurationFileMustReturnAPyrameterConfig(): void
     {
         $path = sys_get_temp_dir() . '/pyrameter-invalid-config-test.php';
         file_put_contents($path, <<<'PHP'
@@ -166,7 +166,7 @@ PHP);
         }
     }
 
-    public function test_target_shape_can_start_with_only_unit_minimum(): void
+    public function testTargetShapeCanStartWithOnlyUnitMinimum(): void
     {
         $config = PyrameterConfig::create()
             ->targetShape(
@@ -180,7 +180,7 @@ PHP);
         self::assertSame(['min' => 0.0, 'max' => 100.0], $config->targetPercentages()['unknown']);
     }
 
-    public function test_target_shape_ranges_must_be_possible(): void
+    public function testTargetShapeRangesMustBePossible(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('maximum percentages must allow 100.0');
@@ -194,7 +194,7 @@ PHP);
         );
     }
 
-    public function test_target_shape_minimum_cannot_exceed_maximum(): void
+    public function testTargetShapeMinimumCannotExceedMaximum(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('minimum for Unit cannot be greater than its maximum');
@@ -208,7 +208,7 @@ PHP);
         );
     }
 
-    public function test_fail_on_violation_is_disabled_by_default_and_can_be_enabled(): void
+    public function testFailOnViolationIsDisabledByDefaultAndCanBeEnabled(): void
     {
         $config = PyrameterConfig::create();
 

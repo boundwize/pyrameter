@@ -16,7 +16,7 @@ use const PHP_EOL;
 
 final class ExtensionSmokeTest extends TestCase
 {
-    public function test_it_registers_with_phpunit_and_prints_a_report_after_execution(): void
+    public function testItRegistersWithPhpunitAndPrintsAReportAfterExecution(): void
     {
         $configuration       = __DIR__ . '/Fixtures/SmokeProject/phpunit.xml';
         [$exitCode, $output] = $this->runPhpUnit($configuration);
@@ -28,7 +28,7 @@ final class ExtensionSmokeTest extends TestCase
         self::assertStringContainsString('Total: 2 tests', $output);
     }
 
-    public function test_fail_on_violation_changes_phpunit_exit_code_without_subscriber_warning(): void
+    public function testFailOnViolationChangesPhpunitExitCodeWithoutSubscriberWarning(): void
     {
         $configuration       = __DIR__ . '/Fixtures/SmokeProject/phpunit-fail.xml';
         [$exitCode, $output] = $this->runPhpUnit($configuration);

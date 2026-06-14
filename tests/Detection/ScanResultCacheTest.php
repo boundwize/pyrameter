@@ -10,7 +10,7 @@ use Pyrameter\Detection\ScanResultCache;
 
 final class ScanResultCacheTest extends TestCase
 {
-    public function test_it_scans_a_test_class_once(): void
+    public function testItScansATestClassOnce(): void
     {
         $cache = new ScanResultCache();
         $calls = 0;

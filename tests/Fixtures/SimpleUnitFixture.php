@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 final class SimpleUnitFixture extends TestCase
 {
-    public function test_it_uses_assertions(): void
+    public function testItUsesAssertions(): void
     {
         $this->addToAssertionCount(1);
     }

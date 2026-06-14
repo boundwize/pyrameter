@@ -45,8 +45,8 @@ jobs:
       - name: Run Structarmed
         run: composer structarmed
 
-#      - name: Run coding standard check
-#        run: composer cs-check
+      - name: Run coding standard check
+        run: composer cs-check
 
       - name: Run PHPStan
         run: composer phpstan

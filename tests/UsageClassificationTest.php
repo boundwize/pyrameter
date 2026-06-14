@@ -30,7 +30,7 @@ final class UsageClassificationTest extends TestCase
      * @param class-string $fixtureClass
      */
     #[DataProvider('classificationCases')]
-    public function test_it_classifies_usage_from_the_test_file(string $fixtureClass, TestKind $expectedKind): void
+    public function testItClassifiesUsageFromTheTestFile(string $fixtureClass, TestKind $expectedKind): void
     {
         $scanner    = new TestUsageScanner();
         $scanResult = $scanner->scan($fixtureClass);
@@ -56,11 +56,14 @@ final class UsageClassificationTest extends TestCase
         yield 'WebDriver usage means e2e' => [WebDriverE2EFixture::class, TestKind::E2E];
         yield 'mocked heavy class stays unit' => [MockedHeavyFixture::class, TestKind::Unit];
         yield 'container class fetch is consumed' => [ContainerGetHeavyFixture::class, TestKind::Integration];
-        yield 'functional plus integration chooses integration' => [FunctionalAndIntegrationFixture::class, TestKind::Integration];
+        yield 'functional plus integration chooses integration' => [
+            FunctionalAndIntegrationFixture::class,
+            TestKind::Integration,
+        ];
         yield 'integration plus e2e chooses e2e' => [IntegrationAndE2EFixture::class, TestKind::E2E];
     }
 
-    public function test_mock_targets_are_removed_from_consumed_classes(): void
+    public function testMockTargetsAreRemovedFromConsumedClasses(): void
     {
         $scanResult = (new TestUsageScanner())->scan(MockedHeavyFixture::class);
 
@@ -68,7 +71,7 @@ final class UsageClassificationTest extends TestCase
         self::assertNotContains(PDO::class, $scanResult->consumedClasses);
     }
 
-    public function test_uninspectable_test_means_unknown(): void
+    public function testUninspectableTestMeansUnknown(): void
     {
         $scanResult = (new TestUsageScanner())->scan('Pyrameter\Tests\Fixtures\MissingFixture');
 

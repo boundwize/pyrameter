@@ -6,6 +6,6 @@ namespace Symfony\Component\Panther;
 
 use PHPUnit\Framework\TestCase;
 
-abstract class PantherTestCase extends TestCase
+class PantherTestCase extends TestCase
 {
 }

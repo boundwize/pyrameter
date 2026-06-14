@@ -15,7 +15,7 @@ use Pyrameter\TestRecord;
 
 final class PyramidReporterTest extends TestCase
 {
-    public function test_it_renders_the_warning_report(): void
+    public function testItRendersTheWarningReport(): void
     {
         $summary = PyramidSummary::fromRecords([
             ...$this->records(TestKind::Unit, 7),
@@ -35,7 +35,7 @@ final class PyramidReporterTest extends TestCase
         self::assertStringContainsString('Your suite is getting heavier.', $report);
     }
 
-    public function test_it_renders_the_passed_report(): void
+    public function testItRendersThePassedReport(): void
     {
         $summary = PyramidSummary::fromRecords([
             ...$this->records(TestKind::Unit, 72),
@@ -53,7 +53,7 @@ final class PyramidReporterTest extends TestCase
         self::assertStringContainsString('Your test pyramid target passed.', $report);
     }
 
-    public function test_it_renders_unconstrained_default_ranges_as_ignored_targets(): void
+    public function testItRendersUnconstrainedDefaultRangesAsIgnoredTargets(): void
     {
         $summary = PyramidSummary::fromRecords([
             ...$this->records(TestKind::Unit, 8),

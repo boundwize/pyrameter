@@ -19,7 +19,7 @@ use function unlink;
 
 final class ExtensionTest extends TestCase
 {
-    public function test_it_bootstraps_the_phpunit_subscribers(): void
+    public function testItBootstrapsThePhpunitSubscribers(): void
     {
         $configFile = sys_get_temp_dir() . '/pyrameter-extension-test.php';
         file_put_contents($configFile, <<<'PHP'

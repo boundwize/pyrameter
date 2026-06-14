@@ -11,7 +11,7 @@ use Pyrameter\TestRecord;
 
 final class PyramidSummaryTest extends TestCase
 {
-    public function test_it_calculates_percentages(): void
+    public function testItCalculatesPercentages(): void
     {
         $summary = PyramidSummary::fromRecords([
             ...$this->records(TestKind::Unit, 7),

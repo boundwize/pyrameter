@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Pyrameter\Tests\Event;
 
 use PHPUnit\Event\Code\Phpt;
-use PHPUnit\Event\Code\Test as EventTest;
 use PHPUnit\Event\Code\TestDox;
 use PHPUnit\Event\Code\TestMethod;
 use PHPUnit\Event\Telemetry\Duration;
@@ -29,46 +28,46 @@ use stdClass;
 
 final class CollectTestResultSubscriberTest extends TestCase
 {
-    public function test_it_collects_finished_test_methods(): void
+    public function testItCollectsFinishedTestMethods(): void
     {
         $collector  = new TestCollector();
         $subscriber = $this->subscriber($collector);
 
         $subscriber->notify($this->finishedTestMethod(
             SimpleUnitFixture::class,
-            'test_it_works with data set "one"',
+            'testItWorks with data set "one"',
         ));
 
         $records = $collector->all();
 
         self::assertCount(1, $records);
         self::assertSame(SimpleUnitFixture::class, $records[0]->testClassName);
-        self::assertSame('test_it_works', $records[0]->testMethodName);
+        self::assertSame('testItWorks', $records[0]->testMethodName);
         self::assertSame(TestKind::Unit, $records[0]->kind);
     }
 
-    public function test_it_marks_uninspectable_tests_as_unknown(): void
+    public function testItMarksUninspectableTestsAsUnknown(): void
     {
         $collector  = new TestCollector();
         $subscriber = $this->subscriber($collector);
 
-        $subscriber->notify($this->finishedTestMethod(stdClass::class, 'test_unknown'));
+        $subscriber->notify($this->finishedTestMethod(stdClass::class, 'testUnknown'));
 
         $records = $collector->all();
 
         self::assertCount(1, $records);
-        self::assertSame('test_unknown', $records[0]->testMethodName);
+        self::assertSame('testUnknown', $records[0]->testMethodName);
         self::assertSame(TestKind::Unknown, $records[0]->kind);
     }
 
-    public function test_it_extracts_test_names_from_event_ids_when_needed(): void
+    public function testItExtractsTestNamesFromEventIdsWhenNeeded(): void
     {
         $collector  = new TestCollector();
         $subscriber = $this->subscriber($collector);
 
         $subscriber->notify(new Finished(
             $this->telemetryInfo(),
-            new IdOnlyEventTest(SimpleUnitFixture::class . '::test_from_id#1'),
+            new IdOnlyEventCode(SimpleUnitFixture::class . '::testFromId#1'),
             1,
         ));
 
@@ -76,10 +75,10 @@ final class CollectTestResultSubscriberTest extends TestCase
 
         self::assertCount(1, $records);
         self::assertSame(SimpleUnitFixture::class, $records[0]->testClassName);
-        self::assertSame('test_from_id', $records[0]->testMethodName);
+        self::assertSame('testFromId', $records[0]->testMethodName);
     }
 
-    public function test_it_ignores_events_that_do_not_identify_test_methods(): void
+    public function testItIgnoresEventsThatDoNotIdentifyTestMethods(): void
     {
         $collector  = new TestCollector();
         $subscriber = $this->subscriber($collector);
@@ -133,33 +132,5 @@ final class CollectTestResultSubscriberTest extends TestCase
         );
 
         return new Info($snapshot, $duration, $memory, $duration, $memory);
-    }
-}
-
-final readonly class IdOnlyEventTest extends EventTest
-{
-    /**
-     * @param non-empty-string $identifier
-     */
-    public function __construct(
-        private string $identifier,
-    ) {
-        parent::__construct(__FILE__);
-    }
-
-    /**
-     * @return non-empty-string
-     */
-    public function id(): string
-    {
-        return $this->identifier;
-    }
-
-    /**
-     * @return non-empty-string
-     */
-    public function name(): string
-    {
-        return $this->identifier;
     }
 }

@@ -10,7 +10,7 @@ use Symfony\Component\Panther\PantherTestCase;
 
 final class IntegrationAndE2EFixture extends PantherTestCase
 {
-    public function test_it_matches_the_heaviest_kind(): void
+    public function testItMatchesTheHeaviestKind(): void
     {
         $connection = DriverManager::getConnection([]);
 

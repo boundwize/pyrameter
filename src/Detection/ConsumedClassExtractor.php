@@ -165,7 +165,9 @@ final class ConsumedClassExtractor
                 }
 
                 $resolvedName = $name->getAttribute('resolvedName');
-                $this->add($resolvedName instanceof Name ? $resolvedName->toString() : $name->toString(), $referenceKind);
+                $this->add($resolvedName instanceof Name
+                    ? $resolvedName->toString()
+                    : $name->toString(), $referenceKind);
             }
 
             /**

@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ProductionClassOnlyFixture extends TestCase
 {
-    public function test_it_references_a_project_class_that_uses_pdo_internally(): void
+    public function testItReferencesAProjectClassThatUsesPdoInternally(): void
     {
         self::assertSame(ProductionUsesPdo::class, ProductionUsesPdo::class);
     }

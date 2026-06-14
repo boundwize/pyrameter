@@ -24,7 +24,7 @@ use const DIRECTORY_SEPARATOR;
 
 final class TestUsageScannerTest extends TestCase
 {
-    public function test_it_reports_unknown_for_internal_classes_without_source_files(): void
+    public function testItReportsUnknownForInternalClassesWithoutSourceFiles(): void
     {
         $result = (new TestUsageScanner())->scan(stdClass::class);
 
@@ -33,7 +33,7 @@ final class TestUsageScannerTest extends TestCase
         self::assertStringContainsString('could not be found', $result->errorMessage);
     }
 
-    public function test_it_reports_unknown_when_the_source_file_cannot_be_read(): void
+    public function testItReportsUnknownWhenTheSourceFileCannotBeRead(): void
     {
         $className = $this->createTemporaryClass();
         $fileName  = (new ReflectionClass($className))->getFileName();
@@ -56,7 +56,7 @@ final class TestUsageScannerTest extends TestCase
         self::assertStringContainsString('could not be read', $result->errorMessage);
     }
 
-    public function test_it_reports_unknown_when_the_source_file_cannot_be_parsed(): void
+    public function testItReportsUnknownWhenTheSourceFileCannotBeParsed(): void
     {
         $className = $this->createTemporaryClass();
         $fileName  = (new ReflectionClass($className))->getFileName();

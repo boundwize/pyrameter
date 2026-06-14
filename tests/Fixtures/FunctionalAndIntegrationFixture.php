@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class FunctionalAndIntegrationFixture extends WebTestCase
 {
-    public function test_it_matches_two_heavy_kinds(): void
+    public function testItMatchesTwoHeavyKinds(): void
     {
         $connection = DriverManager::getConnection([]);
 

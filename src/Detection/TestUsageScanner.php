@@ -57,7 +57,13 @@ final readonly class TestUsageScanner
             $parser = (new ParserFactory())->createForHostVersion();
             $nodes  = $parser->parse($source);
         } catch (Throwable $exception) {
-            return ScanResult::unknown(sprintf('Source file "%s" could not be parsed: %s', $fileName, $exception->getMessage()));
+            return ScanResult::unknown(
+                sprintf(
+                    'Source file "%s" could not be parsed: %s',
+                    $fileName,
+                    $exception->getMessage()
+                )
+            );
         }
 
         // @codeCoverageIgnoreStart

@@ -13,10 +13,10 @@ use Pyrameter\TestRecord;
 
 final class TargetEvaluationTest extends TestCase
 {
-    public function test_it_returns_statuses_for_all_test_kinds(): void
+    public function testItReturnsStatusesForAllTestKinds(): void
     {
         $summary = PyramidSummary::fromRecords([
-            new TestRecord(self::class, 'test_unit', [], TestKind::Unit),
+            new TestRecord(self::class, 'testUnit', [], TestKind::Unit),
         ]);
 
         $evaluation = (new TargetEvaluator([
@@ -27,7 +27,7 @@ final class TargetEvaluationTest extends TestCase
         self::assertSame('No target', $evaluation->status(TestKind::Integration)->label());
     }
 
-    public function test_status_labels_include_ranges_and_unconstrained_targets(): void
+    public function testStatusLabelsIncludeRangesAndUnconstrainedTargets(): void
     {
         self::assertSame(
             '10.0%-90.0%',

@@ -15,7 +15,7 @@ use function sort;
 
 final class ConsumedClassExtractorTest extends TestCase
 {
-    public function test_it_extracts_classes_from_language_constructs_and_types(): void
+    public function testItExtractsClassesFromLanguageConstructsAndTypes(): void
     {
         $classes = $this->extract(<<<'PHP'
 <?php
@@ -82,7 +82,7 @@ PHP);
         ], $classes);
     }
 
-    public function test_it_handles_class_constants_that_are_not_mock_targets(): void
+    public function testItHandlesClassConstantsThatAreNotMockTargets(): void
     {
         $classes = $this->extract(<<<'PHP'
 <?php
@@ -110,7 +110,7 @@ PHP);
         ], $classes);
     }
 
-    public function test_it_accepts_standalone_use_nodes_without_parent_nodes(): void
+    public function testItAcceptsStandaloneUseNodesWithoutParentNodes(): void
     {
         $classes = (new ConsumedClassExtractor())->extract([
             new UseUse(new Name('Vendor\LooseImport')),
