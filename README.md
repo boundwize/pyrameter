@@ -33,7 +33,9 @@ Instead, it looks for configured heavy usage in test files:
 - database or external system usage => integration
 - browser driver usage => e2e
 
-```txt
+```bash
+vendor/bin/phpunit
+........................
 Pyrameter
 =========
 
