@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="../../../vendor/autoload.php"
+         colors="false"
+         cacheDirectory="../../../.phpunit-smoke-cache">
+    <extensions>
+        <bootstrap class="Pyrameter\Extension"/>
+    </extensions>
+    <testsuites>
+        <testsuite name="Smoke">
+            <file>PdoSmokeFixture.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>

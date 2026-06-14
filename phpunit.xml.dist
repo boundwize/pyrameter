@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache">
+    <extensions>
+        <bootstrap class="Pyrameter\Extension">
+            <parameter name="config" value="pyrameter.php"/>
+        </bootstrap>
+    </extensions>
+    <testsuites>
+        <testsuite name="Pyrameter">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

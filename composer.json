@@ -1,0 +1,31 @@
+{
+    "name": "boundwize/pyrameter",
+    "description": "PHPUnit extension that measures the shape of your test pyramid.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "phpunit/phpunit": "^11.0 || ^12.0",
+        "nikic/php-parser": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pyrameter\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pyrameter\\Tests\\": "tests/",
+            "Doctrine\\DBAL\\": "tests/Fixtures/Stubs/Doctrine/DBAL/",
+            "Facebook\\WebDriver\\": "tests/Fixtures/Stubs/Facebook/WebDriver/",
+            "Symfony\\Bundle\\FrameworkBundle\\Test\\": "tests/Fixtures/Stubs/Symfony/Bundle/FrameworkBundle/Test/",
+            "Symfony\\Component\\Panther\\": "tests/Fixtures/Stubs/Symfony/Component/Panther/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
