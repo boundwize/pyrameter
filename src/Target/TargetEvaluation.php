@@ -26,7 +26,7 @@ final readonly class TargetEvaluation
      */
     public function statuses(): array
     {
-        return array_map(fn (TestKind $kind): TargetStatus => $this->status($kind), TestKind::ordered());
+        return array_map($this->status(...), TestKind::ordered());
     }
 
     public function allPassed(): bool

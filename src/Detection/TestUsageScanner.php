@@ -8,7 +8,7 @@ use PhpParser\ParserFactory;
 use ReflectionClass;
 use Throwable;
 
-final class TestUsageScanner
+final readonly class TestUsageScanner
 {
     private ConsumedClassExtractor $extractor;
 
