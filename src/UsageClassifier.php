@@ -13,7 +13,6 @@ final readonly class UsageClassifier
      */
     public function __construct(
         private array $rules,
-        private TestKind $defaultKind = TestKind::Unit,
     ) {
     }
 
@@ -22,7 +21,7 @@ final readonly class UsageClassifier
      */
     public function classify(array $consumedClasses): TestKind
     {
-        $kind = $this->defaultKind;
+        $kind = TestKind::Unit;
 
         foreach ($consumedClasses as $consumedClass) {
             foreach ($this->rules as $rule) {

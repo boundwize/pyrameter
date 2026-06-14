@@ -8,7 +8,6 @@ use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\Framework\TestCase;
 use Pyrameter\Config\PyrameterConfig;
 use Pyrameter\Config\PyrameterConfigLoader;
-use Pyrameter\TestKind;
 
 final class PyrameterConfigLoaderTest extends TestCase
 {
@@ -17,7 +16,6 @@ final class PyrameterConfigLoaderTest extends TestCase
         $config = PyrameterConfigLoader::load(__DIR__ . '/missing-pyrameter.php');
 
         self::assertNotEmpty($config->usageRules());
-        self::assertSame(TestKind::Unit, $config->defaultTestKind());
         self::assertSame(['min' => 70.0], $config->targetPercentages()['unit']);
     }
 

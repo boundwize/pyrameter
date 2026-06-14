@@ -26,7 +26,6 @@ final class Extension implements PHPUnitExtension
         $scanner = new TestUsageScanner();
         $classifier = new UsageClassifier(
             rules: $pyrameterConfig->usageRules(),
-            defaultKind: $pyrameterConfig->defaultTestKind(),
         );
 
         $facade->registerSubscriber(new CollectTestResultSubscriber(

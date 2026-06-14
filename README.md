@@ -66,12 +66,11 @@ use Pyrameter\Config\PyrameterConfig;
 use Pyrameter\TestKind;
 
 return PyrameterConfig::create()
-    ->classifyByUsage()
-        ->usesClass(PDO::class, TestKind::Integration)
-        ->usesNamespace('Doctrine\DBAL\\', TestKind::Integration)
-        ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
-        ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
-        ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E)
+    ->usesClass(PDO::class, TestKind::Integration)
+    ->usesNamespace('Doctrine\DBAL\\', TestKind::Integration)
+    ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
+    ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
+    ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E)
 
     ->targets()
         ->unit(min: 70)

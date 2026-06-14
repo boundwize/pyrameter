@@ -35,7 +35,7 @@ final class UsageClassificationTest extends TestCase
         $scanner = new TestUsageScanner();
         $scanResult = $scanner->scan($fixtureClass);
         $config = PyrameterConfig::defaults();
-        $classifier = new UsageClassifier($config->usageRules(), $config->defaultTestKind());
+        $classifier = new UsageClassifier($config->usageRules());
 
         self::assertTrue($scanResult->inspectable, $scanResult->errorMessage ?? '');
         self::assertSame($expectedKind, $classifier->classify($scanResult->consumedClasses));

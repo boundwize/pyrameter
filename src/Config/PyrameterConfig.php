@@ -16,8 +16,6 @@ final class PyrameterConfig
      */
     private array $usageRules = [];
 
-    private TestKind $defaultKind = TestKind::Unit;
-
     /**
      * @var array<string, array{min?: float, max?: float}>
      */
@@ -33,18 +31,16 @@ final class PyrameterConfig
     public static function defaults(): self
     {
         return self::create()
-            ->classifyByUsage()
-                ->usesClass(PDO::class, TestKind::Integration)
-                ->usesClass(mysqli::class, TestKind::Integration)
-                ->usesNamespace('Doctrine\DBAL\\', TestKind::Integration)
-                ->usesNamespace('Doctrine\ORM\\', TestKind::Integration)
-                ->usesNamespace('Doctrine\ODM\\', TestKind::Integration)
-                ->usesNamespace('Redis\\', TestKind::Integration)
-                ->usesNamespace('Predis\\', TestKind::Integration)
-                ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
-                ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
-                ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E)
-            ->defaultKind(TestKind::Unit)
+            ->usesClass(PDO::class, TestKind::Integration)
+            ->usesClass(mysqli::class, TestKind::Integration)
+            ->usesNamespace('Doctrine\DBAL\\', TestKind::Integration)
+            ->usesNamespace('Doctrine\ORM\\', TestKind::Integration)
+            ->usesNamespace('Doctrine\ODM\\', TestKind::Integration)
+            ->usesNamespace('Redis\\', TestKind::Integration)
+            ->usesNamespace('Predis\\', TestKind::Integration)
+            ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
+            ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
+            ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E)
             ->targets()
                 ->unit(min: 70)
                 ->functional(max: 20)
@@ -52,11 +48,6 @@ final class PyrameterConfig
                 ->e2e(max: 2)
                 ->unknown(max: 2)
             ->warnOnly();
-    }
-
-    public function classifyByUsage(): self
-    {
-        return $this;
     }
 
     /**
@@ -72,13 +63,6 @@ final class PyrameterConfig
     public function usesNamespace(string $namespace, TestKind $kind): self
     {
         $this->usageRules[] = new UsageRule(ltrim($namespace, '\\'), $kind);
-
-        return $this;
-    }
-
-    public function defaultKind(TestKind $kind): self
-    {
-        $this->defaultKind = $kind;
 
         return $this;
     }
@@ -126,11 +110,6 @@ final class PyrameterConfig
     public function usageRules(): array
     {
         return $this->usageRules;
-    }
-
-    public function defaultTestKind(): TestKind
-    {
-        return $this->defaultKind;
     }
 
     /**
