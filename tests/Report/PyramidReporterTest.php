@@ -37,8 +37,8 @@ final class PyramidReporterTest extends TestCase
     public function test_it_renders_the_passed_report(): void
     {
         $summary = PyramidSummary::fromRecords([
-            ...$this->records(TestKind::Unit, 70),
-            ...$this->records(TestKind::Functional, 20),
+            ...$this->records(TestKind::Unit, 72),
+            ...$this->records(TestKind::Functional, 18),
             ...$this->records(TestKind::Integration, 8),
             ...$this->records(TestKind::E2E, 2),
         ]);
