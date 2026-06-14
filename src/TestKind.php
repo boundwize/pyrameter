@@ -6,11 +6,11 @@ namespace Pyrameter;
 
 enum TestKind: string
 {
-    case Unit = 'unit';
-    case Functional = 'functional';
+    case Unit        = 'unit';
+    case Functional  = 'functional';
     case Integration = 'integration';
-    case E2E = 'e2e';
-    case Unknown = 'unknown';
+    case E2E         = 'e2e';
+    case Unknown     = 'unknown';
 
     public function weight(): int
     {

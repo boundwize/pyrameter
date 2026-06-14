@@ -10,16 +10,15 @@ use PDO;
 use Pyrameter\Rule\UsageRule;
 use Pyrameter\TestKind;
 
+use function ltrim;
+use function sprintf;
+
 final class PyrameterConfig
 {
-    /**
-     * @var list<UsageRule>
-     */
+    /** @var list<UsageRule> */
     private array $usageRules = [];
 
-    /**
-     * @var array<string, array{min: float, max: float}>
-     */
+    /** @var array<string, array{min: float, max: float}> */
     private array $targets = [];
 
     private bool $failOnViolation = false;
@@ -83,11 +82,11 @@ final class PyrameterConfig
         array $unknown = [],
     ): self {
         $this->targets = [
-            TestKind::Unit->value => $this->normalizeTarget(TestKind::Unit, $unit),
-            TestKind::Functional->value => $this->normalizeTarget(TestKind::Functional, $functional),
+            TestKind::Unit->value        => $this->normalizeTarget(TestKind::Unit, $unit),
+            TestKind::Functional->value  => $this->normalizeTarget(TestKind::Functional, $functional),
             TestKind::Integration->value => $this->normalizeTarget(TestKind::Integration, $integration),
-            TestKind::E2E->value => $this->normalizeTarget(TestKind::E2E, $e2e),
-            TestKind::Unknown->value => $this->normalizeTarget(TestKind::Unknown, $unknown),
+            TestKind::E2E->value         => $this->normalizeTarget(TestKind::E2E, $e2e),
+            TestKind::Unknown->value     => $this->normalizeTarget(TestKind::Unknown, $unknown),
         ];
 
         $this->guardShapeFeasibility($this->targets);

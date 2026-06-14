@@ -6,6 +6,8 @@ namespace Pyrameter\Target;
 
 use Pyrameter\TestKind;
 
+use function sprintf;
+
 final readonly class TargetStatus
 {
     private function __construct(

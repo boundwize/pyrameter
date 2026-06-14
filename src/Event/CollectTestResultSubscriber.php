@@ -12,6 +12,13 @@ use Pyrameter\TestKind;
 use Pyrameter\TestRecord;
 use Pyrameter\UsageClassifier;
 
+use function explode;
+use function is_string;
+use function method_exists;
+use function str_contains;
+use function strpos;
+use function substr;
+
 final readonly class CollectTestResultSubscriber implements FinishedSubscriber
 {
     public function __construct(
@@ -23,8 +30,8 @@ final readonly class CollectTestResultSubscriber implements FinishedSubscriber
 
     public function notify(Finished $event): void
     {
-        $test = $event->test();
-        $testClassName = $this->extractClassName($test);
+        $test           = $event->test();
+        $testClassName  = $this->extractClassName($test);
         $testMethodName = $this->extractMethodName($test);
 
         if ($testClassName === null || $testMethodName === null) {

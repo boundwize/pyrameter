@@ -6,6 +6,9 @@ namespace Pyrameter\Rule;
 
 use Pyrameter\TestKind;
 
+use function str_ends_with;
+use function str_starts_with;
+
 final readonly class UsageRule
 {
     public function __construct(

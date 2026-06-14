@@ -6,11 +6,19 @@ namespace Pyrameter\Tests;
 
 use PHPUnit\Framework\TestCase;
 
+use function escapeshellarg;
+use function exec;
+use function implode;
+use function sprintf;
+
+use const PHP_BINARY;
+use const PHP_EOL;
+
 final class ExtensionSmokeTest extends TestCase
 {
     public function test_it_registers_with_phpunit_and_prints_a_report_after_execution(): void
     {
-        $configuration = __DIR__ . '/Fixtures/SmokeProject/phpunit.xml';
+        $configuration       = __DIR__ . '/Fixtures/SmokeProject/phpunit.xml';
         [$exitCode, $output] = $this->runPhpUnit($configuration);
 
         self::assertSame(0, $exitCode, $output);
@@ -22,7 +30,7 @@ final class ExtensionSmokeTest extends TestCase
 
     public function test_fail_on_violation_changes_phpunit_exit_code_without_subscriber_warning(): void
     {
-        $configuration = __DIR__ . '/Fixtures/SmokeProject/phpunit-fail.xml';
+        $configuration       = __DIR__ . '/Fixtures/SmokeProject/phpunit-fail.xml';
         [$exitCode, $output] = $this->runPhpUnit($configuration);
 
         self::assertSame(1, $exitCode, $output);

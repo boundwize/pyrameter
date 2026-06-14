@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Pyrameter;
 
+use function count;
+use function round;
+
 final readonly class PyramidSummary
 {
     /**
@@ -23,18 +26,18 @@ final readonly class PyramidSummary
     public static function fromRecords(array $records): self
     {
         $counts = [
-            TestKind::Unit->value => 0,
-            TestKind::Functional->value => 0,
+            TestKind::Unit->value        => 0,
+            TestKind::Functional->value  => 0,
             TestKind::Integration->value => 0,
-            TestKind::E2E->value => 0,
-            TestKind::Unknown->value => 0,
+            TestKind::E2E->value         => 0,
+            TestKind::Unknown->value     => 0,
         ];
 
         foreach ($records as $record) {
             ++$counts[$record->kind->value];
         }
 
-        $total = count($records);
+        $total       = count($records);
         $percentages = [];
 
         foreach ($counts as $kind => $count) {

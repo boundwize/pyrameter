@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Pyrameter;
 
+use function array_values;
+
 final class TestCollector
 {
-    /**
-     * @var array<string, TestRecord>
-     */
+    /** @var array<string, TestRecord> */
     private array $records = [];
 
     public function add(TestRecord $record): void

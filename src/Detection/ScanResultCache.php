@@ -6,9 +6,7 @@ namespace Pyrameter\Detection;
 
 final class ScanResultCache
 {
-    /**
-     * @var array<string, ScanResult>
-     */
+    /** @var array<string, ScanResult> */
     private array $cache = [];
 
     /**

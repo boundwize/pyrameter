@@ -22,9 +22,9 @@ final class Extension implements PHPUnitExtension
         ParameterCollection $parameters,
     ): void {
         $pyrameterConfig = PyrameterConfigLoader::loadFromParametersOrDefaults($parameters);
-        $collector = new TestCollector();
-        $scanner = new TestUsageScanner();
-        $classifier = new UsageClassifier(
+        $collector       = new TestCollector();
+        $scanner         = new TestUsageScanner();
+        $classifier      = new UsageClassifier(
             rules: $pyrameterConfig->usageRules(),
         );
 

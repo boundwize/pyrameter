@@ -7,6 +7,7 @@ namespace Pyrameter\Tests\Report;
 use PHPUnit\Framework\TestCase;
 use Pyrameter\Config\PyrameterConfig;
 use Pyrameter\PyramidSummary;
+use Pyrameter\Report\SuiteShape;
 use Pyrameter\Report\SuiteShapeResolver;
 use Pyrameter\Target\TargetEvaluator;
 use Pyrameter\TestKind;
@@ -25,7 +26,7 @@ final class SuiteShapeResolverTest extends TestCase
     public function test_it_detects_unknown_swamp(): void
     {
         $shape = $this->shape([
-            TestKind::Unit->value => 9,
+            TestKind::Unit->value    => 9,
             TestKind::Unknown->value => 1,
         ]);
 
@@ -36,10 +37,10 @@ final class SuiteShapeResolverTest extends TestCase
     public function test_it_detects_e2e_tower(): void
     {
         $shape = $this->shape([
-            TestKind::Unit->value => 80,
-            TestKind::Functional->value => 10,
+            TestKind::Unit->value        => 80,
+            TestKind::Functional->value  => 10,
             TestKind::Integration->value => 5,
-            TestKind::E2E->value => 5,
+            TestKind::E2E->value         => 5,
         ]);
 
         self::assertSame('E2E Tower', $shape->name);
@@ -49,9 +50,9 @@ final class SuiteShapeResolverTest extends TestCase
     public function test_it_detects_inverted_pyramid(): void
     {
         $shape = $this->shape([
-            TestKind::Unit->value => 35,
+            TestKind::Unit->value        => 35,
             TestKind::Integration->value => 45,
-            TestKind::E2E->value => 5,
+            TestKind::E2E->value         => 5,
         ]);
 
         self::assertSame('Inverted Pyramid', $shape->name);
@@ -61,8 +62,8 @@ final class SuiteShapeResolverTest extends TestCase
     public function test_it_detects_integration_mountain(): void
     {
         $shape = $this->shape([
-            TestKind::Unit->value => 7,
-            TestKind::Functional->value => 2,
+            TestKind::Unit->value        => 7,
+            TestKind::Functional->value  => 2,
             TestKind::Integration->value => 1,
         ]);
 
@@ -73,10 +74,10 @@ final class SuiteShapeResolverTest extends TestCase
     public function test_it_detects_healthy_pyramid(): void
     {
         $shape = $this->shape([
-            TestKind::Unit->value => 72,
-            TestKind::Functional->value => 18,
+            TestKind::Unit->value        => 72,
+            TestKind::Functional->value  => 18,
             TestKind::Integration->value => 8,
-            TestKind::E2E->value => 2,
+            TestKind::E2E->value         => 2,
         ]);
 
         self::assertSame('Healthy Pyramid', $shape->name);
@@ -96,8 +97,8 @@ final class SuiteShapeResolverTest extends TestCase
             );
 
         $shape = $this->shape([
-            TestKind::Unit->value => 75,
-            TestKind::Functional->value => 20,
+            TestKind::Unit->value        => 75,
+            TestKind::Functional->value  => 20,
             TestKind::Integration->value => 5,
         ], $config);
 
@@ -108,9 +109,9 @@ final class SuiteShapeResolverTest extends TestCase
     /**
      * @param array<string, int> $counts
      */
-    private function shape(array $counts, ?PyrameterConfig $config = null): \Pyrameter\Report\SuiteShape
+    private function shape(array $counts, ?PyrameterConfig $config = null): SuiteShape
     {
-        $summary = PyramidSummary::fromRecords($this->records($counts));
+        $summary  = PyramidSummary::fromRecords($this->records($counts));
         $config ??= PyrameterConfig::defaults();
         $targets = (new TargetEvaluator($config->targetPercentages()))->evaluate($summary);
 

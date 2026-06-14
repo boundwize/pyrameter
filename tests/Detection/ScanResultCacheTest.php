@@ -21,7 +21,7 @@ final class ScanResultCacheTest extends TestCase
             return ScanResult::inspectable([$testClassName]);
         };
 
-        $first = $cache->get(self::class, $factory);
+        $first  = $cache->get(self::class, $factory);
         $second = $cache->get(self::class, $factory);
 
         self::assertSame($first, $second);

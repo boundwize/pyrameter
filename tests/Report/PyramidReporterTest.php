@@ -23,7 +23,7 @@ final class PyramidReporterTest extends TestCase
             ...$this->records(TestKind::Integration, 1),
         ]);
         $targets = (new TargetEvaluator(PyrameterConfig::defaults()->targetPercentages()))->evaluate($summary);
-        $shape = (new SuiteShapeResolver())->resolve($summary, $targets);
+        $shape   = (new SuiteShapeResolver())->resolve($summary, $targets);
 
         $report = (new PyramidReporter())->render($summary, $targets, $shape);
 
@@ -44,7 +44,7 @@ final class PyramidReporterTest extends TestCase
             ...$this->records(TestKind::E2E, 2),
         ]);
         $targets = (new TargetEvaluator(PyrameterConfig::defaults()->targetPercentages()))->evaluate($summary);
-        $shape = (new SuiteShapeResolver())->resolve($summary, $targets);
+        $shape   = (new SuiteShapeResolver())->resolve($summary, $targets);
 
         $report = (new PyramidReporter())->render($summary, $targets, $shape);
 
@@ -59,12 +59,12 @@ final class PyramidReporterTest extends TestCase
             ...$this->records(TestKind::Unit, 8),
             ...$this->records(TestKind::Integration, 2),
         ]);
-        $config = PyrameterConfig::create()
+        $config  = PyrameterConfig::create()
             ->targetShape(
                 unit: ['min' => 40],
             );
         $targets = (new TargetEvaluator($config->targetPercentages()))->evaluate($summary);
-        $shape = (new SuiteShapeResolver())->resolve($summary, $targets);
+        $shape   = (new SuiteShapeResolver())->resolve($summary, $targets);
 
         $report = (new PyramidReporter())->render($summary, $targets, $shape);
 

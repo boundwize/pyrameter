@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pyrameter\Tests\Fixtures;
 
 use Doctrine\DBAL\DriverManager;
+use stdClass;
 use Symfony\Component\Panther\PantherTestCase;
 
 final class IntegrationAndE2EFixture extends PantherTestCase
@@ -13,6 +14,6 @@ final class IntegrationAndE2EFixture extends PantherTestCase
     {
         $connection = DriverManager::getConnection([]);
 
-        self::assertSame(\stdClass::class, $connection::class);
+        self::assertSame(stdClass::class, $connection::class);
     }
 }

@@ -5,10 +5,20 @@ declare(strict_types=1);
 namespace Pyrameter\Tests\Config;
 
 use InvalidArgumentException;
-use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Runner\Extension\ParameterCollection;
 use Pyrameter\Config\PyrameterConfig;
 use Pyrameter\Config\PyrameterConfigLoader;
+use RuntimeException;
+
+use function chdir;
+use function file_put_contents;
+use function getcwd;
+use function mkdir;
+use function rmdir;
+use function sys_get_temp_dir;
+use function uniqid;
+use function unlink;
 
 final class PyrameterConfigLoaderTest extends TestCase
 {
@@ -81,6 +91,79 @@ PHP);
         }
 
         self::assertSame(['min' => 55.0, 'max' => 100.0], $config->targetPercentages()['unit']);
+    }
+
+    public function test_it_loads_default_configuration_path_from_current_working_directory(): void
+    {
+        $previousDirectory = getcwd();
+        $directory         = sys_get_temp_dir() . '/pyrameter-config-cwd-' . uniqid();
+
+        self::assertIsString($previousDirectory);
+
+        mkdir($directory);
+        file_put_contents($directory . '/pyrameter.php', <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+use Pyrameter\Config\PyrameterConfig;
+
+return PyrameterConfig::create()
+    ->targetShape(unit: ['min' => 45]);
+PHP);
+
+        chdir($directory);
+
+        try {
+            $config = PyrameterConfigLoader::load();
+        } finally {
+            chdir($previousDirectory);
+            unlink($directory . '/pyrameter.php');
+            rmdir($directory);
+        }
+
+        self::assertSame(['min' => 45.0, 'max' => 100.0], $config->targetPercentages()['unit']);
+    }
+
+    public function test_it_uses_relative_default_path_when_current_working_directory_is_unavailable(): void
+    {
+        $previousDirectory = getcwd();
+        $directory         = sys_get_temp_dir() . '/pyrameter-config-missing-cwd-' . uniqid();
+
+        self::assertIsString($previousDirectory);
+
+        mkdir($directory);
+        chdir($directory);
+        rmdir($directory);
+
+        try {
+            $config = PyrameterConfigLoader::load();
+        } finally {
+            chdir($previousDirectory);
+        }
+
+        self::assertNotEmpty($config->usageRules());
+    }
+
+    public function test_configuration_file_must_return_a_pyrameter_config(): void
+    {
+        $path = sys_get_temp_dir() . '/pyrameter-invalid-config-test.php';
+        file_put_contents($path, <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+return new stdClass();
+PHP);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('must return an instance of ' . PyrameterConfig::class);
+
+        try {
+            PyrameterConfigLoader::load($path);
+        } finally {
+            unlink($path);
+        }
     }
 
     public function test_target_shape_can_start_with_only_unit_minimum(): void

@@ -6,6 +6,8 @@ namespace Pyrameter\Target;
 
 use Pyrameter\TestKind;
 
+use function array_map;
+
 final readonly class TargetEvaluation
 {
     /**

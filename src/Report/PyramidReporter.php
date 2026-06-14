@@ -8,6 +8,13 @@ use Pyrameter\PyramidSummary;
 use Pyrameter\Target\TargetEvaluation;
 use Pyrameter\TestKind;
 
+use function fwrite;
+use function implode;
+use function sprintf;
+
+use const PHP_EOL;
+use const STDOUT;
+
 final readonly class PyramidReporter
 {
     public function print(PyramidSummary $summary, TargetEvaluation $targets, SuiteShape $shape): void

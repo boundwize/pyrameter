@@ -32,9 +32,9 @@ final class UsageClassificationTest extends TestCase
     #[DataProvider('classificationCases')]
     public function test_it_classifies_usage_from_the_test_file(string $fixtureClass, TestKind $expectedKind): void
     {
-        $scanner = new TestUsageScanner();
+        $scanner    = new TestUsageScanner();
         $scanResult = $scanner->scan($fixtureClass);
-        $config = PyrameterConfig::defaults();
+        $config     = PyrameterConfig::defaults();
         $classifier = new UsageClassifier($config->usageRules());
 
         self::assertTrue($scanResult->inspectable, $scanResult->errorMessage ?? '');

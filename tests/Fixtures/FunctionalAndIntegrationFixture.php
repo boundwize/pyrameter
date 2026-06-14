@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pyrameter\Tests\Fixtures;
 
 use Doctrine\DBAL\DriverManager;
+use stdClass;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class FunctionalAndIntegrationFixture extends WebTestCase
@@ -13,6 +14,6 @@ final class FunctionalAndIntegrationFixture extends WebTestCase
     {
         $connection = DriverManager::getConnection([]);
 
-        self::assertSame(\stdClass::class, $connection::class);
+        self::assertSame(stdClass::class, $connection::class);
     }
 }

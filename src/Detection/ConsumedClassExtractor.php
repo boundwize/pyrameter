@@ -7,13 +7,14 @@ namespace Pyrameter\Detection;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Attribute;
+use PhpParser\Node\ComplexType;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\StaticPropertyFetch;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\IntersectionType;
 use PhpParser\Node\Name;
-use PhpParser\Node\ComplexType;
 use PhpParser\Node\NullableType;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\GroupUse;
@@ -22,11 +23,14 @@ use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\Node\Stmt\UseUse;
 use PhpParser\Node\UnionType;
-use PhpParser\Node\IntersectionType;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\NodeVisitorAbstract;
+
+use function in_array;
+use function ltrim;
+use function strtolower;
 
 final class ConsumedClassExtractor
 {
@@ -38,14 +42,10 @@ final class ConsumedClassExtractor
     {
         $traverser = new NodeTraverser();
         $collector = new class extends NodeVisitorAbstract {
-            /**
-             * @var array<string, array{import: bool, normal: bool, mock: bool}>
-             */
+            /** @var array<string, array{import: bool, normal: bool, mock: bool}> */
             private array $references = [];
 
-            /**
-             * @var list<string>
-             */
+            /** @var list<string> */
             private array $mockMethods = [
                 'createMock',
                 'createStub',
@@ -182,7 +182,7 @@ final class ConsumedClassExtractor
                 $reference = $this->references[$className] ?? [
                     'import' => false,
                     'normal' => false,
-                    'mock' => false,
+                    'mock'   => false,
                 ];
 
                 if ($referenceKind === 'import') {

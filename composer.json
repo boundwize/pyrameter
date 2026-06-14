@@ -31,10 +31,14 @@
         "structarmed": "structarmed analyze"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "require-dev": {
         "boundwize/structarmed": "^0.13.4",
+        "laminas/laminas-coding-standard": "^3.1",
         "phpstan/phpstan": "^2.2",
         "rector/rector": "^2.4"
     }

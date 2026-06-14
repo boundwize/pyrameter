@@ -8,6 +8,12 @@ use PhpParser\ParserFactory;
 use ReflectionClass;
 use Throwable;
 
+use function array_values;
+use function class_exists;
+use function file_get_contents;
+use function is_file;
+use function sprintf;
+
 final readonly class TestUsageScanner
 {
     private ConsumedClassExtractor $extractor;
@@ -19,7 +25,7 @@ final readonly class TestUsageScanner
         ?ScanResultCache $cache = null,
     ) {
         $this->extractor = $extractor ?? new ConsumedClassExtractor();
-        $this->cache = $cache ?? new ScanResultCache();
+        $this->cache     = $cache ?? new ScanResultCache();
     }
 
     public function scan(string $testClassName): ScanResult
@@ -49,14 +55,16 @@ final readonly class TestUsageScanner
 
         try {
             $parser = (new ParserFactory())->createForHostVersion();
-            $nodes = $parser->parse($source);
+            $nodes  = $parser->parse($source);
         } catch (Throwable $exception) {
             return ScanResult::unknown(sprintf('Source file "%s" could not be parsed: %s', $fileName, $exception->getMessage()));
         }
 
+        // @codeCoverageIgnoreStart
         if ($nodes === null) {
             return ScanResult::unknown(sprintf('Source file "%s" could not be parsed.', $fileName));
         }
+        // @codeCoverageIgnoreEnd
 
         return ScanResult::inspectable($this->extractor->extract(array_values($nodes)));
     }

@@ -7,6 +7,12 @@ namespace Pyrameter\Config;
 use PHPUnit\Runner\Extension\ParameterCollection;
 use RuntimeException;
 
+use function getcwd;
+use function is_file;
+use function sprintf;
+
+use const DIRECTORY_SEPARATOR;
+
 final class PyrameterConfigLoader
 {
     public static function loadFromParametersOrDefaults(ParameterCollection $parameters): PyrameterConfig

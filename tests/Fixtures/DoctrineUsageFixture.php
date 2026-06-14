@@ -6,6 +6,7 @@ namespace Pyrameter\Tests\Fixtures;
 
 use Doctrine\DBAL\DriverManager;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 final class DoctrineUsageFixture extends TestCase
 {
@@ -13,6 +14,6 @@ final class DoctrineUsageFixture extends TestCase
     {
         $connection = DriverManager::getConnection([]);
 
-        self::assertSame(\stdClass::class, $connection::class);
+        self::assertSame(stdClass::class, $connection::class);
     }
 }
