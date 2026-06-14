@@ -10,6 +10,6 @@ final class SimpleUnitFixture extends TestCase
 {
     public function test_it_uses_assertions(): void
     {
-        self::assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 }

@@ -11,6 +11,8 @@ final class WebDriverE2EFixture extends TestCase
 {
     public function test_it_uses_webdriver(): void
     {
-        RemoteWebDriver::create('http://localhost', []);
+        $driver = RemoteWebDriver::create('http://localhost', []);
+
+        self::assertInstanceOf(RemoteWebDriver::class, $driver);
     }
 }

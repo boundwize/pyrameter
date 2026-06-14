@@ -10,6 +10,6 @@ final class SymfonyFunctionalFixture extends WebTestCase
 {
     public function test_it_uses_the_framework_runtime(): void
     {
-        self::assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 }

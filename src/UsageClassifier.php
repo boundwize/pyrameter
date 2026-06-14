@@ -18,7 +18,7 @@ final readonly class UsageClassifier
     }
 
     /**
-     * @param list<class-string> $consumedClasses
+     * @param list<string> $consumedClasses
      */
     public function classify(array $consumedClasses): TestKind
     {

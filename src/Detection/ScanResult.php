@@ -7,7 +7,7 @@ namespace Pyrameter\Detection;
 final readonly class ScanResult
 {
     /**
-     * @param list<class-string> $consumedClasses
+     * @param list<string> $consumedClasses
      */
     private function __construct(
         public bool $inspectable,
@@ -17,7 +17,7 @@ final readonly class ScanResult
     }
 
     /**
-     * @param list<class-string> $consumedClasses
+     * @param list<string> $consumedClasses
      */
     public static function inspectable(array $consumedClasses): self
     {

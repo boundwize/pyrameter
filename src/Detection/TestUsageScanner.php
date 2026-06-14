@@ -6,7 +6,6 @@ namespace Pyrameter\Detection;
 
 use PhpParser\ParserFactory;
 use ReflectionClass;
-use ReflectionException;
 use Throwable;
 
 final class TestUsageScanner
@@ -23,24 +22,18 @@ final class TestUsageScanner
         $this->cache = $cache ?? new ScanResultCache();
     }
 
-    /**
-     * @param class-string $testClassName
-     */
     public function scan(string $testClassName): ScanResult
     {
         return $this->cache->get($testClassName, fn (string $className): ScanResult => $this->scanUncached($className));
     }
 
-    /**
-     * @param class-string $testClassName
-     */
     private function scanUncached(string $testClassName): ScanResult
     {
-        try {
-            $reflection = new ReflectionClass($testClassName);
-        } catch (ReflectionException $exception) {
-            return ScanResult::unknown($exception->getMessage());
+        if (! class_exists($testClassName)) {
+            return ScanResult::unknown(sprintf('Test class "%s" could not be reflected.', $testClassName));
         }
+
+        $reflection = new ReflectionClass($testClassName);
 
         $fileName = $reflection->getFileName();
 
@@ -65,6 +58,6 @@ final class TestUsageScanner
             return ScanResult::unknown(sprintf('Source file "%s" could not be parsed.', $fileName));
         }
 
-        return ScanResult::inspectable($this->extractor->extract($nodes));
+        return ScanResult::inspectable($this->extractor->extract(array_values($nodes)));
     }
 }

@@ -11,11 +11,11 @@ final class PdoSmokeFixture extends TestCase
 {
     public function test_one(): void
     {
-        self::assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 
     public function test_two(): void
     {
-        self::assertTrue(true);
+        $this->addToAssertionCount(1);
     }
 }

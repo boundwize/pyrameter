@@ -11,6 +11,8 @@ final class IntegrationAndE2EFixture extends PantherTestCase
 {
     public function test_it_matches_the_heaviest_kind(): void
     {
-        DriverManager::getConnection([]);
+        $connection = DriverManager::getConnection([]);
+
+        self::assertSame(\stdClass::class, $connection::class);
     }
 }

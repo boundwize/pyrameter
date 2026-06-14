@@ -48,7 +48,9 @@ final readonly class CollectTestResultSubscriber implements FinishedSubscriber
     private function extractClassName(object $test): ?string
     {
         if (method_exists($test, 'className')) {
-            return $test->className();
+            $className = $test->className();
+
+            return is_string($className) ? $className : null;
         }
 
         $id = method_exists($test, 'id') ? $test->id() : null;
@@ -63,7 +65,9 @@ final readonly class CollectTestResultSubscriber implements FinishedSubscriber
     private function extractMethodName(object $test): ?string
     {
         if (method_exists($test, 'methodName')) {
-            return $test->methodName();
+            $methodName = $test->methodName();
+
+            return is_string($methodName) ? $methodName : null;
         }
 
         $id = method_exists($test, 'id') ? $test->id() : null;

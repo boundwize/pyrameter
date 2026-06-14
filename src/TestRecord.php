@@ -7,7 +7,7 @@ namespace Pyrameter;
 final readonly class TestRecord
 {
     /**
-     * @param list<class-string> $consumedClasses
+     * @param list<string> $consumedClasses
      */
     public function __construct(
         public string $testClassName,

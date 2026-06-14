@@ -11,6 +11,8 @@ final class DoctrineUsageFixture extends TestCase
 {
     public function test_it_consumes_dbal(): void
     {
-        DriverManager::getConnection([]);
+        $connection = DriverManager::getConnection([]);
+
+        self::assertSame(\stdClass::class, $connection::class);
     }
 }

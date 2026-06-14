@@ -7,13 +7,12 @@ namespace Pyrameter\Detection;
 final class ScanResultCache
 {
     /**
-     * @var array<class-string, ScanResult>
+     * @var array<string, ScanResult>
      */
     private array $cache = [];
 
     /**
-     * @param class-string $testClassName
-     * @param callable(class-string): ScanResult $factory
+     * @param callable(string): ScanResult $factory
      */
     public function get(string $testClassName, callable $factory): ScanResult
     {

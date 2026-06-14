@@ -48,30 +48,6 @@ final class PyrameterConfigLoader
 
     private static function parameterValue(ParameterCollection $parameters, string $name): ?string
     {
-        if (method_exists($parameters, 'has') && method_exists($parameters, 'get') && $parameters->has($name)) {
-            $parameter = $parameters->get($name);
-
-            if (is_object($parameter) && method_exists($parameter, 'value')) {
-                return (string) $parameter->value();
-            }
-
-            return (string) $parameter;
-        }
-
-        foreach ($parameters as $parameter) {
-            if (! is_object($parameter)) {
-                continue;
-            }
-
-            if (! method_exists($parameter, 'name') || $parameter->name() !== $name) {
-                continue;
-            }
-
-            if (method_exists($parameter, 'value')) {
-                return (string) $parameter->value();
-            }
-        }
-
-        return null;
+        return $parameters->has($name) ? $parameters->get($name) : null;
     }
 }

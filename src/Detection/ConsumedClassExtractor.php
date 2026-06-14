@@ -13,6 +13,7 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\StaticPropertyFetch;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\ComplexType;
 use PhpParser\Node\NullableType;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\GroupUse;
@@ -31,14 +32,14 @@ final class ConsumedClassExtractor
 {
     /**
      * @param list<Node> $nodes
-     * @return list<class-string>
+     * @return list<string>
      */
     public function extract(array $nodes): array
     {
         $traverser = new NodeTraverser();
         $collector = new class extends NodeVisitorAbstract {
             /**
-             * @var array<class-string, array{import: bool, normal: bool, mock: bool}>
+             * @var array<string, array{import: bool, normal: bool, mock: bool}>
              */
             private array $references = [];
 
@@ -115,7 +116,7 @@ final class ConsumedClassExtractor
             }
 
             /**
-             * @return list<class-string>
+             * @return list<string>
              */
             public function consumedClasses(): array
             {
@@ -135,7 +136,7 @@ final class ConsumedClassExtractor
                 return $classes;
             }
 
-            private function addType(null|Identifier|Name|NullableType|UnionType|IntersectionType $type): void
+            private function addType(null|Identifier|Name|ComplexType $type): void
             {
                 if ($type instanceof Name) {
                     $this->addName($type);
@@ -154,6 +155,9 @@ final class ConsumedClassExtractor
                 }
             }
 
+            /**
+             * @param 'import'|'normal'|'mock' $referenceKind
+             */
             private function addName(?Name $name, string $referenceKind = 'normal'): void
             {
                 if ($name === null) {
@@ -164,6 +168,9 @@ final class ConsumedClassExtractor
                 $this->add($resolvedName instanceof Name ? $resolvedName->toString() : $name->toString(), $referenceKind);
             }
 
+            /**
+             * @param 'import'|'normal'|'mock' $referenceKind
+             */
             private function add(string $className, string $referenceKind): void
             {
                 $className = ltrim($className, '\\');
@@ -172,13 +179,21 @@ final class ConsumedClassExtractor
                     return;
                 }
 
-                $this->references[$className] ??= [
+                $reference = $this->references[$className] ?? [
                     'import' => false,
                     'normal' => false,
                     'mock' => false,
                 ];
 
-                $this->references[$className][$referenceKind] = true;
+                if ($referenceKind === 'import') {
+                    $reference['import'] = true;
+                } elseif ($referenceKind === 'normal') {
+                    $reference['normal'] = true;
+                } else {
+                    $reference['mock'] = true;
+                }
+
+                $this->references[$className] = $reference;
             }
 
             private function isClassConstant(ClassConstFetch $node): bool
@@ -225,7 +240,7 @@ final class ConsumedClassExtractor
                         return false;
                     }
 
-                    return ! property_exists($node, 'type') || $node->type === Use_::TYPE_UNKNOWN || $node->type === Use_::TYPE_NORMAL;
+                    return $node->type === Use_::TYPE_UNKNOWN || $node->type === Use_::TYPE_NORMAL;
                 }
 
                 return true;

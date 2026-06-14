@@ -11,6 +11,8 @@ final class FunctionalAndIntegrationFixture extends WebTestCase
 {
     public function test_it_matches_two_heavy_kinds(): void
     {
-        DriverManager::getConnection([]);
+        $connection = DriverManager::getConnection([]);
+
+        self::assertSame(\stdClass::class, $connection::class);
     }
 }
