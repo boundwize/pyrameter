@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pyrameter\Detection;
 
+use Closure;
 use PhpParser\ParserFactory;
 use ReflectionClass;
 use Throwable;
@@ -20,12 +21,20 @@ final readonly class TestUsageScanner
 
     private ScanResultCache $cache;
 
+    /** @var null|Closure(string): string|false */
+    private ?Closure $readFile;
+
+    /**
+     * @param null|Closure(string): string|false $readFile
+     */
     public function __construct(
         ?ConsumedClassExtractor $extractor = null,
         ?ScanResultCache $cache = null,
+        ?Closure $readFile = null,
     ) {
         $this->extractor = $extractor ?? new ConsumedClassExtractor();
         $this->cache     = $cache ?? new ScanResultCache();
+        $this->readFile  = $readFile;
     }
 
     public function scan(string $testClassName): ScanResult
@@ -47,7 +56,9 @@ final readonly class TestUsageScanner
             return ScanResult::unknown(sprintf('Source file for "%s" could not be found.', $testClassName));
         }
 
-        $source = file_get_contents($fileName);
+        $source = $this->readFile !== null
+            ? ($this->readFile)($fileName)
+            : file_get_contents($fileName);
 
         if ($source === false) {
             return ScanResult::unknown(sprintf('Source file "%s" could not be read.', $fileName));

@@ -9,11 +9,8 @@ use Pyrameter\Detection\TestUsageScanner;
 use ReflectionClass;
 use stdClass;
 
-use function chmod;
 use function class_exists;
 use function file_put_contents;
-use function restore_error_handler;
-use function set_error_handler;
 use function sprintf;
 use function str_replace;
 use function sys_get_temp_dir;
@@ -40,14 +37,11 @@ final class TestUsageScannerTest extends TestCase
 
         self::assertIsString($fileName);
 
-        chmod($fileName, 0000);
-        set_error_handler(static fn (): bool => true);
-
         try {
-            $result = (new TestUsageScanner())->scan($className);
+            $result = (new TestUsageScanner(
+                readFile: static fn (string $fileName): false => false,
+            ))->scan($className);
         } finally {
-            restore_error_handler();
-            chmod($fileName, 0644);
             unlink($fileName);
         }
 
