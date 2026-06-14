@@ -6,12 +6,10 @@ namespace Pyrameter\Event;
 
 use PHPUnit\Event\TestRunner\ExecutionFinished;
 use PHPUnit\Event\TestRunner\ExecutionFinishedSubscriber;
-use Pyrameter\Config\ViolationMode;
 use Pyrameter\PyramidSummary;
 use Pyrameter\Report\PyramidReporter;
 use Pyrameter\Report\SuiteShapeResolver;
 use Pyrameter\Target\TargetEvaluator;
-use Pyrameter\Target\TargetViolation;
 use Pyrameter\TestCollector;
 
 final readonly class PrintReportSubscriber implements ExecutionFinishedSubscriber
@@ -27,7 +25,7 @@ final readonly class PrintReportSubscriber implements ExecutionFinishedSubscribe
         private TestCollector $collector,
         array $targets,
         private PyramidReporter $reporter,
-        private ViolationMode $violationMode = ViolationMode::Warn,
+        private bool $failOnViolation = false,
     ) {
         $this->targetEvaluator = new TargetEvaluator($targets);
         $this->shapeResolver = new SuiteShapeResolver();
@@ -41,8 +39,10 @@ final readonly class PrintReportSubscriber implements ExecutionFinishedSubscribe
 
         $this->reporter->print($summary, $targetResult, $shape);
 
-        if ($this->violationMode === ViolationMode::Fail && ! $targetResult->allPassed()) {
-            throw new TargetViolation('Pyrameter target shape violated.');
+        if ($this->failOnViolation && ! $targetResult->allPassed()) {
+            fwrite(STDOUT, PHP_EOL . 'Pyrameter target shape violated.' . PHP_EOL);
+
+            exit(1);
         }
     }
 }

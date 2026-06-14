@@ -95,18 +95,15 @@ return PyrameterConfig::create()
 
 Each target is a percentage range. Missing `min` means `0`; missing `max` means `100`.
 
-By default, Pyrameter is report-only: it prints warnings but does not change PHPUnit's exit code.
+By default, Pyrameter is report-only: it prints target violations but does not change PHPUnit's exit code.
 
-To make target violations fail the PHPUnit run:
+To fail the PHPUnit process after a target violation:
 
 ```php
 return PyrameterConfig::create()
     ->targetShape(
         unit: ['min' => 70],
-        functional: ['max' => 18],
         integration: ['max' => 8],
-        e2e: ['max' => 2],
-        unknown: ['max' => 2],
     )
     ->failOnViolation();
 ```

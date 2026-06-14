@@ -38,7 +38,7 @@ final class Extension implements PHPUnitExtension
             collector: $collector,
             targets: $pyrameterConfig->targetPercentages(),
             reporter: new PyramidReporter(),
-            violationMode: $pyrameterConfig->violationMode(),
+            failOnViolation: $pyrameterConfig->shouldFailOnViolation(),
         ));
     }
 }

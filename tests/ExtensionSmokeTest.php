@@ -20,15 +20,16 @@ final class ExtensionSmokeTest extends TestCase
         self::assertStringContainsString('Total: 2 tests', $output);
     }
 
-    public function test_fail_on_violation_changes_phpunit_exit_code(): void
+    public function test_fail_on_violation_changes_phpunit_exit_code_without_subscriber_warning(): void
     {
         $configuration = __DIR__ . '/Fixtures/SmokeProject/phpunit-fail.xml';
         [$exitCode, $output] = $this->runPhpUnit($configuration);
 
-        self::assertNotSame(0, $exitCode, $output);
+        self::assertSame(1, $exitCode, $output);
         self::assertStringContainsString('Pyrameter', $output);
-        self::assertStringContainsString('Shape: Inverted Pyramid', $output);
+        self::assertStringContainsString('Result: Violated', $output);
         self::assertStringContainsString('Pyrameter target shape violated.', $output);
+        self::assertStringNotContainsString('Exception in third-party event subscriber', $output);
     }
 
     /**

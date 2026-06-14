@@ -22,7 +22,7 @@ final class PyrameterConfig
      */
     private array $targets = [];
 
-    private ViolationMode $violationMode = ViolationMode::Warn;
+    private bool $failOnViolation = false;
 
     public static function create(): self
     {
@@ -97,7 +97,7 @@ final class PyrameterConfig
 
     public function failOnViolation(): self
     {
-        $this->violationMode = ViolationMode::Fail;
+        $this->failOnViolation = true;
 
         return $this;
     }
@@ -118,9 +118,9 @@ final class PyrameterConfig
         return $this->targets;
     }
 
-    public function violationMode(): ViolationMode
+    public function shouldFailOnViolation(): bool
     {
-        return $this->violationMode;
+        return $this->failOnViolation;
     }
 
     /**
