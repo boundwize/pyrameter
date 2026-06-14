@@ -21,8 +21,8 @@ use PhpParser\Node\Stmt\GroupUse;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\Stmt\Use_;
-use PhpParser\Node\Stmt\UseUse;
 use PhpParser\Node\UnionType;
+use PhpParser\Node\UseItem;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\NodeVisitor\ParentConnectingVisitor;
@@ -56,7 +56,7 @@ final class ConsumedClassExtractor
 
             public function enterNode(Node $node): null
             {
-                if ($node instanceof UseUse && $this->isClassUse($node)) {
+                if ($node instanceof UseItem  && $this->isClassUse($node)) {
                     $this->add($this->useName($node), 'import');
                 }
 
@@ -229,7 +229,7 @@ final class ConsumedClassExtractor
                 return in_array($call->name->toString(), $this->mockMethods, true);
             }
 
-            private function isClassUse(UseUse $node): bool
+            private function isClassUse(UseItem $node): bool
             {
                 $parent = $node->getAttribute('parent');
 

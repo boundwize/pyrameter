@@ -4,7 +4,9 @@
     <img src="./docs/assets/pyrameter_logo.png" alt="StructArmed" width="300">
 </p>
 
-Pyrameter is a PHPUnit extension that measures the shape of your test suite.
+<p align="center">
+    Pyrameter is a PHPUnit extension that measures the shape of your test suite.
+</p>
 
 [![Latest Version](https://img.shields.io/github/release/boundwize/pyrameter.svg?style=flat-square)](https://github.com/boundwize/pyrameter/releases)
 [![ci build](https://github.com/boundwize/pyrameter/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/boundwize/pyrameter/actions/workflows/ci.yml)
