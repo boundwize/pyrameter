@@ -10,7 +10,7 @@ use Pyrameter\TestKind;
 final readonly class TargetEvaluator
 {
     /**
-     * @param array<string, array{min?: float, max?: float}> $targets
+     * @param array<string, array{min: float, max: float}> $targets
      */
     public function __construct(
         private array $targets,
@@ -30,11 +30,16 @@ final readonly class TargetEvaluator
                 continue;
             }
 
+            if ($target['min'] === 0.0 && $target['max'] === 100.0) {
+                $statuses[$kind->value] = TargetStatus::ignored($kind, $actual);
+                continue;
+            }
+
             $statuses[$kind->value] = TargetStatus::fromTarget(
                 kind: $kind,
                 actual: $actual,
-                min: $target['min'] ?? null,
-                max: $target['max'] ?? null,
+                min: $target['min'],
+                max: $target['max'],
             );
         }
 

@@ -12,9 +12,4 @@ final readonly class SuiteShape
         public bool $healthy,
     ) {
     }
-
-    public function symbol(): string
-    {
-        return $this->healthy ? '✓' : '⚠';
-    }
 }

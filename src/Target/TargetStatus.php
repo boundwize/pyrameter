@@ -18,15 +18,15 @@ final readonly class TargetStatus
     ) {
     }
 
-    public static function fromTarget(TestKind $kind, float $actual, ?float $min, ?float $max): self
+    public static function fromTarget(TestKind $kind, float $actual, float $min, float $max): self
     {
         $passed = true;
 
-        if ($min !== null && $actual < $min) {
+        if ($actual < $min) {
             $passed = false;
         }
 
-        if ($max !== null && $actual > $max) {
+        if ($actual > $max) {
             $passed = false;
         }
 
@@ -41,14 +41,18 @@ final readonly class TargetStatus
     public function label(): string
     {
         if ($this->ignored) {
-            return '-';
+            return 'No target';
         }
 
-        if ($this->min !== null) {
+        if ($this->min !== null && $this->min > 0.0 && $this->max !== null && $this->max < 100.0) {
+            return sprintf('%4.1f%%-%4.1f%%', $this->min, $this->max);
+        }
+
+        if ($this->min !== null && $this->min > 0.0) {
             return sprintf('>= %4.1f%%', $this->min);
         }
 
-        if ($this->max !== null) {
+        if ($this->max !== null && $this->max < 100.0) {
             return sprintf('<= %4.1f%%', $this->max);
         }
 

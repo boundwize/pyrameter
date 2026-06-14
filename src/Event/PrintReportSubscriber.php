@@ -21,7 +21,7 @@ final readonly class PrintReportSubscriber implements ExecutionFinishedSubscribe
     private SuiteShapeResolver $shapeResolver;
 
     /**
-     * @param array<string, array{min?: float, max?: float}> $targets
+     * @param array<string, array{min: float, max: float}> $targets
      */
     public function __construct(
         private TestCollector $collector,

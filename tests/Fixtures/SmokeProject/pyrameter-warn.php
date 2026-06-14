@@ -8,10 +8,5 @@ use Pyrameter\TestKind;
 return PyrameterConfig::create()
     ->usesClass(PDO::class, TestKind::Integration)
     ->targetShape(
-        unit: ['min' => 98],
-        functional: ['max' => 0],
-        integration: ['max' => 0],
-        e2e: ['max' => 0],
-        unknown: ['max' => 2],
-    )
-    ->failOnViolation();
+        integration: ['max' => 100],
+    );

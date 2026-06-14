@@ -88,11 +88,11 @@ final class SuiteShapeResolverTest extends TestCase
     {
         $config = PyrameterConfig::create()
             ->targetShape(
-                unit: 80,
-                functional: 10,
-                integration: 6,
-                e2e: 2,
-                unknown: 2,
+                unit: ['min' => 80],
+                functional: ['max' => 10],
+                integration: ['max' => 6],
+                e2e: ['max' => 2],
+                unknown: ['max' => 2],
             );
 
         $shape = $this->shape([

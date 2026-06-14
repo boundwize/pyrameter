@@ -3,7 +3,9 @@
          colors="false"
          cacheDirectory="../../../.phpunit-smoke-cache">
     <extensions>
-        <bootstrap class="Pyrameter\Extension"/>
+        <bootstrap class="Pyrameter\Extension">
+            <parameter name="config" value="tests/Fixtures/SmokeProject/pyrameter-warn.php"/>
+        </bootstrap>
     </extensions>
     <testsuites>
         <testsuite name="Smoke">

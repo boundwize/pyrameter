@@ -21,7 +21,8 @@ final readonly class PyramidReporter
             'Pyrameter',
             '=========',
             '',
-            sprintf('Shape: %s %s', $shape->name, $shape->symbol()),
+            sprintf('Shape: %s', $shape->name),
+            sprintf('Result: %s', $targets->allPassed() ? 'Passed ✓' : 'Violated ⚠'),
             '',
             'Kind          Tests   Actual   Target      Status',
         ];
@@ -30,7 +31,7 @@ final readonly class PyramidReporter
             $status = $targets->status($kind);
 
             $lines[] = sprintf(
-                '%-12s %6d %8s   %-9s   %s',
+                '%-12s %6d %8s   %-10s   %s',
                 $kind->label(),
                 $summary->count($kind),
                 sprintf('%4.1f%%', $summary->percentage($kind)),

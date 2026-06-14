@@ -18,7 +18,7 @@ final class PyrameterConfig
     private array $usageRules = [];
 
     /**
-     * @var array<string, array{min?: float, max?: float}>
+     * @var array<string, array{min: float, max: float}>
      */
     private array $targets = [];
 
@@ -43,11 +43,11 @@ final class PyrameterConfig
             ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
             ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E)
             ->targetShape(
-                unit: 70,
-                functional: 18,
-                integration: 8,
-                e2e: 2,
-                unknown: 2,
+                unit: ['min' => 70],
+                functional: ['max' => 18],
+                integration: ['max' => 8],
+                e2e: ['max' => 2],
+                unknown: ['max' => 2],
             );
     }
 
@@ -68,22 +68,29 @@ final class PyrameterConfig
         return $this;
     }
 
+    /**
+     * @param array{min?: float|int, max?: float|int} $unit
+     * @param array{min?: float|int, max?: float|int} $functional
+     * @param array{min?: float|int, max?: float|int} $integration
+     * @param array{min?: float|int, max?: float|int} $e2e
+     * @param array{min?: float|int, max?: float|int} $unknown
+     */
     public function targetShape(
-        float $unit,
-        float $functional,
-        float $integration,
-        float $e2e,
-        float $unknown,
+        array $unit = [],
+        array $functional = [],
+        array $integration = [],
+        array $e2e = [],
+        array $unknown = [],
     ): self {
-        $this->guardShapePercentage($unit, $functional, $integration, $e2e, $unknown);
-
         $this->targets = [
-            TestKind::Unit->value => ['min' => $unit],
-            TestKind::Functional->value => ['max' => $functional],
-            TestKind::Integration->value => ['max' => $integration],
-            TestKind::E2E->value => ['max' => $e2e],
-            TestKind::Unknown->value => ['max' => $unknown],
+            TestKind::Unit->value => $this->normalizeTarget(TestKind::Unit, $unit),
+            TestKind::Functional->value => $this->normalizeTarget(TestKind::Functional, $functional),
+            TestKind::Integration->value => $this->normalizeTarget(TestKind::Integration, $integration),
+            TestKind::E2E->value => $this->normalizeTarget(TestKind::E2E, $e2e),
+            TestKind::Unknown->value => $this->normalizeTarget(TestKind::Unknown, $unknown),
         ];
+
+        $this->guardShapeFeasibility($this->targets);
 
         return $this;
     }
@@ -104,7 +111,7 @@ final class PyrameterConfig
     }
 
     /**
-     * @return array<string, array{min?: float, max?: float}>
+     * @return array<string, array{min: float, max: float}>
      */
     public function targetPercentages(): array
     {
@@ -116,26 +123,66 @@ final class PyrameterConfig
         return $this->violationMode;
     }
 
-    private function guardShapePercentage(
-        float $unit,
-        float $functional,
-        float $integration,
-        float $e2e,
-        float $unknown,
-    ): void
+    /**
+     * @param array{min?: float|int, max?: float|int} $target
+     * @return array{min: float, max: float}
+     */
+    private function normalizeTarget(TestKind $kind, array $target): array
     {
-        foreach ([$unit, $functional, $integration, $e2e, $unknown] as $percentage) {
-            if ($percentage < 0) {
-                throw new InvalidArgumentException('Pyrameter target shape percentages must be zero or greater.');
-            }
+        $min = (float) ($target['min'] ?? 0);
+        $max = (float) ($target['max'] ?? 100);
+
+        if ($min < 0 || $max < 0) {
+            throw new InvalidArgumentException(sprintf(
+                'Pyrameter target shape percentages for %s must be zero or greater.',
+                $kind->label(),
+            ));
         }
 
-        $total = $unit + $functional + $integration + $e2e + $unknown;
-
-        if (abs($total - 100.0) > 0.00001) {
+        if ($min > 100 || $max > 100) {
             throw new InvalidArgumentException(sprintf(
-                'Pyrameter target shape percentages must total 100.0, %.1f given.',
-                $total,
+                'Pyrameter target shape percentages for %s must be 100 or less.',
+                $kind->label(),
+            ));
+        }
+
+        if ($min > $max) {
+            throw new InvalidArgumentException(sprintf(
+                'Pyrameter target shape minimum for %s cannot be greater than its maximum.',
+                $kind->label(),
+            ));
+        }
+
+        return [
+            'min' => $min,
+            'max' => $max,
+        ];
+    }
+
+    /**
+     * @param array<string, array{min: float, max: float}> $targets
+     */
+    private function guardShapeFeasibility(array $targets): void
+    {
+        $minimumTotal = 0.0;
+        $maximumTotal = 0.0;
+
+        foreach ($targets as $target) {
+            $minimumTotal += $target['min'];
+            $maximumTotal += $target['max'];
+        }
+
+        if ($minimumTotal > 100.0) {
+            throw new InvalidArgumentException(sprintf(
+                'Pyrameter target shape minimum percentages cannot exceed 100.0, %.1f given.',
+                $minimumTotal,
+            ));
+        }
+
+        if ($maximumTotal < 100.0) {
+            throw new InvalidArgumentException(sprintf(
+                'Pyrameter target shape maximum percentages must allow 100.0, %.1f given.',
+                $maximumTotal,
             ));
         }
     }

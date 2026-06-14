@@ -21,7 +21,8 @@ Instead, it looks for configured heavy usage in test files:
 Pyrameter
 =========
 
-Shape: Integration Mountain ⚠
+Shape: Integration Mountain
+Result: Violated ⚠
 
 Kind          Tests   Actual   Target      Status
 Unit             39    65.0%   >= 70.0%    ✗
@@ -66,6 +67,17 @@ use Pyrameter\Config\PyrameterConfig;
 use Pyrameter\TestKind;
 
 return PyrameterConfig::create()
+    ->targetShape(
+        unit: ['min' => 40],
+    );
+```
+
+Missing kinds default to `['min' => 0, 'max' => 100]`, so you can start with only the one target you care about.
+
+Add usage rules when you want Pyrameter to classify heavier tests:
+
+```php
+return PyrameterConfig::create()
     ->usesClass(PDO::class, TestKind::Integration)
     ->usesNamespace('Doctrine\DBAL\\', TestKind::Integration)
     ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
@@ -73,15 +85,15 @@ return PyrameterConfig::create()
     ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E)
 
     ->targetShape(
-        unit: 70,
-        functional: 18,
-        integration: 8,
-        e2e: 2,
-        unknown: 2,
+        unit: ['min' => 70],
+        functional: ['max' => 18],
+        integration: ['max' => 8],
+        e2e: ['max' => 2],
+        unknown: ['max' => 2],
     );
 ```
 
-The target shape must total 100. Pyrameter treats the unit percentage as a minimum and the other percentages as maximums.
+Each target is a percentage range. Missing `min` means `0`; missing `max` means `100`.
 
 By default, Pyrameter is report-only: it prints warnings but does not change PHPUnit's exit code.
 
@@ -90,11 +102,11 @@ To make target violations fail the PHPUnit run:
 ```php
 return PyrameterConfig::create()
     ->targetShape(
-        unit: 70,
-        functional: 18,
-        integration: 8,
-        e2e: 2,
-        unknown: 2,
+        unit: ['min' => 70],
+        functional: ['max' => 18],
+        integration: ['max' => 8],
+        e2e: ['max' => 2],
+        unknown: ['max' => 2],
     )
     ->failOnViolation();
 ```
