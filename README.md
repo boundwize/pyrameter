@@ -72,14 +72,17 @@ return PyrameterConfig::create()
     ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
     ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E)
 
-    ->targets()
-        ->unit(min: 70)
-        ->functional(max: 20)
-        ->integration(max: 8)
-        ->e2e(max: 2)
-        ->unknown(max: 2)
+    ->targetShape(
+        unit: 70,
+        functional: 18,
+        integration: 8,
+        e2e: 2,
+        unknown: 2,
+    )
 
     ->warnOnly();
 ```
+
+The target shape must total 100. Pyrameter treats the unit percentage as a minimum and the other percentages as maximums.
 
 Pyrameter classifies tests by static usage rules in test files. It measures suite shape; it does not prove perfect test taxonomy.

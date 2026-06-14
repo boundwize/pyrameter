@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pyrameter\Tests\Config;
 
+use InvalidArgumentException;
 use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\Framework\TestCase;
 use Pyrameter\Config\PyrameterConfig;
@@ -32,8 +33,13 @@ use Pyrameter\TestKind;
 
 return PyrameterConfig::create()
     ->usesClass(PDO::class, TestKind::Integration)
-    ->targets()
-        ->unit(min: 60);
+    ->targetShape(
+        unit: 60,
+        functional: 30,
+        integration: 5,
+        e2e: 3,
+        unknown: 2,
+    );
 PHP);
 
         try {
@@ -57,8 +63,13 @@ declare(strict_types=1);
 use Pyrameter\Config\PyrameterConfig;
 
 return PyrameterConfig::create()
-    ->targets()
-        ->unit(min: 55);
+    ->targetShape(
+        unit: 55,
+        functional: 35,
+        integration: 5,
+        e2e: 3,
+        unknown: 2,
+    );
 PHP);
 
         try {
@@ -70,5 +81,19 @@ PHP);
         }
 
         self::assertSame(['min' => 55.0], $config->targetPercentages()['unit']);
+    }
+
+    public function test_target_shape_must_total_100_percent(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('must total 100.0');
+
+        PyrameterConfig::create()->targetShape(
+            unit: 70,
+            functional: 20,
+            integration: 8,
+            e2e: 2,
+            unknown: 2,
+        );
     }
 }

@@ -73,8 +73,8 @@ final class SuiteShapeResolverTest extends TestCase
     public function test_it_detects_healthy_pyramid(): void
     {
         $shape = $this->shape([
-            TestKind::Unit->value => 70,
-            TestKind::Functional->value => 20,
+            TestKind::Unit->value => 72,
+            TestKind::Functional->value => 18,
             TestKind::Integration->value => 8,
             TestKind::E2E->value => 2,
         ]);
@@ -87,12 +87,13 @@ final class SuiteShapeResolverTest extends TestCase
     public function test_it_detects_wide_pyramid(): void
     {
         $config = PyrameterConfig::create()
-            ->targets()
-                ->unit(min: 80)
-                ->functional(max: 30)
-                ->integration(max: 30)
-                ->e2e(max: 10)
-                ->unknown(max: 2);
+            ->targetShape(
+                unit: 80,
+                functional: 10,
+                integration: 6,
+                e2e: 2,
+                unknown: 2,
+            );
 
         $shape = $this->shape([
             TestKind::Unit->value => 75,

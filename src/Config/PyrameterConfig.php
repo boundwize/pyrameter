@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pyrameter\Config;
 
+use InvalidArgumentException;
 use mysqli;
 use PDO;
 use Pyrameter\Rule\UsageRule;
@@ -41,12 +42,13 @@ final class PyrameterConfig
             ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
             ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
             ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E)
-            ->targets()
-                ->unit(min: 70)
-                ->functional(max: 20)
-                ->integration(max: 8)
-                ->e2e(max: 2)
-                ->unknown(max: 2)
+            ->targetShape(
+                unit: 70,
+                functional: 18,
+                integration: 8,
+                e2e: 2,
+                unknown: 2,
+            )
             ->warnOnly();
     }
 
@@ -67,39 +69,29 @@ final class PyrameterConfig
         return $this;
     }
 
-    public function targets(): self
-    {
-        return $this;
-    }
-
-    public function unit(?float $min = null, ?float $max = null): self
-    {
-        return $this->target(TestKind::Unit, $min, $max);
-    }
-
-    public function functional(?float $min = null, ?float $max = null): self
-    {
-        return $this->target(TestKind::Functional, $min, $max);
-    }
-
-    public function integration(?float $min = null, ?float $max = null): self
-    {
-        return $this->target(TestKind::Integration, $min, $max);
-    }
-
-    public function e2e(?float $min = null, ?float $max = null): self
-    {
-        return $this->target(TestKind::E2E, $min, $max);
-    }
-
-    public function unknown(?float $min = null, ?float $max = null): self
-    {
-        return $this->target(TestKind::Unknown, $min, $max);
-    }
-
     public function warnOnly(): self
     {
         $this->warnOnly = true;
+
+        return $this;
+    }
+
+    public function targetShape(
+        float $unit,
+        float $functional,
+        float $integration,
+        float $e2e,
+        float $unknown,
+    ): self {
+        $this->guardShapePercentage($unit, $functional, $integration, $e2e, $unknown);
+
+        $this->targets = [
+            TestKind::Unit->value => ['min' => $unit],
+            TestKind::Functional->value => ['max' => $functional],
+            TestKind::Integration->value => ['max' => $integration],
+            TestKind::E2E->value => ['max' => $e2e],
+            TestKind::Unknown->value => ['max' => $unknown],
+        ];
 
         return $this;
     }
@@ -125,20 +117,27 @@ final class PyrameterConfig
         return $this->warnOnly;
     }
 
-    private function target(TestKind $kind, ?float $min, ?float $max): self
+    private function guardShapePercentage(
+        float $unit,
+        float $functional,
+        float $integration,
+        float $e2e,
+        float $unknown,
+    ): void
     {
-        $target = [];
-
-        if ($min !== null) {
-            $target['min'] = (float) $min;
+        foreach ([$unit, $functional, $integration, $e2e, $unknown] as $percentage) {
+            if ($percentage < 0) {
+                throw new InvalidArgumentException('Pyrameter target shape percentages must be zero or greater.');
+            }
         }
 
-        if ($max !== null) {
-            $target['max'] = (float) $max;
+        $total = $unit + $functional + $integration + $e2e + $unknown;
+
+        if (abs($total - 100.0) > 0.00001) {
+            throw new InvalidArgumentException(sprintf(
+                'Pyrameter target shape percentages must total 100.0, %.1f given.',
+                $total,
+            ));
         }
-
-        $this->targets[$kind->value] = $target;
-
-        return $this;
     }
 }
