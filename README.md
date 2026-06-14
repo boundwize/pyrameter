@@ -1,5 +1,9 @@
 # Pyrameter
 
+<p align="center">
+    <img src="./docs/assets/pyrameter_logo.png" alt="StructArmed" width="300">
+</p>
+
 Pyrameter is a PHPUnit extension that measures the shape of your test suite.
 
 It classifies tests as unit, functional, integration, or e2e based on what the test files consume, then reports whether your suite still matches your expected test pyramid.
