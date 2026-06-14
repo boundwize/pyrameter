@@ -56,7 +56,7 @@ final class ConsumedClassExtractor
 
             public function enterNode(Node $node): null
             {
-                if ($node instanceof UseItem  && $this->isClassUse($node)) {
+                if ($node instanceof UseItem && $this->isClassUse($node)) {
                     $this->add($this->useName($node), 'import');
                 }
 
