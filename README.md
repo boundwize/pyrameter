@@ -72,9 +72,7 @@ Register the PHPUnit extension:
 
 ```xml
 <extensions>
-    <bootstrap class="Pyrameter\Extension">
-        <parameter name="config" value="pyrameter.php"/>
-    </bootstrap>
+    <bootstrap class="Pyrameter\Extension"/>
 </extensions>
 ```
 

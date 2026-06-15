@@ -47,10 +47,5 @@
         "laminas/laminas-coding-standard": "^3.1",
         "phpstan/phpstan": "^2.2",
         "rector/rector": "^2.4"
-    },
-    "extra": {
-        "phpunit": {
-            "extension": "Pyrameter\\Extension"
-        }
     }
 }
