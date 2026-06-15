@@ -1,6 +1,12 @@
 {
     "name": "boundwize/pyrameter",
     "description": "PHPUnit extension that measures the shape of your test pyramid.",
+    "keywords": [
+        "dev",
+        "analysis",
+        "static analysis",
+        "testing"
+    ],
     "type": "library",
     "license": "MIT",
     "require": {
@@ -41,5 +47,10 @@
         "laminas/laminas-coding-standard": "^3.1",
         "phpstan/phpstan": "^2.2",
         "rector/rector": "^2.4"
+    },
+    "extra": {
+        "phpunit": {
+            "extension": "Pyrameter\\Extension"
+        }
     }
 }
