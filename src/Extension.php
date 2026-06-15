@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter;
+namespace Boundwize\Pyrameter;
 
+use Boundwize\Pyrameter\Config\PyrameterConfigLoader;
+use Boundwize\Pyrameter\Detection\TestUsageScanner;
+use Boundwize\Pyrameter\Event\CollectTestResultSubscriber;
+use Boundwize\Pyrameter\Event\PrintReportSubscriber;
+use Boundwize\Pyrameter\Report\PyramidReporter;
 use PHPUnit\Runner\Extension\Extension as PHPUnitExtension;
 use PHPUnit\Runner\Extension\Facade;
 use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\TextUI\Configuration\Configuration;
-use Pyrameter\Config\PyrameterConfigLoader;
-use Pyrameter\Detection\TestUsageScanner;
-use Pyrameter\Event\CollectTestResultSubscriber;
-use Pyrameter\Event\PrintReportSubscriber;
-use Pyrameter\Report\PyramidReporter;
 
 final class Extension implements PHPUnitExtension
 {

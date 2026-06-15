@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Fixtures\SmokeProject;
+namespace Boundwize\Pyrameter\Tests\Fixtures\SmokeProject;
 
 use PDO;
 use PHPUnit\Framework\TestCase;

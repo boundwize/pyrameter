@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Target;
+namespace Boundwize\Pyrameter\Target;
 
-use Pyrameter\PyramidSummary;
-use Pyrameter\TestKind;
+use Boundwize\Pyrameter\PyramidSummary;
+use Boundwize\Pyrameter\TestKind;
 
 final readonly class TargetEvaluator
 {

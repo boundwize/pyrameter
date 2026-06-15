@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Pyrameter\Config\PyrameterConfig;
-use Pyrameter\TestKind;
+use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\TestKind;
 
 return PyrameterConfig::defaults()
-    ->usesNamespace('Pyrameter\\Event\\', TestKind::Functional)
+    ->usesNamespace('Boundwize\\Pyrameter\\Event\\', TestKind::Functional)
     ->targetShape(
         unit: ['min' => 60],
         functional: ['max' => 20],

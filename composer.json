@@ -16,12 +16,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Pyrameter\\": "src/"
+            "Boundwize\\Pyrameter\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Pyrameter\\Tests\\": "tests/",
+            "Boundwize\\Pyrameter\\Tests\\": "tests/",
             "Doctrine\\DBAL\\": "tests/Fixtures/Stubs/Doctrine/DBAL/",
             "Facebook\\WebDriver\\": "tests/Fixtures/Stubs/Facebook/WebDriver/",
             "Symfony\\Bundle\\FrameworkBundle\\Test\\": "tests/Fixtures/Stubs/Symfony/Bundle/FrameworkBundle/Test/",

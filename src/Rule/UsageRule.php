@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Rule;
+namespace Boundwize\Pyrameter\Rule;
 
-use Pyrameter\TestKind;
+use Boundwize\Pyrameter\TestKind;
 
 use function str_ends_with;
 use function str_starts_with;

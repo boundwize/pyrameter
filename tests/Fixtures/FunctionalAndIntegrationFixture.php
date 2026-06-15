@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Fixtures;
+namespace Boundwize\Pyrameter\Tests\Fixtures;
 
 use Doctrine\DBAL\DriverManager;
 use stdClass;

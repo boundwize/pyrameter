@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter;
+namespace Boundwize\Pyrameter;
 
-use Pyrameter\Rule\UsageRule;
+use Boundwize\Pyrameter\Rule\UsageRule;
 
 final readonly class UsageClassifier
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Detection;
+namespace Boundwize\Pyrameter\Tests\Detection;
 
+use Boundwize\Pyrameter\Detection\ConsumedClassExtractor;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\UseUse;
 use PhpParser\ParserFactory;
 use PHPUnit\Framework\TestCase;
-use Pyrameter\Detection\ConsumedClassExtractor;
 
 use function array_values;
 use function sort;
@@ -20,7 +20,7 @@ final class ConsumedClassExtractorTest extends TestCase
         $classes = $this->extract(<<<'PHP'
 <?php
 
-namespace Pyrameter\Tests\Fixtures\Extractor;
+namespace Boundwize\Pyrameter\Tests\Fixtures\Extractor;
 
 use Vendor\ImportedOnly;
 use Vendor\ImportedThing;

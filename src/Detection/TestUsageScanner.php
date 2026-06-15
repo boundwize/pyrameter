@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Detection;
+namespace Boundwize\Pyrameter\Detection;
 
 use Closure;
 use PhpParser\ParserFactory;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Detection;
+namespace Boundwize\Pyrameter\Tests\Detection;
 
+use Boundwize\Pyrameter\Detection\TestUsageScanner;
 use PHPUnit\Framework\TestCase;
-use Pyrameter\Detection\TestUsageScanner;
 use ReflectionClass;
 use stdClass;
 

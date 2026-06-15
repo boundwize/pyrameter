@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Target;
+namespace Boundwize\Pyrameter\Tests\Target;
 
+use Boundwize\Pyrameter\PyramidSummary;
+use Boundwize\Pyrameter\Target\TargetEvaluator;
+use Boundwize\Pyrameter\Target\TargetStatus;
+use Boundwize\Pyrameter\TestKind;
+use Boundwize\Pyrameter\TestRecord;
 use PHPUnit\Framework\TestCase;
-use Pyrameter\PyramidSummary;
-use Pyrameter\Target\TargetEvaluator;
-use Pyrameter\Target\TargetStatus;
-use Pyrameter\TestKind;
-use Pyrameter\TestRecord;
 
 final class TargetEvaluationTest extends TestCase
 {

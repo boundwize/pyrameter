@@ -3,7 +3,7 @@
          colors="false"
          cacheDirectory="../../../.phpunit-smoke-cache">
     <extensions>
-        <bootstrap class="Pyrameter\Extension">
+        <bootstrap class="Boundwize\Pyrameter\Extension">
             <parameter name="config" value="tests/Fixtures/SmokeProject/pyrameter-fail.php"/>
         </bootstrap>
     </extensions>

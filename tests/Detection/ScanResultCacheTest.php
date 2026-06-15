@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Detection;
+namespace Boundwize\Pyrameter\Tests\Detection;
 
+use Boundwize\Pyrameter\Detection\ScanResult;
+use Boundwize\Pyrameter\Detection\ScanResultCache;
 use PHPUnit\Framework\TestCase;
-use Pyrameter\Detection\ScanResult;
-use Pyrameter\Detection\ScanResultCache;
 
 final class ScanResultCacheTest extends TestCase
 {

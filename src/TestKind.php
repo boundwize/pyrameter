@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter;
+namespace Boundwize\Pyrameter;
 
 enum TestKind: string
 {

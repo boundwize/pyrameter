@@ -72,7 +72,7 @@ Register the PHPUnit extension:
 
 ```xml
 <extensions>
-    <bootstrap class="Pyrameter\Extension"/>
+    <bootstrap class="Boundwize\Pyrameter\Extension"/>
 </extensions>
 ```
 
@@ -95,8 +95,8 @@ Start with `defaults()` to keep Pyrameter's built-in rules for PDO, mysqli, Doct
 
 declare(strict_types=1);
 
-use Pyrameter\Config\PyrameterConfig;
-use Pyrameter\TestKind;
+use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\TestKind;
 
 return PyrameterConfig::defaults()
     ->usesClass(App\Analyser\Analyser::class, TestKind::Integration)
@@ -117,8 +117,8 @@ Use `create()` when you want full control. It starts with no usage rules and no 
 
 declare(strict_types=1);
 
-use Pyrameter\Config\PyrameterConfig;
-use Pyrameter\TestKind;
+use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\TestKind;
 
 return PyrameterConfig::create()
     ->usesClass(PDO::class, TestKind::Integration)
