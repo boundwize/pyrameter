@@ -9,6 +9,8 @@ use Pyrameter\PyramidSummary;
 use Pyrameter\TestKind;
 use Pyrameter\TestRecord;
 
+use function array_sum;
+
 final class PyramidSummaryTest extends TestCase
 {
     public function testItCalculatesPercentages(): void
@@ -25,6 +27,20 @@ final class PyramidSummaryTest extends TestCase
         self::assertSame(10.0, $summary->percentage(TestKind::Integration));
         self::assertSame(0.0, $summary->percentage(TestKind::E2E));
         self::assertSame(0.0, $summary->percentage(TestKind::Unknown));
+    }
+
+    public function testItBalancesRoundedPercentagesToOneHundred(): void
+    {
+        $summary = PyramidSummary::fromRecords([
+            ...$this->records(TestKind::Unit, 37),
+            ...$this->records(TestKind::Functional, 6),
+            ...$this->records(TestKind::Integration, 3),
+        ]);
+
+        self::assertSame(100.0, array_sum($summary->percentages));
+        self::assertSame(80.4, $summary->percentage(TestKind::Unit));
+        self::assertSame(13.1, $summary->percentage(TestKind::Functional));
+        self::assertSame(6.5, $summary->percentage(TestKind::Integration));
     }
 
     /**
