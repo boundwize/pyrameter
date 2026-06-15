@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Detection;
+namespace Boundwize\Pyrameter\Detection;
 
 final readonly class ScanResult
 {

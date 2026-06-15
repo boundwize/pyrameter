@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Report;
+namespace Boundwize\Pyrameter\Report;
 
 final readonly class SuiteShape
 {

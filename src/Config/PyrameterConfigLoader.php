@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Config;
+namespace Boundwize\Pyrameter\Config;
 
 use PHPUnit\Runner\Extension\ParameterCollection;
 use RuntimeException;

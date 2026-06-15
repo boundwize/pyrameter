@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Config;
+namespace Boundwize\Pyrameter\Config;
 
+use Boundwize\Pyrameter\Rule\UsageRule;
+use Boundwize\Pyrameter\TestKind;
 use InvalidArgumentException;
 use mysqli;
 use PDO;
-use Pyrameter\Rule\UsageRule;
-use Pyrameter\TestKind;
 
 use function ltrim;
 use function sprintf;

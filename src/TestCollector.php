@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter;
+namespace Boundwize\Pyrameter;
 
 use function array_values;
 

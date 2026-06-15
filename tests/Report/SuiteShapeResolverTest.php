@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Report;
+namespace Boundwize\Pyrameter\Tests\Report;
 
+use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\PyramidSummary;
+use Boundwize\Pyrameter\Report\SuiteShape;
+use Boundwize\Pyrameter\Report\SuiteShapeResolver;
+use Boundwize\Pyrameter\Target\TargetEvaluator;
+use Boundwize\Pyrameter\TestKind;
+use Boundwize\Pyrameter\TestRecord;
 use PHPUnit\Framework\TestCase;
-use Pyrameter\Config\PyrameterConfig;
-use Pyrameter\PyramidSummary;
-use Pyrameter\Report\SuiteShape;
-use Pyrameter\Report\SuiteShapeResolver;
-use Pyrameter\Target\TargetEvaluator;
-use Pyrameter\TestKind;
-use Pyrameter\TestRecord;
 
 final class SuiteShapeResolverTest extends TestCase
 {

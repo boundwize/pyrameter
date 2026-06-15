@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Config;
+namespace Boundwize\Pyrameter\Tests\Config;
 
+use Boundwize\Pyrameter\Config\PyrameterConfig;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Pyrameter\Config\PyrameterConfig;
 
 final class PyrameterConfigTest extends TestCase
 {

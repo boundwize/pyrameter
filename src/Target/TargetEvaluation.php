@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Target;
+namespace Boundwize\Pyrameter\Target;
 
-use Pyrameter\TestKind;
+use Boundwize\Pyrameter\TestKind;
 
 use function array_map;
 

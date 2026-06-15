@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Report;
+namespace Boundwize\Pyrameter\Report;
 
-use Pyrameter\PyramidSummary;
-use Pyrameter\Target\TargetEvaluation;
-use Pyrameter\TestKind;
+use Boundwize\Pyrameter\PyramidSummary;
+use Boundwize\Pyrameter\Target\TargetEvaluation;
+use Boundwize\Pyrameter\TestKind;
 
 use function fwrite;
 use function implode;

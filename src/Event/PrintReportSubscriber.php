@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Event;
+namespace Boundwize\Pyrameter\Event;
 
+use Boundwize\Pyrameter\PyramidSummary;
+use Boundwize\Pyrameter\Report\PyramidReporter;
+use Boundwize\Pyrameter\Report\SuiteShapeResolver;
+use Boundwize\Pyrameter\Target\TargetEvaluator;
+use Boundwize\Pyrameter\TestCollector;
 use Closure;
 use PHPUnit\Event\TestRunner\ExecutionFinished;
 use PHPUnit\Event\TestRunner\ExecutionFinishedSubscriber;
-use Pyrameter\PyramidSummary;
-use Pyrameter\Report\PyramidReporter;
-use Pyrameter\Report\SuiteShapeResolver;
-use Pyrameter\Target\TargetEvaluator;
-use Pyrameter\TestCollector;
 
 use function fwrite;
 

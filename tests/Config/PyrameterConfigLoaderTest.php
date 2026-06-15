@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Config;
+namespace Boundwize\Pyrameter\Tests\Config;
 
+use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\Config\PyrameterConfigLoader;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Extension\ParameterCollection;
-use Pyrameter\Config\PyrameterConfig;
-use Pyrameter\Config\PyrameterConfigLoader;
 use RuntimeException;
 
 use function chdir;
@@ -38,8 +38,8 @@ final class PyrameterConfigLoaderTest extends TestCase
 
 declare(strict_types=1);
 
-use Pyrameter\Config\PyrameterConfig;
-use Pyrameter\TestKind;
+use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\TestKind;
 
 return PyrameterConfig::create()
     ->usesClass(PDO::class, TestKind::Integration)
@@ -70,7 +70,7 @@ PHP);
 
 declare(strict_types=1);
 
-use Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\Config\PyrameterConfig;
 
 return PyrameterConfig::create()
     ->targetShape(
@@ -106,7 +106,7 @@ PHP);
 
 declare(strict_types=1);
 
-use Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\Config\PyrameterConfig;
 
 return PyrameterConfig::create()
     ->targetShape(unit: ['min' => 45]);

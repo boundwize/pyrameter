@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Event;
+namespace Boundwize\Pyrameter\Tests\Event;
 
 use PHPUnit\Event\Code\Test as EventTest;
 

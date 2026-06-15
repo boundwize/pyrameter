@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests;
+namespace Boundwize\Pyrameter\Tests;
 
+use Boundwize\Pyrameter\TestCollector;
+use Boundwize\Pyrameter\TestKind;
+use Boundwize\Pyrameter\TestRecord;
 use PHPUnit\Framework\TestCase;
-use Pyrameter\TestCollector;
-use Pyrameter\TestKind;
-use Pyrameter\TestRecord;
 
 final class TestCollectorTest extends TestCase
 {

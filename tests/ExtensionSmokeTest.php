@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests;
+namespace Boundwize\Pyrameter\Tests;
 
 use PHPUnit\Framework\TestCase;
 

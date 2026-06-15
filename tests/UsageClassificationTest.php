@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests;
+namespace Boundwize\Pyrameter\Tests;
 
+use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\Detection\TestUsageScanner;
+use Boundwize\Pyrameter\TestKind;
+use Boundwize\Pyrameter\Tests\Fixtures\ContainerGetHeavyFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\DoctrineUsageFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\FunctionalAndIntegrationFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\IntegrationAndE2EFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\MockedHeavyFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\MysqliRealUsageFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\PantherE2EFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\PdoRealUsageFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\ProductionClassOnlyFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\SimpleUnitFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\SymfonyFunctionalFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\WebDriverE2EFixture;
+use Boundwize\Pyrameter\UsageClassifier;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Pyrameter\Config\PyrameterConfig;
-use Pyrameter\Detection\TestUsageScanner;
-use Pyrameter\TestKind;
-use Pyrameter\Tests\Fixtures\ContainerGetHeavyFixture;
-use Pyrameter\Tests\Fixtures\DoctrineUsageFixture;
-use Pyrameter\Tests\Fixtures\FunctionalAndIntegrationFixture;
-use Pyrameter\Tests\Fixtures\IntegrationAndE2EFixture;
-use Pyrameter\Tests\Fixtures\MockedHeavyFixture;
-use Pyrameter\Tests\Fixtures\MysqliRealUsageFixture;
-use Pyrameter\Tests\Fixtures\PantherE2EFixture;
-use Pyrameter\Tests\Fixtures\PdoRealUsageFixture;
-use Pyrameter\Tests\Fixtures\ProductionClassOnlyFixture;
-use Pyrameter\Tests\Fixtures\SimpleUnitFixture;
-use Pyrameter\Tests\Fixtures\SymfonyFunctionalFixture;
-use Pyrameter\Tests\Fixtures\WebDriverE2EFixture;
-use Pyrameter\UsageClassifier;
 
 final class UsageClassificationTest extends TestCase
 {
@@ -73,7 +73,7 @@ final class UsageClassificationTest extends TestCase
 
     public function testUninspectableTestMeansUnknown(): void
     {
-        $scanResult = (new TestUsageScanner())->scan('Pyrameter\Tests\Fixtures\MissingFixture');
+        $scanResult = (new TestUsageScanner())->scan('Boundwize\Pyrameter\Tests\Fixtures\MissingFixture');
 
         self::assertFalse($scanResult->inspectable);
         self::assertSame([], $scanResult->consumedClasses);

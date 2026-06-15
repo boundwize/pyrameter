@@ -2,8 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Event;
+namespace Boundwize\Pyrameter\Tests\Event;
 
+use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\Event\PrintReportSubscriber;
+use Boundwize\Pyrameter\Report\PyramidReporter;
+use Boundwize\Pyrameter\TestCollector;
+use Boundwize\Pyrameter\TestKind;
+use Boundwize\Pyrameter\TestRecord;
 use PHPUnit\Event\Telemetry\Duration;
 use PHPUnit\Event\Telemetry\GarbageCollectorStatus;
 use PHPUnit\Event\Telemetry\HRTime;
@@ -12,12 +18,6 @@ use PHPUnit\Event\Telemetry\MemoryUsage;
 use PHPUnit\Event\Telemetry\Snapshot;
 use PHPUnit\Event\TestRunner\ExecutionFinished;
 use PHPUnit\Framework\TestCase;
-use Pyrameter\Config\PyrameterConfig;
-use Pyrameter\Event\PrintReportSubscriber;
-use Pyrameter\Report\PyramidReporter;
-use Pyrameter\TestCollector;
-use Pyrameter\TestKind;
-use Pyrameter\TestRecord;
 
 final class PrintReportSubscriberTest extends TestCase
 {

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests;
+namespace Boundwize\Pyrameter\Tests;
 
+use Boundwize\Pyrameter\Extension;
 use PHPUnit\Event\Facade as EventFacade;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Extension\Facade as ExtensionFacade;
 use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\TextUI\Configuration\Configuration;
-use Pyrameter\Extension;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -27,7 +27,7 @@ final class ExtensionTest extends TestCase
 
 declare(strict_types=1);
 
-use Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\Config\PyrameterConfig;
 
 return PyrameterConfig::create();
 PHP);

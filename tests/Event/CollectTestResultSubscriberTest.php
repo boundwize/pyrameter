@@ -2,8 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Pyrameter\Tests\Event;
+namespace Boundwize\Pyrameter\Tests\Event;
 
+use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\Detection\TestUsageScanner;
+use Boundwize\Pyrameter\Event\CollectTestResultSubscriber;
+use Boundwize\Pyrameter\TestCollector;
+use Boundwize\Pyrameter\TestKind;
+use Boundwize\Pyrameter\Tests\Fixtures\SimpleUnitFixture;
+use Boundwize\Pyrameter\UsageClassifier;
 use PHPUnit\Event\Code\Phpt;
 use PHPUnit\Event\Code\TestDox;
 use PHPUnit\Event\Code\TestMethod;
@@ -17,13 +24,6 @@ use PHPUnit\Event\Test\Finished;
 use PHPUnit\Event\TestData\TestDataCollection;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Metadata\MetadataCollection;
-use Pyrameter\Config\PyrameterConfig;
-use Pyrameter\Detection\TestUsageScanner;
-use Pyrameter\Event\CollectTestResultSubscriber;
-use Pyrameter\TestCollector;
-use Pyrameter\TestKind;
-use Pyrameter\Tests\Fixtures\SimpleUnitFixture;
-use Pyrameter\UsageClassifier;
 use stdClass;
 
 final class CollectTestResultSubscriberTest extends TestCase
