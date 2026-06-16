@@ -20,7 +20,6 @@ final class ConsumedClassExtractorTest extends TestCase
 
 namespace Boundwize\Pyrameter\Tests\Fixtures\Extractor;
 
-use Vendor\ImportedOnly;
 use Vendor\ImportedThing;
 use Vendor\Grouped\{GroupedClass, AnotherGroupedClass as RenamedGroupedClass};
 use function Vendor\Functions\{helper};
@@ -39,6 +38,8 @@ final class Child extends \Vendor\BaseClass implements \Vendor\Contracts\FirstCo
     {
         new \Vendor\Constructed\Thing();
         new ImportedThing();
+        new GroupedClass();
+        new RenamedGroupedClass();
         \Vendor\StaticCall\Thing::make();
         \Vendor\StaticProperty\Thing::$store;
 
@@ -67,7 +68,6 @@ PHP);
             'Vendor\Contracts\SecondContract',
             'Vendor\Grouped\AnotherGroupedClass',
             'Vendor\Grouped\GroupedClass',
-            'Vendor\ImportedOnly',
             'Vendor\ImportedThing',
             'Vendor\Params\Input',
             'Vendor\Returns\Output',
@@ -89,9 +89,25 @@ PHP);
 <?php
 
 use Vendor\MixedGroup\{GroupedClass, function helperInGroup};
+
+new GroupedClass();
 PHP);
 
         $this->assertSame(['Vendor\MixedGroup\GroupedClass'], $classes);
+    }
+
+    public function testItIgnoresUnusedImports(): void
+    {
+        $classes = $this->extract(<<<'PHP'
+<?php
+
+use Vendor\Unused\Thing;
+use Vendor\Used\Thing as UsedThing;
+
+new UsedThing();
+PHP);
+
+        $this->assertSame(['Vendor\Used\Thing'], $classes);
     }
 
     public function testItHandlesClassConstantsThatAreNotMockTargets(): void

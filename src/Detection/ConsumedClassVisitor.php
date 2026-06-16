@@ -20,22 +20,21 @@ use PhpParser\Node\Name;
 use PhpParser\Node\NullableType;
 use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\Class_;
-use PhpParser\Node\Stmt\GroupUse;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\TraitUse;
-use PhpParser\Node\Stmt\Use_;
 use PhpParser\Node\UnionType;
 use PhpParser\NodeVisitorAbstract;
 
+use function array_keys;
 use function in_array;
 use function ltrim;
 use function strtolower;
 
 final class ConsumedClassVisitor extends NodeVisitorAbstract
 {
-    /** @var array<string, array{import: bool, normal: bool, mock: bool}> */
-    private array $references = [];
+    /** @var array<string, true> */
+    private array $consumedClasses = [];
 
     /** @var list<string> */
     private array $mockMethods = [
@@ -48,22 +47,6 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
-        if ($node instanceof Use_ && $node->type === Use_::TYPE_NORMAL) {
-            foreach ($node->uses as $useItem) {
-                $this->add($useItem->name->toString(), 'import');
-            }
-        }
-
-        if ($node instanceof GroupUse && ($node->type === Use_::TYPE_UNKNOWN || $node->type === Use_::TYPE_NORMAL)) {
-            foreach ($node->uses as $useItem) {
-                if ($useItem->type !== Use_::TYPE_UNKNOWN && $useItem->type !== Use_::TYPE_NORMAL) {
-                    continue;
-                }
-
-                $this->add($node->prefix->toString() . '\\' . $useItem->name->toString(), 'import');
-            }
-        }
-
         if ($node instanceof Class_) {
             $this->addName($node->extends);
 
@@ -88,9 +71,13 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
             $this->addName($node->class);
         }
 
-        if ($node instanceof ClassConstFetch && $node->class instanceof Name && $this->isClassConstant($node)) {
-            $referenceKind = $node->getAttribute('isMockTarget', false) === true ? 'mock' : 'normal';
-            $this->addName($node->class, $referenceKind);
+        if (
+            $node instanceof ClassConstFetch
+            && $node->class instanceof Name
+            && $this->isClassConstant($node)
+            && $node->getAttribute('isMockTarget', false) !== true
+        ) {
+            $this->addName($node->class);
         }
 
         if ($node instanceof MethodCall || $node instanceof StaticCall) {
@@ -129,20 +116,7 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
      */
     public function consumedClasses(): array
     {
-        $classes = [];
-
-        foreach ($this->references as $className => $referenceKinds) {
-            if ($referenceKinds['normal']) {
-                $classes[] = $className;
-                continue;
-            }
-
-            if ($referenceKinds['import'] && ! $referenceKinds['mock']) {
-                $classes[] = $className;
-            }
-        }
-
-        return $classes;
+        return array_keys($this->consumedClasses);
     }
 
     private function addType(null|Identifier|Name|ComplexType $type): void
@@ -164,10 +138,7 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
         }
     }
 
-    /**
-     * @param 'import'|'normal'|'mock' $referenceKind
-     */
-    private function addName(?Name $name, string $referenceKind = 'normal'): void
+    private function addName(?Name $name): void
     {
         if (! $name instanceof Name) {
             return;
@@ -176,13 +147,10 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
         $resolvedName = $name->getAttribute('resolvedName');
         $className    = $resolvedName instanceof Name ? $resolvedName->toString() : $name->toString();
 
-        $this->add($className, $referenceKind);
+        $this->add($className);
     }
 
-    /**
-     * @param 'import'|'normal'|'mock' $referenceKind
-     */
-    private function add(string $className, string $referenceKind): void
+    private function add(string $className): void
     {
         $className = ltrim($className, '\\');
 
@@ -190,21 +158,7 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
             return;
         }
 
-        $reference = $this->references[$className] ?? [
-            'import' => false,
-            'normal' => false,
-            'mock'   => false,
-        ];
-
-        if ($referenceKind === 'import') {
-            $reference['import'] = true;
-        } elseif ($referenceKind === 'normal') {
-            $reference['normal'] = true;
-        } else {
-            $reference['mock'] = true;
-        }
-
-        $this->references[$className] = $reference;
+        $this->consumedClasses[$className] = true;
     }
 
     private function isClassConstant(ClassConstFetch $classConstFetch): bool
