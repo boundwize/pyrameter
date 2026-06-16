@@ -95,7 +95,12 @@ final readonly class PyramidReporter
             $prefixes[] = $this->repeat(' ', $indent) . $block . '  ' . $testKind->label();
         }
 
-        $prefixWidth = max(array_map($this->visibleLength(...), $prefixes));
+        $prefixWidth = 0;
+
+        foreach ($prefixes as $prefix) {
+            $prefixWidth = max($prefixWidth, $this->visibleLength($prefix));
+        }
+
         $gap         = 2;
         $lineWidth   = $prefixWidth + $gap + 1;
         $leftPad     = intdiv(max(0, $width - $lineWidth), 2);
