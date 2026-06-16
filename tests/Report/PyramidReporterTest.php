@@ -34,7 +34,7 @@ final class PyramidReporterTest extends TestCase
         $this->assertStringContainsString('╭───────╮', $report);
         $this->assertStringContainsString('│ Integration ✗ │', $report);
         $this->assertStringContainsString('   ╰─────────────────────────────╯', $report);
-        $this->assertStringContainsString('│ KIND │ TESTS │ ACTUAL │     TARGET │', $report);
+        $this->assertStringContainsString('│ KIND │ TESTS │ ACTUAL │   TARGET   │', $report);
         $this->assertStringContainsString('╞══════╪═══════╪════════╪════════════╡', $report);
         $this->assertStringContainsString('│ Int  │     1 │  10.0% │ <=  8.0% ✗ │', $report);
         $this->assertStringNotContainsString('Unknown', $report);

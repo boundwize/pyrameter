@@ -153,7 +153,7 @@ final readonly class PyramidReporter
 
         $lines   = [];
         $lines[] = $this->renderTableBorder($widths, '┌', '┬', '┐');
-        $lines[] = $this->renderTableRow($headers, $widths, $alignments);
+        $lines[] = $this->renderTableRow($headers, $widths, array_fill(0, count($headers), 'center'));
         $lines[] = $this->renderTableBorder($widths, '╞', '╪', '╡', '═');
 
         foreach ($rows as $index => $row) {
