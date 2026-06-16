@@ -9,6 +9,7 @@ use Boundwize\Pyrameter\Target\TargetEvaluation;
 use Boundwize\Pyrameter\TestKind;
 
 use function array_fill;
+use function array_reverse;
 use function array_values;
 use function count;
 use function implode;
@@ -60,9 +61,9 @@ final readonly class PyramidReporter
     }
 
     /**
-     * @return list<string>
+     * @return list<TestKind>
      */
-    private function renderPyramid(TargetEvaluation $targetEvaluation, int $width): array
+    private function sortedLevels(TargetEvaluation $targetEvaluation): array
     {
         $levels = [
             TestKind::E2E,
@@ -82,7 +83,15 @@ final readonly class PyramidReporter
             }
         }
 
-        $levels      = [...$untargeted, ...$targeted];
+        return [...$untargeted, ...$targeted];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function renderPyramid(TargetEvaluation $targetEvaluation, int $width): array
+    {
+        $levels      = $this->sortedLevels($targetEvaluation);
         $blockWidths = [1, 5, 9, 13];
         $maxBlock    = $blockWidths[3];
 
@@ -126,7 +135,7 @@ final readonly class PyramidReporter
     ): array {
         $rows = [];
 
-        foreach (TestKind::ordered() as $testKind) {
+        foreach (array_reverse($this->sortedLevels($targetEvaluation)) as $testKind) {
             $status = $targetEvaluation->status($testKind);
             $rows[] = [
                 $testKind->label(),
