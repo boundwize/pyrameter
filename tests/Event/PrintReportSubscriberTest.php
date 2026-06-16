@@ -32,9 +32,9 @@ final class PrintReportSubscriberTest extends TestCase
             pyramidReporter: new PyramidReporter(),
         );
 
-        $printReportSubscriber->notify(new ExecutionFinished($this->telemetryInfo()));
+        $this->expectOutputRegex('/Pyrameter.*Total: 1 tests/s');
 
-        self::addToAssertionCount(1);
+        $printReportSubscriber->notify(new ExecutionFinished($this->telemetryInfo()));
     }
 
     public function testItTerminatesWithFailureWhenTargetsAreViolatedAndFailOnViolationIsEnabled(): void
@@ -54,6 +54,8 @@ final class PrintReportSubscriberTest extends TestCase
                 $exitStatus = $status;
             },
         );
+
+        $this->expectOutputRegex('/Pyrameter.*Pyrameter target shape violated\./s');
 
         $printReportSubscriber->notify(new ExecutionFinished($this->telemetryInfo()));
 

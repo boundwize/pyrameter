@@ -8,12 +8,10 @@ use Boundwize\Pyrameter\PyramidSummary;
 use Boundwize\Pyrameter\Target\TargetEvaluation;
 use Boundwize\Pyrameter\TestKind;
 
-use function fwrite;
 use function implode;
 use function sprintf;
 
 use const PHP_EOL;
-use const STDOUT;
 
 final readonly class PyramidReporter
 {
@@ -22,10 +20,7 @@ final readonly class PyramidReporter
         TargetEvaluation $targetEvaluation,
         SuiteShape $suiteShape
     ): void {
-        fwrite(
-            STDOUT,
-            PHP_EOL . $this->render($pyramidSummary, $targetEvaluation, $suiteShape) . PHP_EOL
-        );
+        echo PHP_EOL . $this->render($pyramidSummary, $targetEvaluation, $suiteShape) . PHP_EOL;
     }
 
     public function render(
