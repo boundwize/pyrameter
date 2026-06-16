@@ -68,7 +68,7 @@ Install it as a dev dependency:
 composer require --dev boundwize/pyrameter
 ```
 
-Register the PHPUnit extension:
+Register the PHPUnit extension into `phpunit.xml`:
 
 ```xml
 <extensions>
