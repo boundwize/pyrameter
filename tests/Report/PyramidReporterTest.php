@@ -82,6 +82,37 @@ final class PyramidReporterTest extends TestCase
         $this->assertStringNotContainsString('0.0%-100.0%', $report);
     }
 
+    public function testItSortsUntargetedLayersAboveTargetedLayersInThePyramid(): void
+    {
+        $pyramidSummary   = PyramidSummary::fromRecords([
+            ...$this->records(TestKind::Unit, 8),
+            ...$this->records(TestKind::Integration, 2),
+        ]);
+        $pyrameterConfig  = PyrameterConfig::create()
+            ->targetShape(
+                unit: ['min' => 40],
+                integration: ['min' => 10],
+            );
+        $targetEvaluation = (new TargetEvaluator($pyrameterConfig->targetPercentages()))->evaluate($pyramidSummary);
+        $suiteShape       = (new SuiteShapeResolver())->resolve($pyramidSummary, $targetEvaluation);
+
+        $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
+
+        $e2ePosition         = strpos($report, 'E2E');
+        $functionalPosition  = strpos($report, 'Functional');
+        $integrationPosition = strpos($report, 'Integration', $functionalPosition);
+        $unitPosition        = strpos($report, 'Unit');
+
+        $this->assertNotFalse($e2ePosition);
+        $this->assertNotFalse($functionalPosition);
+        $this->assertNotFalse($integrationPosition);
+        $this->assertNotFalse($unitPosition);
+        $this->assertLessThan($integrationPosition, $e2ePosition);
+        $this->assertLessThan($unitPosition, $functionalPosition);
+        $this->assertLessThan($integrationPosition, $functionalPosition);
+        $this->assertLessThan($unitPosition, $integrationPosition);
+    }
+
     /**
      * @return list<TestRecord>
      */

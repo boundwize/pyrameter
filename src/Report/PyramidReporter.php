@@ -65,12 +65,25 @@ final readonly class PyramidReporter
      */
     private function renderPyramid(TargetEvaluation $targetEvaluation, int $width): array
     {
-        $levels      = [
+        $levels = [
             TestKind::E2E,
             TestKind::Integration,
             TestKind::Functional,
             TestKind::Unit,
         ];
+
+        $untargeted = [];
+        $targeted   = [];
+
+        foreach ($levels as $testKind) {
+            if ($targetEvaluation->status($testKind)->ignored) {
+                $untargeted[] = $testKind;
+            } else {
+                $targeted[] = $testKind;
+            }
+        }
+
+        $levels      = [...$untargeted, ...$targeted];
         $blockWidths = [1, 5, 9, 13];
         $maxBlock    = $blockWidths[3];
 
