@@ -1,7 +1,7 @@
 # Pyrameter
 
 <p align="center">
-    <img src="./docs/assets/pyrameter_logo.png" alt="Pyrameter" width="200">
+    <img src="./docs/assets/pyrameter_logo.png" alt="Pyrameter" width="160">
 </p>
 
 <p align="center">
@@ -50,38 +50,19 @@ Total: 60 tests
 Your suite is getting heavier.
 ```
 
-Pyrameter is a PHPUnit extension that shows what your test suite is becoming. It classifies each PHPUnit test execution by the classes and namespaces the test file consumes, then prints a shape report after PHPUnit runs.
+Pyrameter is a PHPUnit extension that reports the shape of your test suite after PHPUnit runs. It classifies each executed test as `unit`, `functional`, `integration`, or `e2e`, compares the totals with your target shape, and can fail CI when the suite drifts too far.
 
-Use it to spot a suite that is getting heavier, agree on what "healthy" means for your project, and optionally fail CI when the pyramid drifts too far.
-
-## How it works
-
-Pyrameter does not trust test directories, and it does not scan production classes. Instead, it classifies by configured class or namespace usage in test files:
-
-- no configured heavy usage => unit
-- framework test runtime => functional
-- real resource boundary, such as database, cache, queue, filesystem, or external service => integration
-- browser driver usage => e2e
-
-When multiple usages match, the heaviest kind wins. Mocked heavy dependencies stay unit.
-
-Counts match PHPUnit's test execution count. Each data-provider dataset is counted separately, while all datasets for the same test method usually share the same classification because Pyrameter classifies from the test file's consumed classes.
-
-Your pyramid, your rules: decide which class usage means functional or integration in your project, then configure Pyrameter to match your team's belief.
-
-For example, if a test consumes an analyser that reads real paths, configure that analyser class or namespace as integration.
+It works from the classes and namespaces used by your test files, so you can define what counts as "heavy" in your project instead of relying on test directory names.
 
 ## Quick start
 
-Pyrameter supports PHP 8.2+ and PHPUnit 11 or 12.
-
-Install it as a dev dependency:
+Install Pyrameter as a dev dependency:
 
 ```bash
 composer require --dev boundwize/pyrameter
 ```
 
-Register the PHPUnit extension into `phpunit.xml`:
+Register the extension in `phpunit.xml`:
 
 ```xml
 <extensions>
@@ -89,19 +70,17 @@ Register the PHPUnit extension into `phpunit.xml`:
 </extensions>
 ```
 
-Run PHPUnit as usual:
+Run PHPUnit:
 
 ```bash
 vendor/bin/phpunit
 ```
 
-If the `config` parameter is omitted, Pyrameter looks for `pyrameter.php` in the current working directory. If the file does not exist, it uses the default rules and target shape.
+Without extra configuration, Pyrameter uses its default rules and target shape. If a `pyrameter.php` file exists in the current working directory, it is loaded automatically.
 
 ## Configure
 
-Create `pyrameter.php` when you want to tune the rules or targets.
-
-Start with `defaults()` to keep Pyrameter's built-in rules for PDO, mysqli, Doctrine, Redis, Symfony functional tests, Panther, and WebDriver, then add your project-specific beliefs:
+Create `pyrameter.php` when you want to tune classification rules, target percentages, or CI behavior:
 
 ```php
 <?php
@@ -122,44 +101,42 @@ return PyrameterConfig::defaults()
     );
 ```
 
-Use `create()` when you want full control. It starts with no usage rules and no target shape:
+`PyrameterConfig::defaults()` includes rules for common database, cache, Symfony functional test, Panther, and WebDriver usage. Use `PyrameterConfig::create()` instead when you want to start with no rules or targets and define everything yourself.
 
-```php
-<?php
+To load a config file from another path, pass the `config` parameter to the PHPUnit extension:
 
-declare(strict_types=1);
-
-use Boundwize\Pyrameter\Config\PyrameterConfig;
-use Boundwize\Pyrameter\TestKind;
-
-return PyrameterConfig::create()
-    ->usesClass(PDO::class, TestKind::Integration)
-    ->usesNamespace('Doctrine\DBAL\\', TestKind::Integration)
-    ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
-    ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
-    ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E)
-
-    ->targetShape(
-        unit: ['min' => 70],
-        functional: ['max' => 18],
-        integration: ['max' => 8],
-        e2e: ['max' => 2],
-    );
+```xml
+<extensions>
+    <bootstrap class="Boundwize\Pyrameter\Extension">
+        <parameter name="config" value="config/pyrameter.php"/>
+    </bootstrap>
+</extensions>
 ```
 
-Targets are percentage ranges. Missing `min` means `0`; missing `max` means `100`. When `targetShape()` is called, missing kinds default to `['min' => 0, 'max' => 100]`, which Pyrameter reports as no target.
+## Classification
 
-## Fail CI
+Pyrameter scans the consumed classes and namespaces in each test file:
 
-By default, Pyrameter is report-only. It prints target violations without changing PHPUnit's exit code.
+| Usage | Kind |
+| --- | --- |
+| No configured heavy usage | `unit` |
+| Framework test runtime | `functional` |
+| Database, cache, queue, filesystem, or external boundary | `integration` |
+| Browser driver usage | `e2e` |
 
-Turn violations into a failing PHPUnit process when you are ready to enforce the shape:
+When multiple rules match, the heaviest kind wins. Mocked heavy dependencies stay `unit` unless the test file also consumes a class or namespace you configured as heavier.
+
+Counts follow PHPUnit's executed test count, so data-provider datasets are counted separately.
+
+## Targets and CI
+
+Targets are percentages. Missing `min` means `0`; missing `max` means `100`.
+
+By default, Pyrameter is report-only. To fail PHPUnit when the target shape is violated, enable `failOnViolation()`:
 
 ```php
 return PyrameterConfig::defaults()
     ->failOnViolation();
 ```
 
-## A note on taxonomy
-
-Pyrameter measures suite shape from static usage rules in test files. It is a useful pressure gauge, not a perfect taxonomy judge.
+Pyrameter is a pressure gauge for suite shape, not a perfect taxonomy judge. Tune the rules to match how your team defines unit, functional, integration, and e2e tests.
