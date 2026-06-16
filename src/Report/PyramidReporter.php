@@ -69,7 +69,7 @@ final readonly class PyramidReporter
             TestKind::Functional,
             TestKind::Unit,
         ];
-        $tierWidths = [7, 19, 29, 43];
+        $tierWidths = [7, 15, 21, 29];
         $baseWidth  = $tierWidths[3] + 2;
         $width      = max($baseWidth, $width);
         $lines      = [];
@@ -105,19 +105,28 @@ final readonly class PyramidReporter
         foreach (TestKind::ordered() as $testKind) {
             $status = $targetEvaluation->status($testKind);
             $rows[] = [
-                $testKind->label(),
+                $this->shortKindLabel($testKind),
                 (string) $pyramidSummary->count($testKind),
-                sprintf('%4.1f%%', $pyramidSummary->percentage($testKind)),
-                $status->label(),
-                $status->symbol(),
+                sprintf('%.1f%%', $pyramidSummary->percentage($testKind)),
+                $status->ignored ? $status->label() : $status->label() . ' ' . $status->symbol(),
             ];
         }
 
         return $this->renderTable(
-            ['TEST KIND', 'TESTS', 'ACTUAL', 'TARGET', 'STATUS'],
+            ['KIND', 'TESTS', 'ACTUAL', 'TARGET'],
             $rows,
-            ['left', 'right', 'right', 'left', 'center'],
+            ['left', 'right', 'right', 'left'],
         );
+    }
+
+    private function shortKindLabel(TestKind $testKind): string
+    {
+        return match ($testKind) {
+            TestKind::Unit => 'Unit',
+            TestKind::Functional => 'Func',
+            TestKind::Integration => 'Int',
+            TestKind::E2E => 'E2E',
+        };
     }
 
     /**
