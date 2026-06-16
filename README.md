@@ -1,7 +1,7 @@
 # Pyrameter
 
 <p align="center">
-    <img src="./docs/assets/pyrameter_logo.png" alt="Pyrameter" width="300">
+    <img src="./docs/assets/pyrameter_logo.png" alt="Pyrameter" width="200">
 </p>
 
 <p align="center">
