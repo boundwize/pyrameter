@@ -34,9 +34,9 @@ final class PyramidReporterTest extends TestCase
         $this->assertStringContainsString('╭───────╮', $report);
         $this->assertStringContainsString('│ Integration ✗ │', $report);
         $this->assertStringContainsString('   ╰─────────────────────────────╯', $report);
-        $this->assertStringContainsString('│ KIND │ TESTS │ ACTUAL │ TARGET     │', $report);
+        $this->assertStringContainsString('│ KIND │ TESTS │ ACTUAL │     TARGET │', $report);
         $this->assertStringContainsString('╞══════╪═══════╪════════╪════════════╡', $report);
-        $this->assertStringContainsString('│ Int  │     1 │  10.0% │ <= 8.0% ✗  │', $report);
+        $this->assertStringContainsString('│ Int  │     1 │  10.0% │ <=  8.0% ✗ │', $report);
         $this->assertStringNotContainsString('Unknown', $report);
         $this->assertStringContainsString('Total: 10 tests', $report);
         $this->assertStringContainsString('Your suite is getting heavier.', $report);
@@ -78,7 +78,7 @@ final class PyramidReporterTest extends TestCase
         $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
 
         $this->assertStringContainsString('│ Unit │     8 │  80.0% │ >= 40.0% ✓ │', $report);
-        $this->assertStringContainsString('│ Int  │     2 │  20.0% │ No target  │', $report);
+        $this->assertStringContainsString('│ Int  │     2 │  20.0% │  No target │', $report);
         $this->assertStringNotContainsString('0.0%-100.0%', $report);
     }
 

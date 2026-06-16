@@ -115,7 +115,7 @@ final readonly class PyramidReporter
         return $this->renderTable(
             ['KIND', 'TESTS', 'ACTUAL', 'TARGET'],
             $rows,
-            ['left', 'right', 'right', 'left'],
+            ['left', 'right', 'right', 'right'],
         );
     }
 

@@ -47,15 +47,15 @@ final readonly class TargetStatus
         }
 
         if ($this->min !== null && $this->min > 0.0 && $this->max !== null && $this->max < 100.0) {
-            return sprintf('%.1f%%-%.1f%%', $this->min, $this->max);
+            return sprintf('%4.1f%%-%4.1f%%', $this->min, $this->max);
         }
 
         if ($this->min !== null && $this->min > 0.0) {
-            return sprintf('>= %.1f%%', $this->min);
+            return sprintf('>= %4.1f%%', $this->min);
         }
 
         if ($this->max !== null && $this->max < 100.0) {
-            return sprintf('<= %.1f%%', $this->max);
+            return sprintf('<= %4.1f%%', $this->max);
         }
 
         return '-';
