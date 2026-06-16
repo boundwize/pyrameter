@@ -43,9 +43,9 @@ final readonly class PrintReportSubscriber implements ExecutionFinishedSubscribe
     {
         $pyramidSummary   = PyramidSummary::fromRecords($this->testCollector->all());
         $targetEvaluation = $this->targetEvaluator->evaluate($pyramidSummary);
-        $shape            = $this->suiteShapeResolver->resolve($pyramidSummary, $targetEvaluation);
+        $suiteShape       = $this->suiteShapeResolver->resolve($pyramidSummary, $targetEvaluation);
 
-        $this->pyramidReporter->print($pyramidSummary, $targetEvaluation, $shape);
+        $this->pyramidReporter->print($pyramidSummary, $targetEvaluation, $suiteShape);
 
         if ($this->failOnViolation && ! $targetEvaluation->allPassed()) {
             fwrite(STDOUT, PHP_EOL . 'Pyrameter target shape violated.' . PHP_EOL);
