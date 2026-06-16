@@ -6,7 +6,10 @@ namespace Facebook\WebDriver\Remote;
 
 final class RemoteWebDriver
 {
-    public static function create(): self
+    /**
+     * @param array<string, mixed> $capabilities
+     */
+    public static function create(string $url, array $capabilities): self
     {
         return new self();
     }

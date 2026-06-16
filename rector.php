@@ -5,6 +5,9 @@ declare(strict_types=1);
 use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
+    ->withSkip([
+        '**/Fixtures/**',
+    ])
     ->withPaths([
         __DIR__ . '/src',
         __DIR__ . '/tests',
