@@ -29,7 +29,7 @@
         }
     },
     "scripts": {
-        "test": "phpunit",
+        "test": "phpunit --display-warnings",
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
         "phpstan": "phpstan",

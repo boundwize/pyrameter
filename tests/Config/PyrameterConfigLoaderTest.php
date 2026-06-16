@@ -132,12 +132,13 @@ PHP);
 
         mkdir($directory);
         chdir($directory);
-        rmdir($directory);
+        @rmdir($directory);
 
         try {
             $config = PyrameterConfigLoader::load();
         } finally {
             chdir($previousDirectory);
+            @rmdir($directory);
         }
 
         $this->assertNotEmpty($config->usageRules());
