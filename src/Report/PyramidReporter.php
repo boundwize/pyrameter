@@ -75,11 +75,11 @@ final readonly class PyramidReporter
         $untargeted = [];
         $targeted   = [];
 
-        foreach ($levels as $testKind) {
-            if ($targetEvaluation->status($testKind)->ignored) {
-                $untargeted[] = $testKind;
+        foreach ($levels as $level) {
+            if ($targetEvaluation->status($level)->ignored) {
+                $untargeted[] = $level;
             } else {
-                $targeted[] = $testKind;
+                $targeted[] = $level;
             }
         }
 
