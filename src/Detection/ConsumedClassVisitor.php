@@ -13,13 +13,16 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\StaticPropertyFetch;
+use PhpParser\Node\FunctionLike;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\IntersectionType;
 use PhpParser\Node\Name;
 use PhpParser\Node\NullableType;
+use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\GroupUse;
 use PhpParser\Node\Stmt\Interface_;
+use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\Node\UnionType;
@@ -86,15 +89,15 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
             $this->addName($node->class);
         }
 
-        if ($node instanceof Node\Param) {
+        if ($node instanceof Param) {
             $this->addType($node->type);
         }
 
-        if ($node instanceof Node\Stmt\Property) {
+        if ($node instanceof Property) {
             $this->addType($node->type);
         }
 
-        if ($node instanceof Node\FunctionLike) {
+        if ($node instanceof FunctionLike) {
             $this->addType($node->getReturnType());
         }
 
@@ -150,7 +153,7 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
      */
     private function addName(?Name $name, string $referenceKind = 'normal'): void
     {
-        if ($name === null) {
+        if (! $name instanceof Name) {
             return;
         }
 
@@ -188,17 +191,17 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
         $this->references[$className] = $reference;
     }
 
-    private function isClassConstant(ClassConstFetch $node): bool
+    private function isClassConstant(ClassConstFetch $classConstFetch): bool
     {
-        return $node->name instanceof Identifier
-            && strtolower($node->name->toString()) === 'class';
+        return $classConstFetch->name instanceof Identifier
+            && strtolower($classConstFetch->name->toString()) === 'class';
     }
 
-    private function isMockTarget(ClassConstFetch $node): bool
+    private function isMockTarget(ClassConstFetch $classConstFetch): bool
     {
-        $parent = $node->getAttribute('parent');
+        $parent = $classConstFetch->getAttribute('parent');
 
-        if (! $parent instanceof Arg || $parent->value !== $node) {
+        if (! $parent instanceof Arg || $parent->value !== $classConstFetch) {
             return false;
         }
 
@@ -219,9 +222,9 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
         return in_array($call->name->toString(), $this->mockMethods, true);
     }
 
-    private function isClassUse(UseItem $node): bool
+    private function isClassUse(UseItem $useItem): bool
     {
-        $parent = $node->getAttribute('parent');
+        $parent = $useItem->getAttribute('parent');
 
         if ($parent instanceof Use_) {
             return $parent->type === Use_::TYPE_NORMAL;
@@ -232,20 +235,20 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
                 return false;
             }
 
-            return $node->type === Use_::TYPE_UNKNOWN || $node->type === Use_::TYPE_NORMAL;
+            return $useItem->type === Use_::TYPE_UNKNOWN || $useItem->type === Use_::TYPE_NORMAL;
         }
 
         return true;
     }
 
-    private function useName(UseItem $node): string
+    private function useName(UseItem $useItem): string
     {
-        $parent = $node->getAttribute('parent');
+        $parent = $useItem->getAttribute('parent');
 
         if ($parent instanceof GroupUse) {
-            return $parent->prefix->toString() . '\\' . $node->name->toString();
+            return $parent->prefix->toString() . '\\' . $useItem->name->toString();
         }
 
-        return $node->name->toString();
+        return $useItem->name->toString();
     }
 }

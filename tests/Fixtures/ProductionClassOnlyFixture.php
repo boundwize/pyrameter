@@ -10,6 +10,6 @@ final class ProductionClassOnlyFixture extends TestCase
 {
     public function testItReferencesAProjectClassThatUsesPdoInternally(): void
     {
-        self::assertSame(ProductionUsesPdo::class, ProductionUsesPdo::class);
+        $this->assertSame(ProductionUsesPdo::class, ProductionUsesPdo::class);
     }
 }

@@ -14,6 +14,6 @@ final class DoctrineUsageFixture extends TestCase
     {
         $connection = DriverManager::getConnection([]);
 
-        self::assertSame(stdClass::class, $connection::class);
+        $this->assertSame(stdClass::class, $connection::class);
     }
 }

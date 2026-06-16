@@ -17,25 +17,28 @@ use function sprintf;
 
 final readonly class TestUsageScanner
 {
-    private ConsumedClassExtractor $extractor;
+    private ConsumedClassExtractor $consumedClassExtractor;
 
-    private ScanResultCache $cache;
+    private ScanResultCache $scanResultCache;
 
     /**
      * @param null|Closure(string): (string|false) $readFile
      */
     public function __construct(
-        ?ConsumedClassExtractor $extractor = null,
-        ?ScanResultCache $cache = null,
+        ?ConsumedClassExtractor $consumedClassExtractor = null,
+        ?ScanResultCache $scanResultCache = null,
         private ?Closure $readFile = null,
     ) {
-        $this->extractor = $extractor ?? new ConsumedClassExtractor();
-        $this->cache     = $cache ?? new ScanResultCache();
+        $this->consumedClassExtractor = $consumedClassExtractor ?? new ConsumedClassExtractor();
+        $this->scanResultCache        = $scanResultCache ?? new ScanResultCache();
     }
 
     public function scan(string $testClassName): ScanResult
     {
-        return $this->cache->get($testClassName, fn (string $className): ScanResult => $this->scanUncached($className));
+        return $this->scanResultCache->get(
+            $testClassName,
+            fn (string $className): ScanResult => $this->scanUncached($className)
+        );
     }
 
     private function scanUncached(string $testClassName): ScanResult
@@ -44,15 +47,15 @@ final readonly class TestUsageScanner
             return ScanResult::unknown(sprintf('Test class "%s" could not be reflected.', $testClassName));
         }
 
-        $reflection = new ReflectionClass($testClassName);
+        $reflectionClass = new ReflectionClass($testClassName);
 
-        $fileName = $reflection->getFileName();
+        $fileName = $reflectionClass->getFileName();
 
         if ($fileName === false || ! is_file($fileName)) {
             return ScanResult::unknown(sprintf('Source file for "%s" could not be found.', $testClassName));
         }
 
-        $source = $this->readFile !== null
+        $source = $this->readFile instanceof Closure
             ? ($this->readFile)($fileName)
             : file_get_contents($fileName);
 
@@ -63,12 +66,12 @@ final readonly class TestUsageScanner
         try {
             $parser = (new ParserFactory())->createForHostVersion();
             $nodes  = $parser->parse($source);
-        } catch (Throwable $exception) {
+        } catch (Throwable $throwable) {
             return ScanResult::unknown(
                 sprintf(
                     'Source file "%s" could not be parsed: %s',
                     $fileName,
-                    $exception->getMessage()
+                    $throwable->getMessage()
                 )
             );
         }
@@ -77,8 +80,9 @@ final readonly class TestUsageScanner
         if ($nodes === null) {
             return ScanResult::unknown(sprintf('Source file "%s" could not be parsed.', $fileName));
         }
+
         // @codeCoverageIgnoreEnd
 
-        return ScanResult::inspectable($this->extractor->extract(array_values($nodes)));
+        return ScanResult::inspectable($this->consumedClassExtractor->extract(array_values($nodes)));
     }
 }

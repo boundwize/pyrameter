@@ -10,37 +10,37 @@ use Boundwize\Pyrameter\TestKind;
 
 final readonly class SuiteShapeResolver
 {
-    public function resolve(PyramidSummary $summary, TargetEvaluation $targets): SuiteShape
+    public function resolve(PyramidSummary $pyramidSummary, TargetEvaluation $targetEvaluation): SuiteShape
     {
-        if ($summary->total === 0) {
+        if ($pyramidSummary->total === 0) {
             return new SuiteShape('Empty Suite', 'No tests were collected.', false);
         }
 
-        $unknownMax = $targets->status(TestKind::Unknown)->max;
+        $unknownMax = $targetEvaluation->status(TestKind::Unknown)->max;
 
-        if ($unknownMax !== null && $summary->percentage(TestKind::Unknown) > $unknownMax) {
+        if ($unknownMax !== null && $pyramidSummary->percentage(TestKind::Unknown) > $unknownMax) {
             return new SuiteShape('Unknown Swamp', 'Too many tests could not be inspected.', false);
         }
 
-        $heavy = $summary->percentage(TestKind::Integration) + $summary->percentage(TestKind::E2E);
+        $heavy = $pyramidSummary->percentage(TestKind::Integration) + $pyramidSummary->percentage(TestKind::E2E);
 
-        if ($heavy > $summary->percentage(TestKind::Unit)) {
+        if ($heavy > $pyramidSummary->percentage(TestKind::Unit)) {
             return new SuiteShape('Inverted Pyramid', 'Your heavier tests outnumber your unit tests.', false);
         }
 
-        $e2eMax = $targets->status(TestKind::E2E)->max;
+        $e2eMax = $targetEvaluation->status(TestKind::E2E)->max;
 
-        if ($e2eMax !== null && $summary->percentage(TestKind::E2E) > $e2eMax) {
+        if ($e2eMax !== null && $pyramidSummary->percentage(TestKind::E2E) > $e2eMax) {
             return new SuiteShape('E2E Tower', 'Your E2E tests are growing beyond the target.', false);
         }
 
-        $integrationMax = $targets->status(TestKind::Integration)->max;
+        $integrationMax = $targetEvaluation->status(TestKind::Integration)->max;
 
-        if ($integrationMax !== null && $summary->percentage(TestKind::Integration) > $integrationMax) {
+        if ($integrationMax !== null && $pyramidSummary->percentage(TestKind::Integration) > $integrationMax) {
             return new SuiteShape('Integration Mountain', 'Your suite is getting heavier.', false);
         }
 
-        if ($targets->allPassed()) {
+        if ($targetEvaluation->allPassed()) {
             return new SuiteShape('Healthy Pyramid', 'Your test pyramid target passed.', true);
         }
 

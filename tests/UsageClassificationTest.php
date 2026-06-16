@@ -30,15 +30,15 @@ final class UsageClassificationTest extends TestCase
      * @param class-string $fixtureClass
      */
     #[DataProvider('classificationCases')]
-    public function testItClassifiesUsageFromTheTestFile(string $fixtureClass, TestKind $expectedKind): void
+    public function testItClassifiesUsageFromTheTestFile(string $fixtureClass, TestKind $testKind): void
     {
-        $scanner    = new TestUsageScanner();
-        $scanResult = $scanner->scan($fixtureClass);
-        $config     = PyrameterConfig::defaults();
-        $classifier = new UsageClassifier($config->usageRules());
+        $testUsageScanner = new TestUsageScanner();
+        $scanResult       = $testUsageScanner->scan($fixtureClass);
+        $pyrameterConfig  = PyrameterConfig::defaults();
+        $usageClassifier  = new UsageClassifier($pyrameterConfig->usageRules());
 
-        self::assertTrue($scanResult->inspectable, $scanResult->errorMessage ?? '');
-        self::assertSame($expectedKind, $classifier->classify($scanResult->consumedClasses));
+        $this->assertTrue($scanResult->inspectable, $scanResult->errorMessage ?? '');
+        $this->assertSame($testKind, $usageClassifier->classify($scanResult->consumedClasses));
     }
 
     /**
@@ -67,8 +67,8 @@ final class UsageClassificationTest extends TestCase
     {
         $scanResult = (new TestUsageScanner())->scan(MockedHeavyFixture::class);
 
-        self::assertTrue($scanResult->inspectable);
-        self::assertNotContains(PDO::class, $scanResult->consumedClasses);
+        $this->assertTrue($scanResult->inspectable);
+        $this->assertNotContains(PDO::class, $scanResult->consumedClasses);
     }
 
     /**
@@ -77,10 +77,10 @@ final class UsageClassificationTest extends TestCase
     #[DataProvider('phpRedisGlobalClassCases')]
     public function testDefaultRulesClassifyPhpRedisGlobalClassesAsIntegration(string $className): void
     {
-        $config     = PyrameterConfig::defaults();
-        $classifier = new UsageClassifier($config->usageRules());
+        $pyrameterConfig = PyrameterConfig::defaults();
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
 
-        self::assertSame(TestKind::Integration, $classifier->classify([$className]));
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify([$className]));
     }
 
     /**
@@ -97,8 +97,8 @@ final class UsageClassificationTest extends TestCase
     {
         $scanResult = (new TestUsageScanner())->scan('Boundwize\Pyrameter\Tests\Fixtures\MissingFixture');
 
-        self::assertFalse($scanResult->inspectable);
-        self::assertSame([], $scanResult->consumedClasses);
-        self::assertNotNull($scanResult->errorMessage);
+        $this->assertFalse($scanResult->inspectable);
+        $this->assertSame([], $scanResult->consumedClasses);
+        $this->assertNotNull($scanResult->errorMessage);
     }
 }

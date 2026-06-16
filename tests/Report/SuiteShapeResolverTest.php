@@ -19,8 +19,8 @@ final class SuiteShapeResolverTest extends TestCase
     {
         $shape = $this->shape([]);
 
-        self::assertSame('Empty Suite', $shape->name);
-        self::assertSame('No tests were collected.', $shape->verdict);
+        $this->assertSame('Empty Suite', $shape->name);
+        $this->assertSame('No tests were collected.', $shape->verdict);
     }
 
     public function testItDetectsUnknownSwamp(): void
@@ -30,8 +30,8 @@ final class SuiteShapeResolverTest extends TestCase
             TestKind::Unknown->value => 1,
         ]);
 
-        self::assertSame('Unknown Swamp', $shape->name);
-        self::assertSame('Too many tests could not be inspected.', $shape->verdict);
+        $this->assertSame('Unknown Swamp', $shape->name);
+        $this->assertSame('Too many tests could not be inspected.', $shape->verdict);
     }
 
     public function testItDetectsE2ETower(): void
@@ -43,8 +43,8 @@ final class SuiteShapeResolverTest extends TestCase
             TestKind::E2E->value         => 5,
         ]);
 
-        self::assertSame('E2E Tower', $shape->name);
-        self::assertSame('Your E2E tests are growing beyond the target.', $shape->verdict);
+        $this->assertSame('E2E Tower', $shape->name);
+        $this->assertSame('Your E2E tests are growing beyond the target.', $shape->verdict);
     }
 
     public function testItDetectsInvertedPyramid(): void
@@ -55,8 +55,8 @@ final class SuiteShapeResolverTest extends TestCase
             TestKind::E2E->value         => 5,
         ]);
 
-        self::assertSame('Inverted Pyramid', $shape->name);
-        self::assertSame('Your heavier tests outnumber your unit tests.', $shape->verdict);
+        $this->assertSame('Inverted Pyramid', $shape->name);
+        $this->assertSame('Your heavier tests outnumber your unit tests.', $shape->verdict);
     }
 
     public function testItDetectsIntegrationMountain(): void
@@ -67,8 +67,8 @@ final class SuiteShapeResolverTest extends TestCase
             TestKind::Integration->value => 1,
         ]);
 
-        self::assertSame('Integration Mountain', $shape->name);
-        self::assertSame('Your suite is getting heavier.', $shape->verdict);
+        $this->assertSame('Integration Mountain', $shape->name);
+        $this->assertSame('Your suite is getting heavier.', $shape->verdict);
     }
 
     public function testItDetectsHealthyPyramid(): void
@@ -80,14 +80,14 @@ final class SuiteShapeResolverTest extends TestCase
             TestKind::E2E->value         => 2,
         ]);
 
-        self::assertSame('Healthy Pyramid', $shape->name);
-        self::assertSame('Your test pyramid target passed.', $shape->verdict);
-        self::assertTrue($shape->healthy);
+        $this->assertSame('Healthy Pyramid', $shape->name);
+        $this->assertSame('Your test pyramid target passed.', $shape->verdict);
+        $this->assertTrue($shape->healthy);
     }
 
     public function testItDetectsWidePyramid(): void
     {
-        $config = PyrameterConfig::create()
+        $pyrameterConfig = PyrameterConfig::create()
             ->targetShape(
                 unit: ['min' => 80],
                 functional: ['max' => 10],
@@ -100,22 +100,22 @@ final class SuiteShapeResolverTest extends TestCase
             TestKind::Unit->value        => 75,
             TestKind::Functional->value  => 20,
             TestKind::Integration->value => 5,
-        ], $config);
+        ], $pyrameterConfig);
 
-        self::assertSame('Wide Pyramid', $shape->name);
-        self::assertSame('Your suite is wider than the configured target.', $shape->verdict);
+        $this->assertSame('Wide Pyramid', $shape->name);
+        $this->assertSame('Your suite is wider than the configured target.', $shape->verdict);
     }
 
     /**
      * @param array<string, int> $counts
      */
-    private function shape(array $counts, ?PyrameterConfig $config = null): SuiteShape
+    private function shape(array $counts, ?PyrameterConfig $pyrameterConfig = null): SuiteShape
     {
-        $summary  = PyramidSummary::fromRecords($this->records($counts));
-        $config ??= PyrameterConfig::defaults();
-        $targets = (new TargetEvaluator($config->targetPercentages()))->evaluate($summary);
+        $pyramidSummary    = PyramidSummary::fromRecords($this->records($counts));
+        $pyrameterConfig ??= PyrameterConfig::defaults();
+        $targetEvaluation = (new TargetEvaluator($pyrameterConfig->targetPercentages()))->evaluate($pyramidSummary);
 
-        return (new SuiteShapeResolver())->resolve($summary, $targets);
+        return (new SuiteShapeResolver())->resolve($pyramidSummary, $targetEvaluation);
     }
 
     /**

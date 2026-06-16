@@ -11,47 +11,49 @@ use PHPUnit\Framework\TestCase;
 
 use function array_sum;
 
+use const PHP_FLOAT_EPSILON;
+
 final class PyramidSummaryTest extends TestCase
 {
     public function testItCalculatesPercentages(): void
     {
-        $summary = PyramidSummary::fromRecords([
+        $pyramidSummary = PyramidSummary::fromRecords([
             ...$this->records(TestKind::Unit, 7),
             ...$this->records(TestKind::Functional, 2),
             ...$this->records(TestKind::Integration, 1),
         ]);
 
-        self::assertSame(10, $summary->total);
-        self::assertSame(70.0, $summary->percentage(TestKind::Unit));
-        self::assertSame(20.0, $summary->percentage(TestKind::Functional));
-        self::assertSame(10.0, $summary->percentage(TestKind::Integration));
-        self::assertSame(0.0, $summary->percentage(TestKind::E2E));
-        self::assertSame(0.0, $summary->percentage(TestKind::Unknown));
+        $this->assertSame(10, $pyramidSummary->total);
+        $this->assertEqualsWithDelta(70.0, $pyramidSummary->percentage(TestKind::Unit), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(20.0, $pyramidSummary->percentage(TestKind::Functional), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(10.0, $pyramidSummary->percentage(TestKind::Integration), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(0.0, $pyramidSummary->percentage(TestKind::E2E), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(0.0, $pyramidSummary->percentage(TestKind::Unknown), PHP_FLOAT_EPSILON);
     }
 
     public function testItBalancesRoundedPercentagesToOneHundred(): void
     {
-        $summary = PyramidSummary::fromRecords([
+        $pyramidSummary = PyramidSummary::fromRecords([
             ...$this->records(TestKind::Unit, 37),
             ...$this->records(TestKind::Functional, 6),
             ...$this->records(TestKind::Integration, 3),
         ]);
 
-        self::assertSame(100.0, array_sum($summary->percentages));
-        self::assertSame(80.4, $summary->percentage(TestKind::Unit));
-        self::assertSame(13.1, $summary->percentage(TestKind::Functional));
-        self::assertSame(6.5, $summary->percentage(TestKind::Integration));
+        $this->assertEqualsWithDelta(100.0, array_sum($pyramidSummary->percentages), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(80.4, $pyramidSummary->percentage(TestKind::Unit), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(13.1, $pyramidSummary->percentage(TestKind::Functional), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(6.5, $pyramidSummary->percentage(TestKind::Integration), PHP_FLOAT_EPSILON);
     }
 
     /**
      * @return list<TestRecord>
      */
-    private function records(TestKind $kind, int $count): array
+    private function records(TestKind $testKind, int $count): array
     {
         $records = [];
 
         for ($i = 1; $i <= $count; ++$i) {
-            $records[] = new TestRecord('ExampleTest' . $kind->value, 'test_' . $i, [], $kind);
+            $records[] = new TestRecord('ExampleTest' . $testKind->value, 'test_' . $i, [], $testKind);
         }
 
         return $records;

@@ -59,7 +59,7 @@ PHP);
 
         sort($classes);
 
-        self::assertSame([
+        $this->assertSame([
             'Vendor\Attributes\ExampleAttribute',
             'Vendor\BaseClass',
             'Vendor\Constructed\Thing',
@@ -105,7 +105,7 @@ PHP);
 
         sort($classes);
 
-        self::assertSame([
+        $this->assertSame([
             'Vendor\ClassConstant\Direct',
             'Vendor\ClassConstant\DynamicMethod',
             'Vendor\ClassConstant\FunctionArgument',
@@ -119,7 +119,7 @@ PHP);
             new UseItem(new Name('Vendor\LooseImport')),
         ]);
 
-        self::assertSame(['Vendor\LooseImport'], $classes);
+        $this->assertSame(['Vendor\LooseImport'], $classes);
     }
 
     /**
@@ -130,7 +130,7 @@ PHP);
         $parser = (new ParserFactory())->createForHostVersion();
         $nodes  = $parser->parse($source);
 
-        self::assertIsArray($nodes);
+        $this->assertIsArray($nodes);
 
         return (new ConsumedClassExtractor())->extract(array_values($nodes));
     }

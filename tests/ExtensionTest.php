@@ -32,9 +32,9 @@ use Boundwize\Pyrameter\Config\PyrameterConfig;
 return PyrameterConfig::create();
 PHP);
 
-        $eventFacadeInstance = new ReflectionProperty(EventFacade::class, 'instance');
-        $originalEventFacade = $eventFacadeInstance->getValue();
-        $eventFacadeInstance->setValue(null, new EventFacade());
+        $reflectionProperty  = new ReflectionProperty(EventFacade::class, 'instance');
+        $originalEventFacade = $reflectionProperty->getValue();
+        $reflectionProperty->setValue(null, new EventFacade());
 
         try {
             (new Extension())->bootstrap(
@@ -43,7 +43,7 @@ PHP);
                 ParameterCollection::fromArray(['config' => $configFile]),
             );
         } finally {
-            $eventFacadeInstance->setValue(null, $originalEventFacade);
+            $reflectionProperty->setValue(null, $originalEventFacade);
             unlink($configFile);
         }
 

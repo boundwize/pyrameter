@@ -8,10 +8,7 @@ use stdClass;
 
 final class DriverManager
 {
-    /**
-     * @param array<string, mixed> $params
-     */
-    public static function getConnection(array $params): object
+    public static function getConnection(): stdClass
     {
         return new stdClass();
     }

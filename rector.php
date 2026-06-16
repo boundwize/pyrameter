@@ -9,4 +9,16 @@ return RectorConfig::configure()
         __DIR__ . '/src',
         __DIR__ . '/tests',
     ])
-    ->withPhpSets();
+    ->withPhpSets()
+    ->withPreparedSets(
+        codeQuality: true,
+        codingStyle: true,
+        deadCode: true,
+        naming: true,
+        privatization: true,
+        typeDeclarations: true,
+        typeDeclarationDocblocks: true,
+        phpunitCodeQuality: true
+    )
+    ->withComposerBased(phpunit: true)
+    ->withImportNames(removeUnusedImports: true);

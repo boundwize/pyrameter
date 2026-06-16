@@ -11,7 +11,7 @@ final class PdoSmokeFixture extends TestCase
 {
     public function testOne(): void
     {
-        self::assertSame(PDO::class, PDO::class);
+        $this->assertSame(PDO::class, PDO::class);
     }
 
     public function testTwo(): void
