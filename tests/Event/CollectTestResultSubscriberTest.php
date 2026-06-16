@@ -131,7 +131,7 @@ final class CollectTestResultSubscriberTest extends TestCase
     private function finishedTestMethod(
         string $className,
         string $methodName,
-        ?TestDataCollection $testData = null,
+        ?TestDataCollection $testDataCollection = null,
     ): Finished {
         return new Finished(
             $this->telemetryInfo(),
@@ -142,7 +142,7 @@ final class CollectTestResultSubscriberTest extends TestCase
                 1,
                 new TestDox('', '', ''),
                 MetadataCollection::fromArray([]),
-                $testData ?? TestDataCollection::fromArray([]),
+                $testDataCollection ?? TestDataCollection::fromArray([]),
             ),
             1,
         );
