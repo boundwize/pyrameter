@@ -9,6 +9,7 @@ use Boundwize\Pyrameter\Target\TargetEvaluation;
 use Boundwize\Pyrameter\TestKind;
 
 use function array_fill;
+use function array_map;
 use function array_values;
 use function count;
 use function implode;
@@ -38,11 +39,12 @@ final readonly class PyramidReporter
         $statusTable = $this->renderStatusTable($pyramidSummary, $targetEvaluation);
 
         $lines = [
+            '=========',
             'Pyrameter',
             '=========',
             '',
-            sprintf('Shape: %s', $suiteShape->name),
-            sprintf('Result: %s', $targetEvaluation->allPassed()
+            sprintf('%-7s %s', 'Shape:', $suiteShape->name),
+            sprintf('%-7s %s', 'Result:', $targetEvaluation->allPassed()
                 ? 'Passed ✓' : 'Violated ⚠'),
             '',
             ...$this->renderPyramid($targetEvaluation, $this->visibleLength($statusTable[0])),
@@ -63,32 +65,37 @@ final readonly class PyramidReporter
      */
     private function renderPyramid(TargetEvaluation $targetEvaluation, int $width): array
     {
-        $levels     = [
+        $levels      = [
             TestKind::E2E,
             TestKind::Integration,
             TestKind::Functional,
             TestKind::Unit,
         ];
-        $tierWidths = [7, 15, 21, 29];
-        $baseWidth  = $tierWidths[3] + 2;
-        $width      = max($baseWidth, $width);
-        $lines      = [];
+        $blockWidths = [1, 5, 9, 13];
+        $maxBlock    = $blockWidths[3];
+
+        $prefixes = [];
 
         foreach ($levels as $index => $testKind) {
-            $lines[] = $this->center(
-                $this->tierTop($tierWidths[$index], $tierWidths[$index - 1] ?? null),
-                $width,
-            );
-            $lines[] = $this->center(
-                '|' . $this->padCentered(
-                    $testKind->label() . ' ' . $targetEvaluation->status($testKind)->symbol(),
-                    $tierWidths[$index],
-                ) . '|',
-                $width,
-            );
+            $indent     = intdiv($maxBlock - $blockWidths[$index], 2);
+            $block      = $index === 0 ? '▲' : $this->repeat('▄', $blockWidths[$index]);
+            $prefixes[] = $this->repeat(' ', $indent) . $block . '  ' . $testKind->label();
         }
 
-        $lines[] = $this->center('+' . $this->repeat('-', $tierWidths[3]) . '+', $width);
+        $prefixWidth = max(array_map($this->visibleLength(...), $prefixes));
+        $gap         = 2;
+        $lineWidth   = $prefixWidth + $gap + 1;
+        $leftPad     = intdiv(max(0, $width - $lineWidth), 2);
+
+        $lines = [];
+
+        foreach ($levels as $index => $testKind) {
+            $symbol  = $targetEvaluation->status($testKind)->symbol();
+            $lines[] = $this->repeat(' ', $leftPad)
+                . $this->padForColumn($prefixes[$index], $prefixWidth, 'left')
+                . $this->repeat(' ', $gap)
+                . $symbol;
+        }
 
         return $lines;
     }
@@ -207,44 +214,6 @@ final readonly class PyramidReporter
             'right' => $this->repeat(' ', $padding) . $text,
             default => $text . $this->repeat(' ', $padding),
         };
-    }
-
-    private function center(string $text, int $width): string
-    {
-        $padding = max(0, $width - $this->visibleLength($text));
-        $left    = intdiv($padding, 2);
-
-        return $this->repeat(' ', $left) . $text;
-    }
-
-    private function padCentered(string $text, int $width): string
-    {
-        $padding = max(0, $width - $this->visibleLength($text));
-        $left    = intdiv($padding, 2);
-
-        return $this->repeat(' ', $left) . $text . $this->repeat(' ', $padding - $left);
-    }
-
-    private function tierTop(int $innerWidth, ?int $previousInnerWidth): string
-    {
-        if ($previousInnerWidth === null) {
-            return '+' . $this->repeat('-', $innerWidth) . '+';
-        }
-
-        $outerWidth         = $innerWidth + 2;
-        $previousOuterWidth = $previousInnerWidth + 2;
-        $previousStart      = intdiv($outerWidth - $previousOuterWidth, 2);
-        $leftWidth          = $previousStart - 1;
-        $middleWidth        = $previousOuterWidth - 2;
-        $rightWidth         = $outerWidth - $previousStart - $previousOuterWidth - 1;
-
-        return '+'
-            . $this->repeat('-', $leftWidth)
-            . '+'
-            . $this->repeat('-', $middleWidth)
-            . '+'
-            . $this->repeat('-', $rightWidth)
-            . '+';
     }
 
     private function repeat(string $text, int $count): string

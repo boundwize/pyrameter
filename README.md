@@ -25,21 +25,17 @@ Use it to spot a suite that is getting heavier, agree on what "healthy" means fo
 ```bash
 vendor/bin/phpunit
 ........................
+=========
 Pyrameter
 =========
 
-Shape: Integration Mountain
+Shape:  Integration Mountain
 Result: Violated ⚠
 
-                  +-------+
-                  | E2E ✓ |
-              +---+-------+---+
-              | Integration ✗ |
-           +--+---------------+--+
-           |    Functional ✓     |
-       +---+---------------------+---+
-       |           Unit ✗            |
-       +-----------------------------+
+               ▲  E2E             ✓
+             ▄▄▄▄▄  Integration   ✗
+           ▄▄▄▄▄▄▄▄▄  Functional  ✓
+         ▄▄▄▄▄▄▄▄▄▄▄▄▄  Unit      ✗
 
 +=============+=======+========+============+
 |    KIND     | TESTS | ACTUAL |   TARGET   |

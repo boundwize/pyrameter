@@ -29,11 +29,11 @@ final class PyramidReporterTest extends TestCase
         $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
 
         $this->assertStringContainsString('Pyrameter', $report);
-        $this->assertStringContainsString('Shape: Integration Mountain', $report);
+        $this->assertStringContainsString('Shape:  Integration Mountain', $report);
         $this->assertStringContainsString('Result: Violated ⚠', $report);
-        $this->assertStringContainsString('+-------+', $report);
-        $this->assertStringContainsString('| Integration ✗ |', $report);
-        $this->assertStringContainsString('       +-----------------------------+', $report);
+        $this->assertStringContainsString('▲  E2E', $report);
+        $this->assertStringContainsString('▄▄▄▄▄  Integration', $report);
+        $this->assertStringContainsString('▄▄▄▄▄▄▄▄▄▄▄▄▄  Unit', $report);
         $this->assertStringContainsString('|    KIND     | TESTS | ACTUAL |   TARGET   |', $report);
         $this->assertStringContainsString('+=============+=======+========+============+', $report);
         $this->assertStringContainsString('| Integration |     1 |  10.0% | <=  8.0% ✗ |', $report);
@@ -57,7 +57,7 @@ final class PyramidReporterTest extends TestCase
 
         $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
 
-        $this->assertStringContainsString('Shape: Healthy Pyramid', $report);
+        $this->assertStringContainsString('Shape:  Healthy Pyramid', $report);
         $this->assertStringContainsString('Result: Passed ✓', $report);
         $this->assertStringContainsString('Your test pyramid target passed.', $report);
     }
