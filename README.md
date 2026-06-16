@@ -18,7 +18,7 @@
 ![macOS](https://img.shields.io/badge/macOS-supported-C084FC?logo=apple&logoColor=white&labelColor=555555)
 ![Linux](https://img.shields.io/badge/Linux-supported-FCC624?logo=linux&logoColor=black&labelColor=555555)
 
-Pyrameter is a PHPUnit extension that shows what your test suite is becoming. It classifies each test by the classes and namespaces the test file consumes, then prints a shape report after PHPUnit runs.
+Pyrameter is a PHPUnit extension that shows what your test suite is becoming. It classifies each PHPUnit test execution by the classes and namespaces the test file consumes, then prints a shape report after PHPUnit runs.
 
 Use it to spot a suite that is getting heavier, agree on what "healthy" means for your project, and optionally fail CI when the pyramid drifts too far.
 
@@ -48,7 +48,7 @@ Result: Violated ⚠
 ├─────────────┼───────┼────────┼──────────┼────────┤
 │ Functional  │    10 │  16.7% │ <= 20.0% │   ✓    │
 ├─────────────┼───────┼────────┼──────────┼────────┤
-│ Integration │     9 │  15.0% │ <=  8.0% │   ✗    │
+│ Integration │    10 │  16.7% │ <=  8.0% │   ✗    │
 ├─────────────┼───────┼────────┼──────────┼────────┤
 │ E2E         │     1 │   1.7% │ <=  2.0% │   ✓    │
 └─────────────┴───────┴────────┴──────────┴────────┘
@@ -68,6 +68,8 @@ Pyrameter does not trust test directories, and it does not scan production class
 - browser driver usage => e2e
 
 When multiple usages match, the heaviest kind wins. Mocked heavy dependencies stay unit.
+
+Counts match PHPUnit's test execution count. Each data-provider dataset is counted separately, while all datasets for the same test method usually share the same classification because Pyrameter classifies from the test file's consumed classes.
 
 Your pyramid, your rules: decide which class usage means functional or integration in your project, then configure Pyrameter to match your team's belief.
 

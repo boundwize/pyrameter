@@ -20,7 +20,6 @@ use Boundwize\Pyrameter\Tests\Fixtures\SimpleUnitFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\SymfonyFunctionalFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\WebDriverE2EFixture;
 use Boundwize\Pyrameter\UsageClassifier;
-use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -68,7 +67,7 @@ final class UsageClassificationTest extends TestCase
         $scanResult = (new TestUsageScanner())->scan(MockedHeavyFixture::class);
 
         $this->assertTrue($scanResult->inspectable);
-        $this->assertNotContains(PDO::class, $scanResult->consumedClasses);
+        $this->assertNotContains('PDO', $scanResult->consumedClasses);
     }
 
     /**

@@ -21,6 +21,7 @@ use PHPUnit\Event\Telemetry\Info;
 use PHPUnit\Event\Telemetry\MemoryUsage;
 use PHPUnit\Event\Telemetry\Snapshot;
 use PHPUnit\Event\Test\Finished;
+use PHPUnit\Event\TestData\DataFromDataProvider;
 use PHPUnit\Event\TestData\TestDataCollection;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Metadata\MetadataCollection;
@@ -35,7 +36,7 @@ final class CollectTestResultSubscriberTest extends TestCase
 
         $subscriber->notify($this->finishedTestMethod(
             SimpleUnitFixture::class,
-            'testItWorks with data set "one"',
+            'testItWorks',
         ));
 
         $records = $testCollector->all();
@@ -44,6 +45,30 @@ final class CollectTestResultSubscriberTest extends TestCase
         $this->assertSame(SimpleUnitFixture::class, $records[0]->testClassName);
         $this->assertSame('testItWorks', $records[0]->testMethodName);
         $this->assertSame(TestKind::Unit, $records[0]->kind);
+    }
+
+    public function testItKeepsSeparateDataProviderExecutions(): void
+    {
+        $testCollector = new TestCollector();
+        $subscriber    = $this->subscriber($testCollector);
+
+        $subscriber->notify($this->finishedDataProviderTestMethod(
+            SimpleUnitFixture::class,
+            'testItWorks',
+            'one',
+        ));
+
+        $subscriber->notify($this->finishedDataProviderTestMethod(
+            SimpleUnitFixture::class,
+            'testItWorks',
+            'two',
+        ));
+
+        $records = $testCollector->all();
+
+        $this->assertCount(2, $records);
+        $this->assertSame('testItWorks#one', $records[0]->testMethodName);
+        $this->assertSame('testItWorks#two', $records[1]->testMethodName);
     }
 
     public function testItMarksUninspectableTestsAsUnit(): void
@@ -75,7 +100,25 @@ final class CollectTestResultSubscriberTest extends TestCase
 
         $this->assertCount(1, $records);
         $this->assertSame(SimpleUnitFixture::class, $records[0]->testClassName);
-        $this->assertSame('testFromId', $records[0]->testMethodName);
+        $this->assertSame('testFromId#1', $records[0]->testMethodName);
+    }
+
+    public function testItFallsBackToMethodNamesWhenEventIdsDoNotIdentifyTestMethods(): void
+    {
+        $testCollector = new TestCollector();
+        $subscriber    = $this->subscriber($testCollector);
+
+        $subscriber->notify(new Finished(
+            $this->telemetryInfo(),
+            new MethodNameOnlyEventCode(SimpleUnitFixture::class, 'testFromMethodName'),
+            1,
+        ));
+
+        $records = $testCollector->all();
+
+        $this->assertCount(1, $records);
+        $this->assertSame(SimpleUnitFixture::class, $records[0]->testClassName);
+        $this->assertSame('testFromMethodName', $records[0]->testMethodName);
     }
 
     public function testItIgnoresEventsThatDoNotIdentifyTestMethods(): void
@@ -103,8 +146,11 @@ final class CollectTestResultSubscriberTest extends TestCase
      * @param class-string $className
      * @param non-empty-string $methodName
      */
-    private function finishedTestMethod(string $className, string $methodName): Finished
-    {
+    private function finishedTestMethod(
+        string $className,
+        string $methodName,
+        ?TestDataCollection $testDataCollection = null,
+    ): Finished {
         return new Finished(
             $this->telemetryInfo(),
             new TestMethod(
@@ -114,9 +160,28 @@ final class CollectTestResultSubscriberTest extends TestCase
                 1,
                 new TestDox('', '', ''),
                 MetadataCollection::fromArray([]),
-                TestDataCollection::fromArray([]),
+                $testDataCollection ?? TestDataCollection::fromArray([]),
             ),
             1,
+        );
+    }
+
+    /**
+     * @param class-string $className
+     * @param non-empty-string $methodName
+     * @param non-empty-string $dataSetName
+     */
+    private function finishedDataProviderTestMethod(
+        string $className,
+        string $methodName,
+        string $dataSetName,
+    ): Finished {
+        return $this->finishedTestMethod(
+            $className,
+            $methodName,
+            TestDataCollection::fromArray([
+                DataFromDataProvider::from($dataSetName, '$value = 1', '$value = 1'),
+            ]),
         );
     }
 
