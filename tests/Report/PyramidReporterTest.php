@@ -115,6 +115,24 @@ final class PyramidReporterTest extends TestCase
         $this->assertLessThan($unitPosition, $functionalPosition);
         $this->assertLessThan($integrationPosition, $functionalPosition);
         $this->assertLessThan($unitPosition, $integrationPosition);
+
+        $tableStart = strpos($report, 'KIND');
+
+        $this->assertNotFalse($tableStart);
+
+        $tableUnitPosition = strpos($report, '| Unit', $tableStart);
+        $tableIntegrationPosition = strpos($report, '| Integration', $tableStart);
+        $tableFunctionalPosition = strpos($report, '| Functional', $tableStart);
+        $tableE2ePosition = strpos($report, '| E2E', $tableStart);
+
+        $this->assertNotFalse($tableUnitPosition);
+        $this->assertNotFalse($tableIntegrationPosition);
+        $this->assertNotFalse($tableFunctionalPosition);
+        $this->assertNotFalse($tableE2ePosition);
+        $this->assertLessThan($tableFunctionalPosition, $tableUnitPosition);
+        $this->assertLessThan($tableE2ePosition, $tableUnitPosition);
+        $this->assertLessThan($tableFunctionalPosition, $tableIntegrationPosition);
+        $this->assertLessThan($tableE2ePosition, $tableIntegrationPosition);
     }
 
     /**
