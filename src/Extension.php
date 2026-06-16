@@ -29,15 +29,15 @@ final class Extension implements PHPUnitExtension
         );
 
         $facade->registerSubscriber(new CollectTestResultSubscriber(
-            collector: $testCollector,
-            scanner: $testUsageScanner,
-            classifier: $usageClassifier,
+            testCollector: $testCollector,
+            testUsageScanner: $testUsageScanner,
+            usageClassifier: $usageClassifier,
         ));
 
         $facade->registerSubscriber(new PrintReportSubscriber(
-            collector: $testCollector,
+            testCollector: $testCollector,
             targets: $pyrameterConfig->targetPercentages(),
-            reporter: new PyramidReporter(),
+            pyramidReporter: new PyramidReporter(),
             failOnViolation: $pyrameterConfig->shouldFailOnViolation(),
         ));
     }

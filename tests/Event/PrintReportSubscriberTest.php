@@ -27,9 +27,9 @@ final class PrintReportSubscriberTest extends TestCase
         $testCollector->add(new TestRecord(self::class, 'testUnit', [], TestKind::Unit));
 
         $printReportSubscriber = new PrintReportSubscriber(
-            collector: $testCollector,
+            testCollector: $testCollector,
             targets: PyrameterConfig::defaults()->targetPercentages(),
-            reporter: new PyramidReporter(),
+            pyramidReporter: new PyramidReporter(),
         );
 
         $printReportSubscriber->notify(new ExecutionFinished($this->telemetryInfo()));
@@ -46,9 +46,9 @@ final class PrintReportSubscriberTest extends TestCase
         $exitStatus = null;
 
         $printReportSubscriber = new PrintReportSubscriber(
-            collector: $testCollector,
+            testCollector: $testCollector,
             targets: PyrameterConfig::defaults()->targetPercentages(),
-            reporter: new PyramidReporter(),
+            pyramidReporter: new PyramidReporter(),
             failOnViolation: true,
             exit: static function (int $status) use (&$exitStatus): void {
                 $exitStatus = $status;

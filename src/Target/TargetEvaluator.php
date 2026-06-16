@@ -36,7 +36,7 @@ final readonly class TargetEvaluator
             }
 
             $statuses[$testKind->value] = TargetStatus::fromTarget(
-                kind: $testKind,
+                testKind: $testKind,
                 actual: $actual,
                 min: $target['min'],
                 max: $target['max'],

@@ -93,9 +93,9 @@ final class CollectTestResultSubscriberTest extends TestCase
         $pyrameterConfig = PyrameterConfig::defaults();
 
         return new CollectTestResultSubscriber(
-            collector: $testCollector,
-            scanner: new TestUsageScanner(),
-            classifier: new UsageClassifier($pyrameterConfig->usageRules()),
+            testCollector: $testCollector,
+            testUsageScanner: new TestUsageScanner(),
+            usageClassifier: new UsageClassifier($pyrameterConfig->usageRules()),
         );
     }
 
