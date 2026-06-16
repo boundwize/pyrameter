@@ -9,6 +9,8 @@ use Boundwize\Pyrameter\Target\TargetEvaluation;
 use Boundwize\Pyrameter\TestKind;
 
 use function array_fill;
+use function array_values;
+use function count;
 use function implode;
 use function intdiv;
 use function max;
@@ -33,6 +35,8 @@ final readonly class PyramidReporter
         TargetEvaluation $targetEvaluation,
         SuiteShape $suiteShape
     ): string {
+        $statusTable = $this->renderStatusTable($pyramidSummary, $targetEvaluation);
+
         $lines = [
             'Pyrameter',
             '=========',
@@ -41,14 +45,10 @@ final readonly class PyramidReporter
             sprintf('Result: %s', $targetEvaluation->allPassed()
                 ? 'Passed ✓' : 'Violated ⚠'),
             '',
-            ...$this->renderPyramid($targetEvaluation),
+            ...$this->renderPyramid($targetEvaluation, $this->visibleLength($statusTable[0])),
             '',
-            'Kind          Tests   Actual   Target      Status',
+            ...$statusTable,
         ];
-
-        foreach (TestKind::ordered() as $testKind) {
-            $lines[] = $this->renderStatusRow($pyramidSummary, $targetEvaluation, $testKind);
-        }
 
         $lines[] = '';
         $lines[] = sprintf('Total: %d tests', $pyramidSummary->total);
@@ -61,7 +61,7 @@ final readonly class PyramidReporter
     /**
      * @return list<string>
      */
-    private function renderPyramid(TargetEvaluation $targetEvaluation): array
+    private function renderPyramid(TargetEvaluation $targetEvaluation, int $width): array
     {
         $levels     = [
             TestKind::E2E,
@@ -71,42 +71,143 @@ final readonly class PyramidReporter
         ];
         $tierWidths = [7, 19, 29, 43];
         $baseWidth  = $tierWidths[3] + 2;
+        $width      = max($baseWidth, $width);
         $lines      = [];
 
         foreach ($levels as $index => $testKind) {
             $lines[] = $this->center(
                 $this->tierTop($tierWidths[$index], $tierWidths[$index - 1] ?? null),
-                $baseWidth,
+                $width,
             );
             $lines[] = $this->center(
                 '│' . $this->padCentered(
                     $testKind->label() . ' ' . $targetEvaluation->status($testKind)->symbol(),
                     $tierWidths[$index],
                 ) . '│',
-                $baseWidth,
+                $width,
             );
         }
 
-        $lines[] = '╰' . $this->repeat('─', $tierWidths[3]) . '╯';
+        $lines[] = $this->center('╰' . $this->repeat('─', $tierWidths[3]) . '╯', $width);
 
         return $lines;
     }
 
-    private function renderStatusRow(
+    /**
+     * @return list<string>
+     */
+    private function renderStatusTable(
         PyramidSummary $pyramidSummary,
-        TargetEvaluation $targetEvaluation,
-        TestKind $testKind
-    ): string {
-        $status = $targetEvaluation->status($testKind);
+        TargetEvaluation $targetEvaluation
+    ): array {
+        $rows = [];
 
-        return sprintf(
-            '%-12s %6d %8s   %-10s   %s',
-            $testKind->label(),
-            $pyramidSummary->count($testKind),
-            sprintf('%4.1f%%', $pyramidSummary->percentage($testKind)),
-            $status->label(),
-            $status->symbol(),
+        foreach (TestKind::ordered() as $testKind) {
+            $status = $targetEvaluation->status($testKind);
+            $rows[] = [
+                $testKind->label(),
+                (string) $pyramidSummary->count($testKind),
+                sprintf('%4.1f%%', $pyramidSummary->percentage($testKind)),
+                $status->label(),
+                $status->symbol(),
+            ];
+        }
+
+        return $this->renderTable(
+            ['TEST KIND', 'TESTS', 'ACTUAL', 'TARGET', 'STATUS'],
+            $rows,
+            ['left', 'right', 'right', 'left', 'center'],
         );
+    }
+
+    /**
+     * @param list<string> $headers
+     * @param list<list<string>> $rows
+     * @param list<string> $alignments
+     * @return list<string>
+     */
+    private function renderTable(array $headers, array $rows, array $alignments): array
+    {
+        $widths = [];
+
+        foreach ($headers as $index => $header) {
+            $widths[$index] = $this->visibleLength($header);
+        }
+
+        foreach ($rows as $row) {
+            foreach ($row as $index => $cell) {
+                $widths[$index] = max($widths[$index], $this->visibleLength($cell));
+            }
+        }
+
+        $widths = array_values($widths);
+
+        $lines   = [];
+        $lines[] = $this->renderTableBorder($widths, '┌', '┬', '┐');
+        $lines[] = $this->renderTableRow($headers, $widths, $alignments);
+        $lines[] = $this->renderTableBorder($widths, '╞', '╪', '╡', '═');
+
+        foreach ($rows as $index => $row) {
+            $lines[] = $this->renderTableRow($row, $widths, $alignments);
+
+            if ($index < count($rows) - 1) {
+                $lines[] = $this->renderTableBorder($widths, '├', '┼', '┤');
+            }
+        }
+
+        $lines[] = $this->renderTableBorder($widths, '└', '┴', '┘');
+
+        return $lines;
+    }
+
+    /**
+     * @param list<int> $widths
+     */
+    private function renderTableBorder(
+        array $widths,
+        string $left,
+        string $join,
+        string $right,
+        string $fill = '─'
+    ): string {
+        $segments = [];
+
+        foreach ($widths as $width) {
+            $segments[] = $this->repeat($fill, $width + 2);
+        }
+
+        return $left . implode($join, $segments) . $right;
+    }
+
+    /**
+     * @param list<string> $cells
+     * @param list<int> $widths
+     * @param list<string> $alignments
+     */
+    private function renderTableRow(array $cells, array $widths, array $alignments): string
+    {
+        $line = '│';
+
+        foreach ($cells as $index => $cell) {
+            $line .= ' '
+                . $this->padForColumn($cell, $widths[$index], $alignments[$index] ?? 'left')
+                . ' │';
+        }
+
+        return $line;
+    }
+
+    private function padForColumn(string $text, int $width, string $alignment): string
+    {
+        $padding = max(0, $width - $this->visibleLength($text));
+
+        return match ($alignment) {
+            'center' => $this->repeat(' ', intdiv($padding, 2))
+                . $text
+                . $this->repeat(' ', $padding - intdiv($padding, 2)),
+            'right' => $this->repeat(' ', $padding) . $text,
+            default => $text . $this->repeat(' ', $padding),
+        };
     }
 
     private function center(string $text, int $width): string
