@@ -120,10 +120,10 @@ final class PyramidReporterTest extends TestCase
 
         $this->assertNotFalse($tableStart);
 
-        $tableUnitPosition = strpos($report, '| Unit', $tableStart);
+        $tableUnitPosition        = strpos($report, '| Unit', $tableStart);
         $tableIntegrationPosition = strpos($report, '| Integration', $tableStart);
-        $tableFunctionalPosition = strpos($report, '| Functional', $tableStart);
-        $tableE2ePosition = strpos($report, '| E2E', $tableStart);
+        $tableFunctionalPosition  = strpos($report, '| Functional', $tableStart);
+        $tableE2ePosition         = strpos($report, '| E2E', $tableStart);
 
         $this->assertNotFalse($tableUnitPosition);
         $this->assertNotFalse($tableIntegrationPosition);
