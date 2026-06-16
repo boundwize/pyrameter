@@ -98,15 +98,17 @@ final class PyramidReporterTest extends TestCase
 
         $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
 
-        $e2ePosition         = strpos($report, 'E2E');
-        $functionalPosition  = strpos($report, 'Functional');
-        $integrationPosition = strpos($report, 'Integration', $functionalPosition);
-        $unitPosition        = strpos($report, 'Unit');
+        $e2ePosition        = strpos($report, 'E2E');
+        $functionalPosition = strpos($report, 'Functional');
+        $unitPosition       = strpos($report, 'Unit');
 
         $this->assertNotFalse($e2ePosition);
         $this->assertNotFalse($functionalPosition);
-        $this->assertNotFalse($integrationPosition);
         $this->assertNotFalse($unitPosition);
+
+        $integrationPosition = strpos($report, 'Integration', $functionalPosition);
+
+        $this->assertNotFalse($integrationPosition);
         $this->assertLessThan($integrationPosition, $e2ePosition);
         $this->assertLessThan($unitPosition, $functionalPosition);
         $this->assertLessThan($integrationPosition, $functionalPosition);

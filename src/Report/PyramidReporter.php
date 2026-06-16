@@ -9,7 +9,6 @@ use Boundwize\Pyrameter\Target\TargetEvaluation;
 use Boundwize\Pyrameter\TestKind;
 
 use function array_fill;
-use function array_map;
 use function array_values;
 use function count;
 use function implode;
