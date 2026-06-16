@@ -103,6 +103,24 @@ final class CollectTestResultSubscriberTest extends TestCase
         $this->assertSame('testFromId#1', $records[0]->testMethodName);
     }
 
+    public function testItFallsBackToMethodNamesWhenEventIdsDoNotIdentifyTestMethods(): void
+    {
+        $testCollector = new TestCollector();
+        $subscriber    = $this->subscriber($testCollector);
+
+        $subscriber->notify(new Finished(
+            $this->telemetryInfo(),
+            new MethodNameOnlyEventCode(SimpleUnitFixture::class, 'testFromMethodName'),
+            1,
+        ));
+
+        $records = $testCollector->all();
+
+        $this->assertCount(1, $records);
+        $this->assertSame(SimpleUnitFixture::class, $records[0]->testClassName);
+        $this->assertSame('testFromMethodName', $records[0]->testMethodName);
+    }
+
     public function testItIgnoresEventsThatDoNotIdentifyTestMethods(): void
     {
         $testCollector = new TestCollector();
