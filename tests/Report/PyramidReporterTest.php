@@ -13,6 +13,8 @@ use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\TestRecord;
 use PHPUnit\Framework\TestCase;
 
+use function strpos;
+
 final class PyramidReporterTest extends TestCase
 {
     public function testItRendersTheWarningReport(): void
@@ -80,6 +82,57 @@ final class PyramidReporterTest extends TestCase
         $this->assertStringContainsString('| Unit        |     8 |  80.0% | >= 40.0% ✓ |', $report);
         $this->assertStringContainsString('| Integration |     2 |  20.0% |  No target |', $report);
         $this->assertStringNotContainsString('0.0%-100.0%', $report);
+    }
+
+    public function testItSortsUntargetedLayersAboveTargetedLayersInThePyramid(): void
+    {
+        $pyramidSummary   = PyramidSummary::fromRecords([
+            ...$this->records(TestKind::Unit, 8),
+            ...$this->records(TestKind::Integration, 2),
+        ]);
+        $pyrameterConfig  = PyrameterConfig::create()
+            ->targetShape(
+                unit: ['min' => 40],
+                integration: ['min' => 10],
+            );
+        $targetEvaluation = (new TargetEvaluator($pyrameterConfig->targetPercentages()))->evaluate($pyramidSummary);
+        $suiteShape       = (new SuiteShapeResolver())->resolve($pyramidSummary, $targetEvaluation);
+
+        $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
+
+        $e2ePosition        = strpos($report, 'E2E');
+        $functionalPosition = strpos($report, 'Functional');
+        $unitPosition       = strpos($report, 'Unit');
+
+        $this->assertNotFalse($e2ePosition);
+        $this->assertNotFalse($functionalPosition);
+        $this->assertNotFalse($unitPosition);
+
+        $integrationPosition = strpos($report, 'Integration', $functionalPosition);
+
+        $this->assertNotFalse($integrationPosition);
+        $this->assertLessThan($integrationPosition, $e2ePosition);
+        $this->assertLessThan($unitPosition, $functionalPosition);
+        $this->assertLessThan($integrationPosition, $functionalPosition);
+        $this->assertLessThan($unitPosition, $integrationPosition);
+
+        $tableStart = strpos($report, 'KIND');
+
+        $this->assertNotFalse($tableStart);
+
+        $tableUnitPosition        = strpos($report, '| Unit', $tableStart);
+        $tableIntegrationPosition = strpos($report, '| Integration', $tableStart);
+        $tableFunctionalPosition  = strpos($report, '| Functional', $tableStart);
+        $tableE2ePosition         = strpos($report, '| E2E', $tableStart);
+
+        $this->assertNotFalse($tableUnitPosition);
+        $this->assertNotFalse($tableIntegrationPosition);
+        $this->assertNotFalse($tableFunctionalPosition);
+        $this->assertNotFalse($tableE2ePosition);
+        $this->assertLessThan($tableFunctionalPosition, $tableUnitPosition);
+        $this->assertLessThan($tableE2ePosition, $tableUnitPosition);
+        $this->assertLessThan($tableFunctionalPosition, $tableIntegrationPosition);
+        $this->assertLessThan($tableE2ePosition, $tableIntegrationPosition);
     }
 
     /**

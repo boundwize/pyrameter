@@ -9,7 +9,7 @@ use Boundwize\Pyrameter\Target\TargetEvaluation;
 use Boundwize\Pyrameter\TestKind;
 
 use function array_fill;
-use function array_map;
+use function array_reverse;
 use function array_values;
 use function count;
 use function implode;
@@ -61,16 +61,37 @@ final readonly class PyramidReporter
     }
 
     /**
-     * @return list<string>
+     * @return list<TestKind>
      */
-    private function renderPyramid(TargetEvaluation $targetEvaluation, int $width): array
+    private function sortedLevels(TargetEvaluation $targetEvaluation): array
     {
-        $levels      = [
+        $levels = [
             TestKind::E2E,
             TestKind::Integration,
             TestKind::Functional,
             TestKind::Unit,
         ];
+
+        $untargeted = [];
+        $targeted   = [];
+
+        foreach ($levels as $level) {
+            if ($targetEvaluation->status($level)->ignored) {
+                $untargeted[] = $level;
+            } else {
+                $targeted[] = $level;
+            }
+        }
+
+        return [...$untargeted, ...$targeted];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function renderPyramid(TargetEvaluation $targetEvaluation, int $width): array
+    {
+        $levels      = $this->sortedLevels($targetEvaluation);
         $blockWidths = [1, 5, 9, 13];
         $maxBlock    = $blockWidths[3];
 
@@ -82,10 +103,15 @@ final readonly class PyramidReporter
             $prefixes[] = $this->repeat(' ', $indent) . $block . '  ' . $testKind->label();
         }
 
-        $prefixWidth = max(array_map($this->visibleLength(...), $prefixes));
-        $gap         = 2;
-        $lineWidth   = $prefixWidth + $gap + 1;
-        $leftPad     = intdiv(max(0, $width - $lineWidth), 2);
+        $prefixWidth = 0;
+
+        foreach ($prefixes as $prefix) {
+            $prefixWidth = max($prefixWidth, $this->visibleLength($prefix));
+        }
+
+        $gap       = 2;
+        $lineWidth = $prefixWidth + $gap + 1;
+        $leftPad   = intdiv(max(0, $width - $lineWidth), 2);
 
         $lines = [];
 
@@ -109,7 +135,7 @@ final readonly class PyramidReporter
     ): array {
         $rows = [];
 
-        foreach (TestKind::ordered() as $testKind) {
+        foreach (array_reverse($this->sortedLevels($targetEvaluation)) as $testKind) {
             $status = $targetEvaluation->status($testKind);
             $rows[] = [
                 $testKind->label(),
