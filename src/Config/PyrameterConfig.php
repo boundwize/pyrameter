@@ -11,6 +11,7 @@ use mysqli;
 use PDO;
 
 use function ltrim;
+use function rtrim;
 use function sprintf;
 
 final class PyrameterConfig
@@ -63,7 +64,7 @@ final class PyrameterConfig
 
     public function usesNamespace(string $namespace, TestKind $testKind): self
     {
-        $this->usageRules[] = new UsageRule(ltrim($namespace, '\\'), $testKind);
+        $this->usageRules[] = new UsageRule(rtrim(ltrim($namespace, '\\'), '\\') . '\\', $testKind);
 
         return $this;
     }
