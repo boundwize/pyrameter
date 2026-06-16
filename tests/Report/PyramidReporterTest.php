@@ -13,6 +13,8 @@ use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\TestRecord;
 use PHPUnit\Framework\TestCase;
 
+use function strpos;
+
 final class PyramidReporterTest extends TestCase
 {
     public function testItRendersTheWarningReport(): void
