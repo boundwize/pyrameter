@@ -71,6 +71,28 @@ final class UsageClassificationTest extends TestCase
         self::assertNotContains(PDO::class, $scanResult->consumedClasses);
     }
 
+    /**
+     * @param non-empty-string $className
+     */
+    #[DataProvider('phpRedisGlobalClassCases')]
+    public function testDefaultRulesClassifyPhpRedisGlobalClassesAsIntegration(string $className): void
+    {
+        $config     = PyrameterConfig::defaults();
+        $classifier = new UsageClassifier($config->usageRules());
+
+        self::assertSame(TestKind::Integration, $classifier->classify([$className]));
+    }
+
+    /**
+     * @return iterable<string, array{non-empty-string}>
+     */
+    public static function phpRedisGlobalClassCases(): iterable
+    {
+        yield 'Redis client' => ['Redis'];
+        yield 'Redis cluster client' => ['RedisCluster'];
+        yield 'Redis sentinel client' => ['RedisSentinel'];
+    }
+
     public function testUninspectableTestMeansUnknown(): void
     {
         $scanResult = (new TestUsageScanner())->scan('Boundwize\Pyrameter\Tests\Fixtures\MissingFixture');
