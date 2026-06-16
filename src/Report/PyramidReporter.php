@@ -142,19 +142,19 @@ final readonly class PyramidReporter
         $widths = array_values($widths);
 
         $lines   = [];
-        $lines[] = $this->renderTableBorder($widths, '┌', '┬', '┐');
+        $lines[] = $this->renderTableBorder($widths, '+', '+', '+');
         $lines[] = $this->renderTableRow($headers, $widths, array_fill(0, count($headers), 'center'));
-        $lines[] = $this->renderTableBorder($widths, '╞', '╪', '╡', '═');
+        $lines[] = $this->renderTableBorder($widths, '+', '+', '+', '=');
 
         foreach ($rows as $index => $row) {
             $lines[] = $this->renderTableRow($row, $widths, $alignments);
 
             if ($index < count($rows) - 1) {
-                $lines[] = $this->renderTableBorder($widths, '├', '┼', '┤');
+                $lines[] = $this->renderTableBorder($widths, '+', '+', '+');
             }
         }
 
-        $lines[] = $this->renderTableBorder($widths, '└', '┴', '┘');
+        $lines[] = $this->renderTableBorder($widths, '+', '+', '+');
 
         return $lines;
     }
@@ -167,7 +167,7 @@ final readonly class PyramidReporter
         string $left,
         string $join,
         string $right,
-        string $fill = '─'
+        string $fill = '-'
     ): string {
         $segments = [];
 
@@ -185,12 +185,12 @@ final readonly class PyramidReporter
      */
     private function renderTableRow(array $cells, array $widths, array $alignments): string
     {
-        $line = '│';
+        $line = '|';
 
         foreach ($cells as $index => $cell) {
             $line .= ' '
                 . $this->padForColumn($cell, $widths[$index], $alignments[$index] ?? 'left')
-                . ' │';
+                . ' |';
         }
 
         return $line;
