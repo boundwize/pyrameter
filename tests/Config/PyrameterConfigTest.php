@@ -48,6 +48,6 @@ final class PyrameterConfigTest extends TestCase
         $pyrameterConfig = PyrameterConfig::create()->usesNamespace('App\Tests\Browser', TestKind::E2E);
         $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
 
-        $this->assertSame(TestKind::E2E, $usageClassifier->classify(['App\Tests\Browser\CheckoutTest']));
+        $this->assertSame(TestKind::E2E, $usageClassifier->classify(['App\Tests\Browser\Checkout']));
     }
 }
