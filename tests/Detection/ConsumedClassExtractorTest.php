@@ -83,6 +83,17 @@ PHP);
         ], $classes);
     }
 
+    public function testItIgnoresNonClassImportsWithinAMixedGroupUse(): void
+    {
+        $classes = $this->extract(<<<'PHP'
+<?php
+
+use Vendor\MixedGroup\{GroupedClass, function helperInGroup};
+PHP);
+
+        $this->assertSame(['Vendor\MixedGroup\GroupedClass'], $classes);
+    }
+
     public function testItHandlesClassConstantsThatAreNotMockTargets(): void
     {
         $classes = $this->extract(<<<'PHP'
