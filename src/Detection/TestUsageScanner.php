@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boundwize\Pyrameter\Detection;
 
 use Closure;
+use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use ReflectionClass;
 use Throwable;
@@ -21,6 +22,8 @@ final readonly class TestUsageScanner
 
     private ScanResultCache $scanResultCache;
 
+    private Parser $parser;
+
     /**
      * @param null|Closure(string): (string|false) $readFile
      */
@@ -31,6 +34,7 @@ final readonly class TestUsageScanner
     ) {
         $this->consumedClassExtractor = $consumedClassExtractor ?? new ConsumedClassExtractor();
         $this->scanResultCache        = $scanResultCache ?? new ScanResultCache();
+        $this->parser                 = (new ParserFactory())->createForNewestSupportedVersion();
     }
 
     public function scan(string $testClassName): ScanResult
@@ -64,8 +68,7 @@ final readonly class TestUsageScanner
         }
 
         try {
-            $parser = (new ParserFactory())->createForHostVersion();
-            $nodes  = $parser->parse($source);
+            $nodes = $this->parser->parse($source);
         } catch (Throwable $throwable) {
             return ScanResult::uninspectable(
                 sprintf(
