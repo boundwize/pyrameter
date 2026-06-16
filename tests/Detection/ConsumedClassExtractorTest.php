@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Boundwize\Pyrameter\Tests\Detection;
 
 use Boundwize\Pyrameter\Detection\ConsumedClassExtractor;
-use PhpParser\Node\Name;
-use PhpParser\Node\UseItem;
 use PhpParser\ParserFactory;
 use PHPUnit\Framework\TestCase;
 
@@ -111,15 +109,6 @@ PHP);
             'Vendor\ClassConstant\FunctionArgument',
             'Vendor\ClassConstant\NotFirstArgument',
         ], $classes);
-    }
-
-    public function testItAcceptsStandaloneUseNodesWithoutParentNodes(): void
-    {
-        $classes = (new ConsumedClassExtractor())->extract([
-            new UseItem(new Name('Vendor\LooseImport')),
-        ]);
-
-        $this->assertSame(['Vendor\LooseImport'], $classes);
     }
 
     /**

@@ -26,7 +26,6 @@ use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\Node\UnionType;
-use PhpParser\Node\UseItem;
 use PhpParser\NodeVisitorAbstract;
 
 use function in_array;
@@ -49,8 +48,20 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
-        if ($node instanceof UseItem && $this->isClassUse($node)) {
-            $this->add($this->useName($node), 'import');
+        if ($node instanceof Use_ && $node->type === Use_::TYPE_NORMAL) {
+            foreach ($node->uses as $useItem) {
+                $this->add($useItem->name->toString(), 'import');
+            }
+        }
+
+        if ($node instanceof GroupUse && ($node->type === Use_::TYPE_UNKNOWN || $node->type === Use_::TYPE_NORMAL)) {
+            foreach ($node->uses as $useItem) {
+                if ($useItem->type !== Use_::TYPE_UNKNOWN && $useItem->type !== Use_::TYPE_NORMAL) {
+                    continue;
+                }
+
+                $this->add($node->prefix->toString() . '\\' . $useItem->name->toString(), 'import');
+            }
         }
 
         if ($node instanceof Class_) {
@@ -78,7 +89,12 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof ClassConstFetch && $node->class instanceof Name && $this->isClassConstant($node)) {
-            $this->addName($node->class, $this->isMockTarget($node) ? 'mock' : 'normal');
+            $referenceKind = $node->getAttribute('isMockTarget', false) === true ? 'mock' : 'normal';
+            $this->addName($node->class, $referenceKind);
+        }
+
+        if ($node instanceof MethodCall || $node instanceof StaticCall) {
+            $this->markMockTarget($node);
         }
 
         if ($node instanceof StaticCall && $node->class instanceof Name) {
@@ -197,58 +213,16 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
             && strtolower($classConstFetch->name->toString()) === 'class';
     }
 
-    private function isMockTarget(ClassConstFetch $classConstFetch): bool
+    private function markMockTarget(MethodCall|StaticCall $call): void
     {
-        $parent = $classConstFetch->getAttribute('parent');
-
-        if (! $parent instanceof Arg || $parent->value !== $classConstFetch) {
-            return false;
+        if (! $call->name instanceof Identifier || ! in_array($call->name->toString(), $this->mockMethods, true)) {
+            return;
         }
 
-        $call = $parent->getAttribute('parent');
+        $firstArg = $call->args[0] ?? null;
 
-        if (! $call instanceof MethodCall && ! $call instanceof StaticCall) {
-            return false;
+        if ($firstArg instanceof Arg && $firstArg->value instanceof ClassConstFetch) {
+            $firstArg->value->setAttribute('isMockTarget', true);
         }
-
-        if (! $call->name instanceof Identifier) {
-            return false;
-        }
-
-        if (($call->args[0] ?? null) !== $parent) {
-            return false;
-        }
-
-        return in_array($call->name->toString(), $this->mockMethods, true);
-    }
-
-    private function isClassUse(UseItem $useItem): bool
-    {
-        $parent = $useItem->getAttribute('parent');
-
-        if ($parent instanceof Use_) {
-            return $parent->type === Use_::TYPE_NORMAL;
-        }
-
-        if ($parent instanceof GroupUse) {
-            if ($parent->type !== Use_::TYPE_UNKNOWN && $parent->type !== Use_::TYPE_NORMAL) {
-                return false;
-            }
-
-            return $useItem->type === Use_::TYPE_UNKNOWN || $useItem->type === Use_::TYPE_NORMAL;
-        }
-
-        return true;
-    }
-
-    private function useName(UseItem $useItem): string
-    {
-        $parent = $useItem->getAttribute('parent');
-
-        if ($parent instanceof GroupUse) {
-            return $parent->prefix->toString() . '\\' . $useItem->name->toString();
-        }
-
-        return $useItem->name->toString();
     }
 }
