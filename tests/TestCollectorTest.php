@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class TestCollectorTest extends TestCase
 {
-    public function testItCountsDataProviderExecutionsOncePerTestMethod(): void
+    public function testItDeduplicatesIdenticalRecords(): void
     {
         $testCollector = new TestCollector();
 
@@ -19,5 +19,25 @@ final class TestCollectorTest extends TestCase
         $testCollector->add(new TestRecord('PriceTest', 'testItCalculatesPrice', [], TestKind::Unit));
 
         $this->assertCount(1, $testCollector->all());
+    }
+
+    public function testItKeepsSeparateDataProviderExecutions(): void
+    {
+        $testCollector = new TestCollector();
+
+        $testCollector->add(new TestRecord(
+            'PriceTest',
+            'testItCalculatesPrice with data set "small"',
+            [],
+            TestKind::Unit,
+        ));
+        $testCollector->add(new TestRecord(
+            'PriceTest',
+            'testItCalculatesPrice with data set "large"',
+            [],
+            TestKind::Unit,
+        ));
+
+        $this->assertCount(2, $testCollector->all());
     }
 }

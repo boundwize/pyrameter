@@ -16,8 +16,6 @@ use function explode;
 use function is_string;
 use function method_exists;
 use function str_contains;
-use function strpos;
-use function substr;
 
 final readonly class CollectTestResultSubscriber implements FinishedSubscriber
 {
@@ -46,7 +44,7 @@ final readonly class CollectTestResultSubscriber implements FinishedSubscriber
 
         $this->testCollector->add(new TestRecord(
             testClassName: $testClassName,
-            testMethodName: $this->normalizeMethodName($testMethodName),
+            testMethodName: $testMethodName,
             consumedClasses: $scanResult->consumedClasses,
             kind: $kind,
         ));
@@ -71,31 +69,18 @@ final readonly class CollectTestResultSubscriber implements FinishedSubscriber
 
     private function extractMethodName(object $test): ?string
     {
+        $id = method_exists($test, 'id') ? $test->id() : null;
+
+        if (is_string($id) && str_contains($id, '::')) {
+            return explode('::', $id, 2)[1];
+        }
+
         if (method_exists($test, 'methodName')) {
             $methodName = $test->methodName();
 
             return is_string($methodName) ? $methodName : null;
         }
 
-        $id = method_exists($test, 'id') ? $test->id() : null;
-
-        if (! is_string($id) || ! str_contains($id, '::')) {
-            return null;
-        }
-
-        return explode('::', $id, 2)[1];
-    }
-
-    private function normalizeMethodName(string $testMethodName): string
-    {
-        foreach ([' with data set ', '#'] as $marker) {
-            $position = strpos($testMethodName, $marker);
-
-            if ($position !== false) {
-                return substr($testMethodName, 0, $position);
-            }
-        }
-
-        return $testMethodName;
+        return null;
     }
 }
