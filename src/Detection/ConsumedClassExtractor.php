@@ -7,7 +7,6 @@ namespace Boundwize\Pyrameter\Detection;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
-use PhpParser\NodeVisitor\ParentConnectingVisitor;
 
 final class ConsumedClassExtractor
 {
@@ -20,7 +19,6 @@ final class ConsumedClassExtractor
         $nodeTraverser        = new NodeTraverser();
         $consumedClassVisitor = new ConsumedClassVisitor();
 
-        $nodeTraverser->addVisitor(new ParentConnectingVisitor());
         $nodeTraverser->addVisitor(new NameResolver());
         $nodeTraverser->addVisitor($consumedClassVisitor);
         $nodeTraverser->traverse($nodes);
