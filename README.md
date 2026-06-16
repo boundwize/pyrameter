@@ -18,10 +18,6 @@
 ![macOS](https://img.shields.io/badge/macOS-supported-C084FC?logo=apple&logoColor=white&labelColor=555555)
 ![Linux](https://img.shields.io/badge/Linux-supported-FCC624?logo=linux&logoColor=black&labelColor=555555)
 
-Pyrameter is a PHPUnit extension that shows what your test suite is becoming. It classifies each PHPUnit test execution by the classes and namespaces the test file consumes, then prints a shape report after PHPUnit runs.
-
-Use it to spot a suite that is getting heavier, agree on what "healthy" means for your project, and optionally fail CI when the pyramid drifts too far.
-
 ```bash
 vendor/bin/phpunit
 ........................
@@ -53,6 +49,10 @@ Total: 60 tests
 
 Your suite is getting heavier.
 ```
+
+Pyrameter is a PHPUnit extension that shows what your test suite is becoming. It classifies each PHPUnit test execution by the classes and namespaces the test file consumes, then prints a shape report after PHPUnit runs.
+
+Use it to spot a suite that is getting heavier, agree on what "healthy" means for your project, and optionally fail CI when the pyramid drifts too far.
 
 ## How it works
 
