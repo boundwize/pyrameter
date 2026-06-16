@@ -9,6 +9,7 @@ use Boundwize\Pyrameter\Target\TargetEvaluation;
 use Boundwize\Pyrameter\TestKind;
 
 use function array_fill;
+use function array_values;
 use function count;
 use function implode;
 use function intdiv;
@@ -138,6 +139,8 @@ final readonly class PyramidReporter
                 $widths[$index] = max($widths[$index], $this->visibleLength($cell));
             }
         }
+
+        $widths = array_values($widths);
 
         $lines   = [];
         $lines[] = $this->renderTableBorder($widths, '┌', '┬', '┐');
