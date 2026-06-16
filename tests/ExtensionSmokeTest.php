@@ -21,11 +21,11 @@ final class ExtensionSmokeTest extends TestCase
         $configuration       = __DIR__ . '/Fixtures/SmokeProject/phpunit.xml';
         [$exitCode, $output] = $this->runPhpUnit($configuration);
 
-        self::assertSame(0, $exitCode, $output);
-        self::assertStringContainsString('OK (2 tests, 2 assertions)', $output);
-        self::assertStringContainsString('Pyrameter', $output);
-        self::assertStringContainsString('Shape:', $output);
-        self::assertStringContainsString('Total: 2 tests', $output);
+        $this->assertSame(0, $exitCode, $output);
+        $this->assertStringContainsString('OK (2 tests, 2 assertions)', $output);
+        $this->assertStringContainsString('Pyrameter', $output);
+        $this->assertStringContainsString('Shape:', $output);
+        $this->assertStringContainsString('Total: 2 tests', $output);
     }
 
     public function testFailOnViolationChangesPhpunitExitCodeWithoutSubscriberWarning(): void
@@ -33,11 +33,11 @@ final class ExtensionSmokeTest extends TestCase
         $configuration       = __DIR__ . '/Fixtures/SmokeProject/phpunit-fail.xml';
         [$exitCode, $output] = $this->runPhpUnit($configuration);
 
-        self::assertSame(1, $exitCode, $output);
-        self::assertStringContainsString('Pyrameter', $output);
-        self::assertStringContainsString('Result: Violated', $output);
-        self::assertStringContainsString('Pyrameter target shape violated.', $output);
-        self::assertStringNotContainsString('Exception in third-party event subscriber', $output);
+        $this->assertSame(1, $exitCode, $output);
+        $this->assertStringContainsString('Pyrameter', $output);
+        $this->assertStringContainsString('Result: Violated', $output);
+        $this->assertStringContainsString('Pyrameter target shape violated.', $output);
+        $this->assertStringNotContainsString('Exception in third-party event subscriber', $output);
     }
 
     /**

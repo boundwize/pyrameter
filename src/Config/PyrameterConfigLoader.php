@@ -15,9 +15,9 @@ use const DIRECTORY_SEPARATOR;
 
 final class PyrameterConfigLoader
 {
-    public static function loadFromParametersOrDefaults(ParameterCollection $parameters): PyrameterConfig
+    public static function loadFromParametersOrDefaults(ParameterCollection $parameterCollection): PyrameterConfig
     {
-        return self::load(self::parameterValue($parameters, 'config'));
+        return self::load(self::parameterValue($parameterCollection, 'config'));
     }
 
     public static function load(?string $path = null): PyrameterConfig
@@ -52,8 +52,8 @@ final class PyrameterConfigLoader
         return $cwd . DIRECTORY_SEPARATOR . 'pyrameter.php';
     }
 
-    private static function parameterValue(ParameterCollection $parameters, string $name): ?string
+    private static function parameterValue(ParameterCollection $parameterCollection, string $name): ?string
     {
-        return $parameters->has($name) ? $parameters->get($name) : null;
+        return $parameterCollection->has($name) ? $parameterCollection->get($name) : null;
     }
 }

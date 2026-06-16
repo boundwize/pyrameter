@@ -17,14 +17,14 @@ final class ConsumedClassExtractor
      */
     public function extract(array $nodes): array
     {
-        $traverser = new NodeTraverser();
-        $collector = new ConsumedClassVisitor();
+        $nodeTraverser        = new NodeTraverser();
+        $consumedClassVisitor = new ConsumedClassVisitor();
 
-        $traverser->addVisitor(new ParentConnectingVisitor());
-        $traverser->addVisitor(new NameResolver());
-        $traverser->addVisitor($collector);
-        $traverser->traverse($nodes);
+        $nodeTraverser->addVisitor(new ParentConnectingVisitor());
+        $nodeTraverser->addVisitor(new NameResolver());
+        $nodeTraverser->addVisitor($consumedClassVisitor);
+        $nodeTraverser->traverse($nodes);
 
-        return $collector->consumedClasses();
+        return $consumedClassVisitor->consumedClasses();
     }
 }

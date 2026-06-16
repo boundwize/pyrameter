@@ -18,9 +18,9 @@ final readonly class TargetEvaluation
     ) {
     }
 
-    public function status(TestKind $kind): TargetStatus
+    public function status(TestKind $testKind): TargetStatus
     {
-        return $this->statuses[$kind->value] ?? TargetStatus::ignored($kind, 0.0);
+        return $this->statuses[$testKind->value] ?? TargetStatus::ignored($testKind, 0.0);
     }
 
     /**

@@ -12,8 +12,8 @@ final class ScanResultCacheTest extends TestCase
 {
     public function testItScansATestClassOnce(): void
     {
-        $cache = new ScanResultCache();
-        $calls = 0;
+        $scanResultCache = new ScanResultCache();
+        $calls           = 0;
 
         $factory = function (string $testClassName) use (&$calls): ScanResult {
             ++$calls;
@@ -21,10 +21,10 @@ final class ScanResultCacheTest extends TestCase
             return ScanResult::inspectable([$testClassName]);
         };
 
-        $first  = $cache->get(self::class, $factory);
-        $second = $cache->get(self::class, $factory);
+        $scanResult = $scanResultCache->get(self::class, $factory);
+        $second     = $scanResultCache->get(self::class, $factory);
 
-        self::assertSame($first, $second);
-        self::assertSame(1, $calls);
+        $this->assertSame($scanResult, $second);
+        $this->assertSame(1, $calls);
     }
 }

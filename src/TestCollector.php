@@ -11,9 +11,9 @@ final class TestCollector
     /** @var array<string, TestRecord> */
     private array $records = [];
 
-    public function add(TestRecord $record): void
+    public function add(TestRecord $testRecord): void
     {
-        $this->records[$record->id()] = $record;
+        $this->records[$testRecord->id()] = $testRecord;
     }
 
     /**

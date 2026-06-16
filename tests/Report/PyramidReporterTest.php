@@ -17,71 +17,74 @@ final class PyramidReporterTest extends TestCase
 {
     public function testItRendersTheWarningReport(): void
     {
-        $summary = PyramidSummary::fromRecords([
+        $pyramidSummary   = PyramidSummary::fromRecords([
             ...$this->records(TestKind::Unit, 7),
             ...$this->records(TestKind::Functional, 2),
             ...$this->records(TestKind::Integration, 1),
         ]);
-        $targets = (new TargetEvaluator(PyrameterConfig::defaults()->targetPercentages()))->evaluate($summary);
-        $shape   = (new SuiteShapeResolver())->resolve($summary, $targets);
+        $targetEvaluation = (new TargetEvaluator(PyrameterConfig::defaults()->targetPercentages()))
+            ->evaluate($pyramidSummary);
+        $suiteShape       = (new SuiteShapeResolver())->resolve($pyramidSummary, $targetEvaluation);
 
-        $report = (new PyramidReporter())->render($summary, $targets, $shape);
+        $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
 
-        self::assertStringContainsString('Pyrameter', $report);
-        self::assertStringContainsString('Shape: Integration Mountain', $report);
-        self::assertStringContainsString('Result: Violated ⚠', $report);
-        self::assertStringContainsString('Integration       1    10.0%   <=  8.0%     ✗', $report);
-        self::assertStringContainsString('Total: 10 tests', $report);
-        self::assertStringContainsString('Your suite is getting heavier.', $report);
+        $this->assertStringContainsString('Pyrameter', $report);
+        $this->assertStringContainsString('Shape: Integration Mountain', $report);
+        $this->assertStringContainsString('Result: Violated ⚠', $report);
+        $this->assertStringContainsString('Integration       1    10.0%   <=  8.0%     ✗', $report);
+        $this->assertStringContainsString('Total: 10 tests', $report);
+        $this->assertStringContainsString('Your suite is getting heavier.', $report);
     }
 
     public function testItRendersThePassedReport(): void
     {
-        $summary = PyramidSummary::fromRecords([
+        $pyramidSummary   = PyramidSummary::fromRecords([
             ...$this->records(TestKind::Unit, 72),
             ...$this->records(TestKind::Functional, 18),
             ...$this->records(TestKind::Integration, 8),
             ...$this->records(TestKind::E2E, 2),
         ]);
-        $targets = (new TargetEvaluator(PyrameterConfig::defaults()->targetPercentages()))->evaluate($summary);
-        $shape   = (new SuiteShapeResolver())->resolve($summary, $targets);
+        $targetEvaluation = (new TargetEvaluator(PyrameterConfig::defaults()
+            ->targetPercentages()))
+            ->evaluate($pyramidSummary);
+        $suiteShape       = (new SuiteShapeResolver())->resolve($pyramidSummary, $targetEvaluation);
 
-        $report = (new PyramidReporter())->render($summary, $targets, $shape);
+        $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
 
-        self::assertStringContainsString('Shape: Healthy Pyramid', $report);
-        self::assertStringContainsString('Result: Passed ✓', $report);
-        self::assertStringContainsString('Your test pyramid target passed.', $report);
+        $this->assertStringContainsString('Shape: Healthy Pyramid', $report);
+        $this->assertStringContainsString('Result: Passed ✓', $report);
+        $this->assertStringContainsString('Your test pyramid target passed.', $report);
     }
 
     public function testItRendersUnconstrainedDefaultRangesAsIgnoredTargets(): void
     {
-        $summary = PyramidSummary::fromRecords([
+        $pyramidSummary   = PyramidSummary::fromRecords([
             ...$this->records(TestKind::Unit, 8),
             ...$this->records(TestKind::Integration, 2),
         ]);
-        $config  = PyrameterConfig::create()
+        $pyrameterConfig  = PyrameterConfig::create()
             ->targetShape(
                 unit: ['min' => 40],
             );
-        $targets = (new TargetEvaluator($config->targetPercentages()))->evaluate($summary);
-        $shape   = (new SuiteShapeResolver())->resolve($summary, $targets);
+        $targetEvaluation = (new TargetEvaluator($pyrameterConfig->targetPercentages()))->evaluate($pyramidSummary);
+        $suiteShape       = (new SuiteShapeResolver())->resolve($pyramidSummary, $targetEvaluation);
 
-        $report = (new PyramidReporter())->render($summary, $targets, $shape);
+        $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
 
-        self::assertStringContainsString('Unit              8    80.0%   >= 40.0%     ✓', $report);
-        self::assertStringContainsString('Integration       2    20.0%   No target    -', $report);
-        self::assertStringNotContainsString('0.0%-100.0%', $report);
+        $this->assertStringContainsString('Unit              8    80.0%   >= 40.0%     ✓', $report);
+        $this->assertStringContainsString('Integration       2    20.0%   No target    -', $report);
+        $this->assertStringNotContainsString('0.0%-100.0%', $report);
     }
 
     /**
      * @return list<TestRecord>
      */
-    private function records(TestKind $kind, int $count): array
+    private function records(TestKind $testKind, int $count): array
     {
         $records = [];
 
         for ($i = 1; $i <= $count; ++$i) {
-            $records[] = new TestRecord($kind->value . 'Test', 'test_' . $i, [], $kind);
+            $records[] = new TestRecord($testKind->value . 'Test', 'test_' . $i, [], $testKind);
         }
 
         return $records;

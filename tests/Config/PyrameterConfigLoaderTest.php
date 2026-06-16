@@ -24,10 +24,10 @@ final class PyrameterConfigLoaderTest extends TestCase
 {
     public function testItUsesDefaultConfigurationWhenFileIsMissing(): void
     {
-        $config = PyrameterConfigLoader::load(__DIR__ . '/missing-pyrameter.php');
+        $pyrameterConfig = PyrameterConfigLoader::load(__DIR__ . '/missing-pyrameter.php');
 
-        self::assertNotEmpty($config->usageRules());
-        self::assertSame(['min' => 70.0, 'max' => 100.0], $config->targetPercentages()['unit']);
+        $this->assertNotEmpty($pyrameterConfig->usageRules());
+        $this->assertSame(['min' => 70.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['unit']);
     }
 
     public function testItLoadsAConfigurationFile(): void
@@ -58,8 +58,8 @@ PHP);
             unlink($path);
         }
 
-        self::assertSame(['min' => 60.0, 'max' => 100.0], $config->targetPercentages()['unit']);
-        self::assertCount(1, $config->usageRules());
+        $this->assertSame(['min' => 60.0, 'max' => 100.0], $config->targetPercentages()['unit']);
+        $this->assertCount(1, $config->usageRules());
     }
 
     public function testItLoadsAConfigurationFileFromPhpunitParameters(): void
@@ -90,7 +90,7 @@ PHP);
             unlink($path);
         }
 
-        self::assertSame(['min' => 55.0, 'max' => 100.0], $config->targetPercentages()['unit']);
+        $this->assertSame(['min' => 55.0, 'max' => 100.0], $config->targetPercentages()['unit']);
     }
 
     public function testItLoadsDefaultConfigurationPathFromCurrentWorkingDirectory(): void
@@ -98,7 +98,7 @@ PHP);
         $previousDirectory = getcwd();
         $directory         = sys_get_temp_dir() . '/pyrameter-config-cwd-' . uniqid();
 
-        self::assertIsString($previousDirectory);
+        $this->assertIsString($previousDirectory);
 
         mkdir($directory);
         file_put_contents($directory . '/pyrameter.php', <<<'PHP'
@@ -122,7 +122,7 @@ PHP);
             rmdir($directory);
         }
 
-        self::assertSame(['min' => 45.0, 'max' => 100.0], $config->targetPercentages()['unit']);
+        $this->assertSame(['min' => 45.0, 'max' => 100.0], $config->targetPercentages()['unit']);
     }
 
     public function testItUsesRelativeDefaultPathWhenCurrentWorkingDirectoryIsUnavailable(): void
@@ -130,7 +130,7 @@ PHP);
         $previousDirectory = getcwd();
         $directory         = sys_get_temp_dir() . '/pyrameter-config-missing-cwd-' . uniqid();
 
-        self::assertIsString($previousDirectory);
+        $this->assertIsString($previousDirectory);
 
         mkdir($directory);
         chdir($directory);
@@ -142,7 +142,7 @@ PHP);
             chdir($previousDirectory);
         }
 
-        self::assertNotEmpty($config->usageRules());
+        $this->assertNotEmpty($config->usageRules());
     }
 
     public function testConfigurationFileMustReturnAPyrameterConfig(): void
@@ -168,16 +168,16 @@ PHP);
 
     public function testTargetShapeCanStartWithOnlyUnitMinimum(): void
     {
-        $config = PyrameterConfig::create()
+        $pyrameterConfig = PyrameterConfig::create()
             ->targetShape(
                 unit: ['min' => 40],
             );
 
-        self::assertSame(['min' => 40.0, 'max' => 100.0], $config->targetPercentages()['unit']);
-        self::assertSame(['min' => 0.0, 'max' => 100.0], $config->targetPercentages()['functional']);
-        self::assertSame(['min' => 0.0, 'max' => 100.0], $config->targetPercentages()['integration']);
-        self::assertSame(['min' => 0.0, 'max' => 100.0], $config->targetPercentages()['e2e']);
-        self::assertSame(['min' => 0.0, 'max' => 100.0], $config->targetPercentages()['unknown']);
+        $this->assertSame(['min' => 40.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['unit']);
+        $this->assertSame(['min' => 0.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['functional']);
+        $this->assertSame(['min' => 0.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['integration']);
+        $this->assertSame(['min' => 0.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['e2e']);
+        $this->assertSame(['min' => 0.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['unknown']);
     }
 
     public function testTargetShapeRangesMustBePossible(): void
@@ -210,9 +210,9 @@ PHP);
 
     public function testFailOnViolationIsDisabledByDefaultAndCanBeEnabled(): void
     {
-        $config = PyrameterConfig::create();
+        $pyrameterConfig = PyrameterConfig::create();
 
-        self::assertFalse($config->shouldFailOnViolation());
-        self::assertTrue($config->failOnViolation()->shouldFailOnViolation());
+        $this->assertFalse($pyrameterConfig->shouldFailOnViolation());
+        $this->assertTrue($pyrameterConfig->failOnViolation()->shouldFailOnViolation());
     }
 }

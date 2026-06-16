@@ -13,11 +13,11 @@ final class TestCollectorTest extends TestCase
 {
     public function testItCountsDataProviderExecutionsOncePerTestMethod(): void
     {
-        $collector = new TestCollector();
+        $testCollector = new TestCollector();
 
-        $collector->add(new TestRecord('PriceTest', 'testItCalculatesPrice', [], TestKind::Unit));
-        $collector->add(new TestRecord('PriceTest', 'testItCalculatesPrice', [], TestKind::Unit));
+        $testCollector->add(new TestRecord('PriceTest', 'testItCalculatesPrice', [], TestKind::Unit));
+        $testCollector->add(new TestRecord('PriceTest', 'testItCalculatesPrice', [], TestKind::Unit));
 
-        self::assertCount(1, $collector->all());
+        $this->assertCount(1, $testCollector->all());
     }
 }

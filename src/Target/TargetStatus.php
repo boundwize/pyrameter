@@ -20,7 +20,7 @@ final readonly class TargetStatus
     ) {
     }
 
-    public static function fromTarget(TestKind $kind, float $actual, float $min, float $max): self
+    public static function fromTarget(TestKind $testKind, float $actual, float $min, float $max): self
     {
         $passed = true;
 
@@ -32,12 +32,12 @@ final readonly class TargetStatus
             $passed = false;
         }
 
-        return new self($kind, $actual, $min, $max, $passed, false);
+        return new self($testKind, $actual, $min, $max, $passed, false);
     }
 
-    public static function ignored(TestKind $kind, float $actual): self
+    public static function ignored(TestKind $testKind, float $actual): self
     {
-        return new self($kind, $actual, null, null, true, true);
+        return new self($testKind, $actual, null, null, true, true);
     }
 
     public function label(): string

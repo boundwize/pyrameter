@@ -21,23 +21,23 @@ final class Extension implements PHPUnitExtension
         Facade $facade,
         ParameterCollection $parameters,
     ): void {
-        $pyrameterConfig = PyrameterConfigLoader::loadFromParametersOrDefaults($parameters);
-        $collector       = new TestCollector();
-        $scanner         = new TestUsageScanner();
-        $classifier      = new UsageClassifier(
+        $pyrameterConfig  = PyrameterConfigLoader::loadFromParametersOrDefaults($parameters);
+        $testCollector    = new TestCollector();
+        $testUsageScanner = new TestUsageScanner();
+        $usageClassifier  = new UsageClassifier(
             rules: $pyrameterConfig->usageRules(),
         );
 
         $facade->registerSubscriber(new CollectTestResultSubscriber(
-            collector: $collector,
-            scanner: $scanner,
-            classifier: $classifier,
+            testCollector: $testCollector,
+            testUsageScanner: $testUsageScanner,
+            usageClassifier: $usageClassifier,
         ));
 
         $facade->registerSubscriber(new PrintReportSubscriber(
-            collector: $collector,
+            testCollector: $testCollector,
             targets: $pyrameterConfig->targetPercentages(),
-            reporter: new PyramidReporter(),
+            pyramidReporter: new PyramidReporter(),
             failOnViolation: $pyrameterConfig->shouldFailOnViolation(),
         ));
     }

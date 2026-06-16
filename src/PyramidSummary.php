@@ -45,14 +45,14 @@ final readonly class PyramidSummary
         return new self($total, $counts, $percentages);
     }
 
-    public function count(TestKind $kind): int
+    public function count(TestKind $testKind): int
     {
-        return $this->counts[$kind->value] ?? 0;
+        return $this->counts[$testKind->value] ?? 0;
     }
 
-    public function percentage(TestKind $kind): float
+    public function percentage(TestKind $testKind): float
     {
-        return $this->percentages[$kind->value] ?? 0.0;
+        return $this->percentages[$testKind->value] ?? 0.0;
     }
 
     /**

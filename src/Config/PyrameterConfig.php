@@ -55,16 +55,16 @@ final class PyrameterConfig
     /**
      * @param class-string $className
      */
-    public function usesClass(string $className, TestKind $kind): self
+    public function usesClass(string $className, TestKind $testKind): self
     {
-        $this->usageRules[] = new UsageRule(ltrim($className, '\\'), $kind);
+        $this->usageRules[] = new UsageRule(ltrim($className, '\\'), $testKind);
 
         return $this;
     }
 
-    public function usesNamespace(string $namespace, TestKind $kind): self
+    public function usesNamespace(string $namespace, TestKind $testKind): self
     {
-        $this->usageRules[] = new UsageRule(ltrim($namespace, '\\'), $kind);
+        $this->usageRules[] = new UsageRule(ltrim($namespace, '\\'), $testKind);
 
         return $this;
     }
@@ -128,7 +128,7 @@ final class PyrameterConfig
      * @param array{min?: float|int, max?: float|int} $target
      * @return array{min: float, max: float}
      */
-    private function normalizeTarget(TestKind $kind, array $target): array
+    private function normalizeTarget(TestKind $testKind, array $target): array
     {
         $min = (float) ($target['min'] ?? 0);
         $max = (float) ($target['max'] ?? 100);
@@ -136,21 +136,21 @@ final class PyrameterConfig
         if ($min < 0 || $max < 0) {
             throw new InvalidArgumentException(sprintf(
                 'Pyrameter target shape percentages for %s must be zero or greater.',
-                $kind->label(),
+                $testKind->label(),
             ));
         }
 
         if ($min > 100 || $max > 100) {
             throw new InvalidArgumentException(sprintf(
                 'Pyrameter target shape percentages for %s must be 100 or less.',
-                $kind->label(),
+                $testKind->label(),
             ));
         }
 
         if ($min > $max) {
             throw new InvalidArgumentException(sprintf(
                 'Pyrameter target shape minimum for %s cannot be greater than its maximum.',
-                $kind->label(),
+                $testKind->label(),
             ));
         }
 

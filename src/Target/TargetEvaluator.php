@@ -17,26 +17,26 @@ final readonly class TargetEvaluator
     ) {
     }
 
-    public function evaluate(PyramidSummary $summary): TargetEvaluation
+    public function evaluate(PyramidSummary $pyramidSummary): TargetEvaluation
     {
         $statuses = [];
 
-        foreach (TestKind::ordered() as $kind) {
-            $actual = $summary->percentage($kind);
-            $target = $this->targets[$kind->value] ?? null;
+        foreach (TestKind::ordered() as $testKind) {
+            $actual = $pyramidSummary->percentage($testKind);
+            $target = $this->targets[$testKind->value] ?? null;
 
             if ($target === null) {
-                $statuses[$kind->value] = TargetStatus::ignored($kind, $actual);
+                $statuses[$testKind->value] = TargetStatus::ignored($testKind, $actual);
                 continue;
             }
 
             if ($target['min'] === 0.0 && $target['max'] === 100.0) {
-                $statuses[$kind->value] = TargetStatus::ignored($kind, $actual);
+                $statuses[$testKind->value] = TargetStatus::ignored($testKind, $actual);
                 continue;
             }
 
-            $statuses[$kind->value] = TargetStatus::fromTarget(
-                kind: $kind,
+            $statuses[$testKind->value] = TargetStatus::fromTarget(
+                testKind: $testKind,
                 actual: $actual,
                 min: $target['min'],
                 max: $target['max'],

@@ -23,11 +23,11 @@ final class TestUsageScannerTest extends TestCase
 {
     public function testItReportsUnknownForInternalClassesWithoutSourceFiles(): void
     {
-        $result = (new TestUsageScanner())->scan(stdClass::class);
+        $scanResult = (new TestUsageScanner())->scan(stdClass::class);
 
-        self::assertFalse($result->inspectable);
-        self::assertIsString($result->errorMessage);
-        self::assertStringContainsString('could not be found', $result->errorMessage);
+        $this->assertFalse($scanResult->inspectable);
+        $this->assertIsString($scanResult->errorMessage);
+        $this->assertStringContainsString('could not be found', $scanResult->errorMessage);
     }
 
     public function testItReportsUnknownWhenTheSourceFileCannotBeRead(): void
@@ -35,7 +35,7 @@ final class TestUsageScannerTest extends TestCase
         $className = $this->createTemporaryClass();
         $fileName  = (new ReflectionClass($className))->getFileName();
 
-        self::assertIsString($fileName);
+        $this->assertIsString($fileName);
 
         try {
             $result = (new TestUsageScanner(
@@ -45,9 +45,9 @@ final class TestUsageScannerTest extends TestCase
             unlink($fileName);
         }
 
-        self::assertFalse($result->inspectable);
-        self::assertIsString($result->errorMessage);
-        self::assertStringContainsString('could not be read', $result->errorMessage);
+        $this->assertFalse($result->inspectable);
+        $this->assertIsString($result->errorMessage);
+        $this->assertStringContainsString('could not be read', $result->errorMessage);
     }
 
     public function testItReportsUnknownWhenTheSourceFileCannotBeParsed(): void
@@ -55,7 +55,7 @@ final class TestUsageScannerTest extends TestCase
         $className = $this->createTemporaryClass();
         $fileName  = (new ReflectionClass($className))->getFileName();
 
-        self::assertIsString($fileName);
+        $this->assertIsString($fileName);
 
         file_put_contents($fileName, "<?php\nfinal class Broken {");
 
@@ -65,9 +65,9 @@ final class TestUsageScannerTest extends TestCase
             unlink($fileName);
         }
 
-        self::assertFalse($result->inspectable);
-        self::assertIsString($result->errorMessage);
-        self::assertStringContainsString('could not be parsed:', $result->errorMessage);
+        $this->assertFalse($result->inspectable);
+        $this->assertIsString($result->errorMessage);
+        $this->assertStringContainsString('could not be parsed:', $result->errorMessage);
     }
 
     /**

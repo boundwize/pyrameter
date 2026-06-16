@@ -22,32 +22,32 @@ final readonly class PrintReportSubscriber implements ExecutionFinishedSubscribe
 {
     private TargetEvaluator $targetEvaluator;
 
-    private SuiteShapeResolver $shapeResolver;
+    private SuiteShapeResolver $suiteShapeResolver;
 
     /**
      * @param array<string, array{min: float, max: float}> $targets
      * @param null|Closure(int): void $exit
      */
     public function __construct(
-        private TestCollector $collector,
+        private TestCollector $testCollector,
         array $targets,
-        private PyramidReporter $reporter,
+        private PyramidReporter $pyramidReporter,
         private bool $failOnViolation = false,
         private ?Closure $exit = null,
     ) {
-        $this->targetEvaluator = new TargetEvaluator($targets);
-        $this->shapeResolver   = new SuiteShapeResolver();
+        $this->targetEvaluator    = new TargetEvaluator($targets);
+        $this->suiteShapeResolver = new SuiteShapeResolver();
     }
 
     public function notify(ExecutionFinished $event): void
     {
-        $summary      = PyramidSummary::fromRecords($this->collector->all());
-        $targetResult = $this->targetEvaluator->evaluate($summary);
-        $shape        = $this->shapeResolver->resolve($summary, $targetResult);
+        $pyramidSummary   = PyramidSummary::fromRecords($this->testCollector->all());
+        $targetEvaluation = $this->targetEvaluator->evaluate($pyramidSummary);
+        $suiteShape       = $this->suiteShapeResolver->resolve($pyramidSummary, $targetEvaluation);
 
-        $this->reporter->print($summary, $targetResult, $shape);
+        $this->pyramidReporter->print($pyramidSummary, $targetEvaluation, $suiteShape);
 
-        if ($this->failOnViolation && ! $targetResult->allPassed()) {
+        if ($this->failOnViolation && ! $targetEvaluation->allPassed()) {
             fwrite(STDOUT, PHP_EOL . 'Pyrameter target shape violated.' . PHP_EOL);
 
             $this->exit(1);
@@ -56,7 +56,7 @@ final readonly class PrintReportSubscriber implements ExecutionFinishedSubscribe
 
     private function exit(int $status): void
     {
-        if ($this->exit !== null) {
+        if ($this->exit instanceof Closure) {
             ($this->exit)($status);
 
             return;

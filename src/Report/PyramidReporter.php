@@ -17,40 +17,53 @@ use const STDOUT;
 
 final readonly class PyramidReporter
 {
-    public function print(PyramidSummary $summary, TargetEvaluation $targets, SuiteShape $shape): void
-    {
-        fwrite(STDOUT, PHP_EOL . $this->render($summary, $targets, $shape) . PHP_EOL);
+    public function print(
+        PyramidSummary $pyramidSummary,
+        TargetEvaluation $targetEvaluation,
+        SuiteShape $suiteShape
+    ): void {
+        fwrite(
+            STDOUT,
+            PHP_EOL . $this->render($pyramidSummary, $targetEvaluation, $suiteShape) . PHP_EOL
+        );
     }
 
-    public function render(PyramidSummary $summary, TargetEvaluation $targets, SuiteShape $shape): string
-    {
+    public function render(
+        PyramidSummary $pyramidSummary,
+        TargetEvaluation $targetEvaluation,
+        SuiteShape $suiteShape
+    ): string {
         $lines = [
             'Pyrameter',
             '=========',
             '',
-            sprintf('Shape: %s', $shape->name),
-            sprintf('Result: %s', $targets->allPassed() ? 'Passed ✓' : 'Violated ⚠'),
+            sprintf('Shape: %s', $suiteShape->name),
+            sprintf('Result: %s', $targetEvaluation->allPassed()
+                ? 'Passed ✓' : 'Violated ⚠'),
             '',
             'Kind          Tests   Actual   Target      Status',
         ];
 
-        foreach (TestKind::ordered() as $kind) {
-            $status = $targets->status($kind);
+        foreach (TestKind::ordered() as $testKind) {
+            $status = $targetEvaluation->status($testKind);
 
             $lines[] = sprintf(
                 '%-12s %6d %8s   %-10s   %s',
-                $kind->label(),
-                $summary->count($kind),
-                sprintf('%4.1f%%', $summary->percentage($kind)),
+                $testKind->label(),
+                $pyramidSummary->count($testKind),
+                sprintf(
+                    '%4.1f%%',
+                    $pyramidSummary->percentage($testKind)
+                ),
                 $status->label(),
                 $status->symbol(),
             );
         }
 
         $lines[] = '';
-        $lines[] = sprintf('Total: %d tests', $summary->total);
+        $lines[] = sprintf('Total: %d tests', $pyramidSummary->total);
         $lines[] = '';
-        $lines[] = $shape->verdict;
+        $lines[] = $suiteShape->verdict;
 
         return implode(PHP_EOL, $lines);
     }

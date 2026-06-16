@@ -15,28 +15,22 @@ final class TargetEvaluationTest extends TestCase
 {
     public function testItReturnsStatusesForAllTestKinds(): void
     {
-        $summary = PyramidSummary::fromRecords([
+        $pyramidSummary = PyramidSummary::fromRecords([
             new TestRecord(self::class, 'testUnit', [], TestKind::Unit),
         ]);
 
-        $evaluation = (new TargetEvaluator([
+        $targetEvaluation = (new TargetEvaluator([
             TestKind::Unit->value => ['min' => 100.0, 'max' => 100.0],
-        ]))->evaluate($summary);
+        ]))->evaluate($pyramidSummary);
 
-        self::assertCount(5, $evaluation->statuses());
-        self::assertSame('No target', $evaluation->status(TestKind::Integration)->label());
+        $this->assertCount(5, $targetEvaluation->statuses());
+        $this->assertSame('No target', $targetEvaluation->status(TestKind::Integration)->label());
     }
 
     public function testStatusLabelsIncludeRangesAndUnconstrainedTargets(): void
     {
-        self::assertSame(
-            '10.0%-90.0%',
-            TargetStatus::fromTarget(TestKind::Unit, 50.0, 10.0, 90.0)->label(),
-        );
+        $this->assertSame('10.0%-90.0%', TargetStatus::fromTarget(TestKind::Unit, 50.0, 10.0, 90.0)->label());
 
-        self::assertSame(
-            '-',
-            TargetStatus::fromTarget(TestKind::Unit, 50.0, 0.0, 100.0)->label(),
-        );
+        $this->assertSame('-', TargetStatus::fromTarget(TestKind::Unit, 50.0, 0.0, 100.0)->label());
     }
 }

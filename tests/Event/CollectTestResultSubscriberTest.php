@@ -30,40 +30,40 @@ final class CollectTestResultSubscriberTest extends TestCase
 {
     public function testItCollectsFinishedTestMethods(): void
     {
-        $collector  = new TestCollector();
-        $subscriber = $this->subscriber($collector);
+        $testCollector = new TestCollector();
+        $subscriber    = $this->subscriber($testCollector);
 
         $subscriber->notify($this->finishedTestMethod(
             SimpleUnitFixture::class,
             'testItWorks with data set "one"',
         ));
 
-        $records = $collector->all();
+        $records = $testCollector->all();
 
-        self::assertCount(1, $records);
-        self::assertSame(SimpleUnitFixture::class, $records[0]->testClassName);
-        self::assertSame('testItWorks', $records[0]->testMethodName);
-        self::assertSame(TestKind::Unit, $records[0]->kind);
+        $this->assertCount(1, $records);
+        $this->assertSame(SimpleUnitFixture::class, $records[0]->testClassName);
+        $this->assertSame('testItWorks', $records[0]->testMethodName);
+        $this->assertSame(TestKind::Unit, $records[0]->kind);
     }
 
     public function testItMarksUninspectableTestsAsUnknown(): void
     {
-        $collector  = new TestCollector();
-        $subscriber = $this->subscriber($collector);
+        $testCollector = new TestCollector();
+        $subscriber    = $this->subscriber($testCollector);
 
         $subscriber->notify($this->finishedTestMethod(stdClass::class, 'testUnknown'));
 
-        $records = $collector->all();
+        $records = $testCollector->all();
 
-        self::assertCount(1, $records);
-        self::assertSame('testUnknown', $records[0]->testMethodName);
-        self::assertSame(TestKind::Unknown, $records[0]->kind);
+        $this->assertCount(1, $records);
+        $this->assertSame('testUnknown', $records[0]->testMethodName);
+        $this->assertSame(TestKind::Unknown, $records[0]->kind);
     }
 
     public function testItExtractsTestNamesFromEventIdsWhenNeeded(): void
     {
-        $collector  = new TestCollector();
-        $subscriber = $this->subscriber($collector);
+        $testCollector = new TestCollector();
+        $subscriber    = $this->subscriber($testCollector);
 
         $subscriber->notify(new Finished(
             $this->telemetryInfo(),
@@ -71,31 +71,31 @@ final class CollectTestResultSubscriberTest extends TestCase
             1,
         ));
 
-        $records = $collector->all();
+        $records = $testCollector->all();
 
-        self::assertCount(1, $records);
-        self::assertSame(SimpleUnitFixture::class, $records[0]->testClassName);
-        self::assertSame('testFromId', $records[0]->testMethodName);
+        $this->assertCount(1, $records);
+        $this->assertSame(SimpleUnitFixture::class, $records[0]->testClassName);
+        $this->assertSame('testFromId', $records[0]->testMethodName);
     }
 
     public function testItIgnoresEventsThatDoNotIdentifyTestMethods(): void
     {
-        $collector  = new TestCollector();
-        $subscriber = $this->subscriber($collector);
+        $testCollector = new TestCollector();
+        $subscriber    = $this->subscriber($testCollector);
 
         $subscriber->notify(new Finished($this->telemetryInfo(), new Phpt(__FILE__), 0));
 
-        self::assertSame([], $collector->all());
+        $this->assertSame([], $testCollector->all());
     }
 
-    private function subscriber(TestCollector $collector): CollectTestResultSubscriber
+    private function subscriber(TestCollector $testCollector): CollectTestResultSubscriber
     {
-        $config = PyrameterConfig::defaults();
+        $pyrameterConfig = PyrameterConfig::defaults();
 
         return new CollectTestResultSubscriber(
-            collector: $collector,
-            scanner: new TestUsageScanner(),
-            classifier: new UsageClassifier($config->usageRules()),
+            testCollector: $testCollector,
+            testUsageScanner: new TestUsageScanner(),
+            usageClassifier: new UsageClassifier($pyrameterConfig->usageRules()),
         );
     }
 
@@ -122,15 +122,15 @@ final class CollectTestResultSubscriberTest extends TestCase
 
     private function telemetryInfo(): Info
     {
-        $duration = Duration::fromSecondsAndNanoseconds(0, 0);
-        $memory   = MemoryUsage::fromBytes(0);
-        $snapshot = new Snapshot(
+        $duration    = Duration::fromSecondsAndNanoseconds(0, 0);
+        $memoryUsage = MemoryUsage::fromBytes(0);
+        $snapshot    = new Snapshot(
             HRTime::fromSecondsAndNanoseconds(0, 0),
-            $memory,
-            $memory,
+            $memoryUsage,
+            $memoryUsage,
             new GarbageCollectorStatus(0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, false, false, false, 0),
         );
 
-        return new Info($snapshot, $duration, $memory, $duration, $memory);
+        return new Info($snapshot, $duration, $memoryUsage, $duration, $memoryUsage);
     }
 }

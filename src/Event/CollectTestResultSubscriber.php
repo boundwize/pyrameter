@@ -22,9 +22,9 @@ use function substr;
 final readonly class CollectTestResultSubscriber implements FinishedSubscriber
 {
     public function __construct(
-        private TestCollector $collector,
-        private TestUsageScanner $scanner,
-        private UsageClassifier $classifier,
+        private TestCollector $testCollector,
+        private TestUsageScanner $testUsageScanner,
+        private UsageClassifier $usageClassifier,
     ) {
     }
 
@@ -38,13 +38,13 @@ final readonly class CollectTestResultSubscriber implements FinishedSubscriber
             return;
         }
 
-        $scanResult = $this->scanner->scan($testClassName);
+        $scanResult = $this->testUsageScanner->scan($testClassName);
 
         $kind = $scanResult->inspectable
-            ? $this->classifier->classify($scanResult->consumedClasses)
+            ? $this->usageClassifier->classify($scanResult->consumedClasses)
             : TestKind::Unknown;
 
-        $this->collector->add(new TestRecord(
+        $this->testCollector->add(new TestRecord(
             testClassName: $testClassName,
             testMethodName: $this->normalizeMethodName($testMethodName),
             consumedClasses: $scanResult->consumedClasses,
