@@ -105,7 +105,7 @@ final readonly class PyramidReporter
         foreach (TestKind::ordered() as $testKind) {
             $status = $targetEvaluation->status($testKind);
             $rows[] = [
-                $this->shortKindLabel($testKind),
+                $testKind->label(),
                 (string) $pyramidSummary->count($testKind),
                 sprintf('%.1f%%', $pyramidSummary->percentage($testKind)),
                 $status->ignored ? $status->label() : $status->label() . ' ' . $status->symbol(),
@@ -117,16 +117,6 @@ final readonly class PyramidReporter
             $rows,
             ['left', 'right', 'right', 'right'],
         );
-    }
-
-    private function shortKindLabel(TestKind $testKind): string
-    {
-        return match ($testKind) {
-            TestKind::Unit => 'Unit',
-            TestKind::Functional => 'Func',
-            TestKind::Integration => 'Int',
-            TestKind::E2E => 'E2E',
-        };
     }
 
     /**
