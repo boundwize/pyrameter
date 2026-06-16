@@ -13,10 +13,7 @@ use Closure;
 use PHPUnit\Event\TestRunner\ExecutionFinished;
 use PHPUnit\Event\TestRunner\ExecutionFinishedSubscriber;
 
-use function fwrite;
-
 use const PHP_EOL;
-use const STDOUT;
 
 final readonly class PrintReportSubscriber implements ExecutionFinishedSubscriber
 {
@@ -48,7 +45,7 @@ final readonly class PrintReportSubscriber implements ExecutionFinishedSubscribe
         $this->pyramidReporter->print($pyramidSummary, $targetEvaluation, $suiteShape);
 
         if ($this->failOnViolation && ! $targetEvaluation->allPassed()) {
-            fwrite(STDOUT, PHP_EOL . 'Pyrameter target shape violated.' . PHP_EOL);
+            echo PHP_EOL . 'Pyrameter target shape violated.' . PHP_EOL;
 
             $this->exit(1);
         }
