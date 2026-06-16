@@ -100,9 +100,9 @@ final readonly class PyramidReporter
             $prefixWidth = max($prefixWidth, $this->visibleLength($prefix));
         }
 
-        $gap         = 2;
-        $lineWidth   = $prefixWidth + $gap + 1;
-        $leftPad     = intdiv(max(0, $width - $lineWidth), 2);
+        $gap       = 2;
+        $lineWidth = $prefixWidth + $gap + 1;
+        $leftPad   = intdiv(max(0, $width - $lineWidth), 2);
 
         $lines = [];
 
