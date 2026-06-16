@@ -16,12 +16,6 @@ final readonly class SuiteShapeResolver
             return new SuiteShape('Empty Suite', 'No tests were collected.', false);
         }
 
-        $unknownMax = $targetEvaluation->status(TestKind::Unknown)->max;
-
-        if ($unknownMax !== null && $pyramidSummary->percentage(TestKind::Unknown) > $unknownMax) {
-            return new SuiteShape('Unknown Swamp', 'Too many tests could not be inspected.', false);
-        }
-
         $heavy = $pyramidSummary->percentage(TestKind::Integration) + $pyramidSummary->percentage(TestKind::E2E);
 
         if ($heavy > $pyramidSummary->percentage(TestKind::Unit)) {

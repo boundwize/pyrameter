@@ -23,17 +23,6 @@ final class SuiteShapeResolverTest extends TestCase
         $this->assertSame('No tests were collected.', $shape->verdict);
     }
 
-    public function testItDetectsUnknownSwamp(): void
-    {
-        $shape = $this->shape([
-            TestKind::Unit->value    => 9,
-            TestKind::Unknown->value => 1,
-        ]);
-
-        $this->assertSame('Unknown Swamp', $shape->name);
-        $this->assertSame('Too many tests could not be inspected.', $shape->verdict);
-    }
-
     public function testItDetectsE2ETower(): void
     {
         $shape = $this->shape([
@@ -93,7 +82,6 @@ final class SuiteShapeResolverTest extends TestCase
                 functional: ['max' => 10],
                 integration: ['max' => 6],
                 e2e: ['max' => 2],
-                unknown: ['max' => 2],
             );
 
         $shape = $this->shape([

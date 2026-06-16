@@ -23,7 +23,7 @@ final class TargetEvaluationTest extends TestCase
             TestKind::Unit->value => ['min' => 100.0, 'max' => 100.0],
         ]))->evaluate($pyramidSummary);
 
-        $this->assertCount(5, $targetEvaluation->statuses());
+        $this->assertCount(4, $targetEvaluation->statuses());
         $this->assertSame('No target', $targetEvaluation->status(TestKind::Integration)->label());
     }
 

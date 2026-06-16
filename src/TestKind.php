@@ -10,12 +10,10 @@ enum TestKind: string
     case Functional  = 'functional';
     case Integration = 'integration';
     case E2E         = 'e2e';
-    case Unknown     = 'unknown';
 
     public function weight(): int
     {
         return match ($this) {
-            self::Unknown => 0,
             self::Unit => 1,
             self::Functional => 2,
             self::Integration => 3,
@@ -30,7 +28,6 @@ enum TestKind: string
             self::Functional => 'Functional',
             self::Integration => 'Integration',
             self::E2E => 'E2E',
-            self::Unknown => 'Unknown',
         };
     }
 
@@ -44,7 +41,6 @@ enum TestKind: string
             self::Functional,
             self::Integration,
             self::E2E,
-            self::Unknown,
         ];
     }
 }

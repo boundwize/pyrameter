@@ -48,7 +48,6 @@ final class PyrameterConfig
                 functional: ['max' => 18],
                 integration: ['max' => 8],
                 e2e: ['max' => 2],
-                unknown: ['max' => 2],
             );
     }
 
@@ -74,21 +73,18 @@ final class PyrameterConfig
      * @param array{min?: float|int, max?: float|int} $functional
      * @param array{min?: float|int, max?: float|int} $integration
      * @param array{min?: float|int, max?: float|int} $e2e
-     * @param array{min?: float|int, max?: float|int} $unknown
      */
     public function targetShape(
         array $unit = [],
         array $functional = [],
         array $integration = [],
         array $e2e = [],
-        array $unknown = [],
     ): self {
         $this->targets = [
             TestKind::Unit->value        => $this->normalizeTarget(TestKind::Unit, $unit),
             TestKind::Functional->value  => $this->normalizeTarget(TestKind::Functional, $functional),
             TestKind::Integration->value => $this->normalizeTarget(TestKind::Integration, $integration),
             TestKind::E2E->value         => $this->normalizeTarget(TestKind::E2E, $e2e),
-            TestKind::Unknown->value     => $this->normalizeTarget(TestKind::Unknown, $unknown),
         ];
 
         $this->guardShapeFeasibility($this->targets);

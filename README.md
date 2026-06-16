@@ -31,12 +31,21 @@ Pyrameter
 Shape: Integration Mountain
 Result: Violated ⚠
 
+                  ╭───────╮
+                  │ E2E ✓ │
+            ╭─────┴───────┴─────╮
+            │   Integration ✗   │
+       ╭────┴───────────────────┴────╮
+       │        Functional ✓         │
+╭──────┴─────────────────────────────┴──────╮
+│                  Unit ✗                   │
+╰───────────────────────────────────────────╯
+
 Kind          Tests   Actual   Target      Status
 Unit             39    65.0%   >= 70.0%    ✗
 Functional       10    16.7%   <= 20.0%    ✓
 Integration       9    15.0%   <=  8.0%    ✗
 E2E               1     1.7%   <=  2.0%    ✓
-Unknown           1     1.6%   <=  2.0%    ✓
 
 Total: 60 tests
 
@@ -106,7 +115,6 @@ return PyrameterConfig::defaults()
         functional: ['max' => 15],
         integration: ['max' => 7],
         e2e: ['max' => 2],
-        unknown: ['max' => 1],
     );
 ```
 
@@ -132,7 +140,6 @@ return PyrameterConfig::create()
         functional: ['max' => 18],
         integration: ['max' => 8],
         e2e: ['max' => 2],
-        unknown: ['max' => 2],
     );
 ```
 

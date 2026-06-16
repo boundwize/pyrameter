@@ -12,6 +12,5 @@ return PyrameterConfig::defaults()
         functional: ['max' => 20],
         integration: ['max' => 16],
         e2e: ['max' => 2],
-        unknown: ['max' => 2],
     )
     ->failOnViolation();
