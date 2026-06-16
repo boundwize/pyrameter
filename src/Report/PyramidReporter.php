@@ -154,12 +154,6 @@ final readonly class PyramidReporter
 
     private function visibleLength(string $text): int
     {
-        $length = preg_match_all('/./us', $text);
-
-        if ($length === false) {
-            return strlen($text);
-        }
-
-        return $length;
+        return preg_match_all('/./us', $text) ?: strlen($text);
     }
 }
