@@ -31,9 +31,9 @@ final class PyramidReporterTest extends TestCase
         $this->assertStringContainsString('Pyrameter', $report);
         $this->assertStringContainsString('Shape: Integration Mountain', $report);
         $this->assertStringContainsString('Result: Violated ⚠', $report);
-        $this->assertStringContainsString('╭───────╮', $report);
-        $this->assertStringContainsString('│ Integration ✗ │', $report);
-        $this->assertStringContainsString('   ╰─────────────────────────────╯', $report);
+        $this->assertStringContainsString('+-------+', $report);
+        $this->assertStringContainsString('| Integration ✗ |', $report);
+        $this->assertStringContainsString('       +-----------------------------+', $report);
         $this->assertStringContainsString('|    KIND     | TESTS | ACTUAL |   TARGET   |', $report);
         $this->assertStringContainsString('+=============+=======+========+============+', $report);
         $this->assertStringContainsString('| Integration |     1 |  10.0% | <=  8.0% ✗ |', $report);

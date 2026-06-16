@@ -80,15 +80,15 @@ final readonly class PyramidReporter
                 $width,
             );
             $lines[] = $this->center(
-                '│' . $this->padCentered(
+                '|' . $this->padCentered(
                     $testKind->label() . ' ' . $targetEvaluation->status($testKind)->symbol(),
                     $tierWidths[$index],
-                ) . '│',
+                ) . '|',
                 $width,
             );
         }
 
-        $lines[] = $this->center('╰' . $this->repeat('─', $tierWidths[3]) . '╯', $width);
+        $lines[] = $this->center('+' . $this->repeat('-', $tierWidths[3]) . '+', $width);
 
         return $lines;
     }
@@ -228,7 +228,7 @@ final readonly class PyramidReporter
     private function tierTop(int $innerWidth, ?int $previousInnerWidth): string
     {
         if ($previousInnerWidth === null) {
-            return '╭' . $this->repeat('─', $innerWidth) . '╮';
+            return '+' . $this->repeat('-', $innerWidth) . '+';
         }
 
         $outerWidth         = $innerWidth + 2;
@@ -238,13 +238,13 @@ final readonly class PyramidReporter
         $middleWidth        = $previousOuterWidth - 2;
         $rightWidth         = $outerWidth - $previousStart - $previousOuterWidth - 1;
 
-        return '╭'
-            . $this->repeat('─', $leftWidth)
-            . '┴'
-            . $this->repeat('─', $middleWidth)
-            . '┴'
-            . $this->repeat('─', $rightWidth)
-            . '╮';
+        return '+'
+            . $this->repeat('-', $leftWidth)
+            . '+'
+            . $this->repeat('-', $middleWidth)
+            . '+'
+            . $this->repeat('-', $rightWidth)
+            . '+';
     }
 
     private function repeat(string $text, int $count): string
