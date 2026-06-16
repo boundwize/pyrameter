@@ -42,7 +42,7 @@ final readonly class CollectTestResultSubscriber implements FinishedSubscriber
 
         $kind = $scanResult->inspectable
             ? $this->usageClassifier->classify($scanResult->consumedClasses)
-            : TestKind::Unknown;
+            : TestKind::Unit;
 
         $this->testCollector->add(new TestRecord(
             testClassName: $testClassName,

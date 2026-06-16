@@ -24,7 +24,7 @@ final readonly class ScanResult
         return new self(true, $consumedClasses);
     }
 
-    public static function unknown(string $errorMessage): self
+    public static function uninspectable(string $errorMessage): self
     {
         return new self(false, [], $errorMessage);
     }

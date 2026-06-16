@@ -46,18 +46,18 @@ final class CollectTestResultSubscriberTest extends TestCase
         $this->assertSame(TestKind::Unit, $records[0]->kind);
     }
 
-    public function testItMarksUninspectableTestsAsUnknown(): void
+    public function testItMarksUninspectableTestsAsUnit(): void
     {
         $testCollector = new TestCollector();
         $subscriber    = $this->subscriber($testCollector);
 
-        $subscriber->notify($this->finishedTestMethod(stdClass::class, 'testUnknown'));
+        $subscriber->notify($this->finishedTestMethod(stdClass::class, 'testUninspectable'));
 
         $records = $testCollector->all();
 
         $this->assertCount(1, $records);
-        $this->assertSame('testUnknown', $records[0]->testMethodName);
-        $this->assertSame(TestKind::Unknown, $records[0]->kind);
+        $this->assertSame('testUninspectable', $records[0]->testMethodName);
+        $this->assertSame(TestKind::Unit, $records[0]->kind);
     }
 
     public function testItExtractsTestNamesFromEventIdsWhenNeeded(): void

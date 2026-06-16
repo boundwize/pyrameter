@@ -48,7 +48,6 @@ return PyrameterConfig::create()
         functional: ['max' => 30],
         integration: ['max' => 5],
         e2e: ['max' => 3],
-        unknown: ['max' => 2],
     );
 PHP);
 
@@ -78,7 +77,6 @@ return PyrameterConfig::create()
         functional: ['max' => 35],
         integration: ['max' => 5],
         e2e: ['max' => 3],
-        unknown: ['max' => 2],
     );
 PHP);
 
@@ -177,7 +175,6 @@ PHP);
         $this->assertSame(['min' => 0.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['functional']);
         $this->assertSame(['min' => 0.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['integration']);
         $this->assertSame(['min' => 0.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['e2e']);
-        $this->assertSame(['min' => 0.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['unknown']);
     }
 
     public function testTargetShapeRangesMustBePossible(): void
@@ -190,7 +187,6 @@ PHP);
             functional: ['max' => 20],
             integration: ['max' => 8],
             e2e: ['max' => 2],
-            unknown: ['max' => 2],
         );
     }
 
@@ -204,7 +200,6 @@ PHP);
             functional: ['max' => 20],
             integration: ['max' => 8],
             e2e: ['max' => 2],
-            unknown: ['max' => 2],
         );
     }
 

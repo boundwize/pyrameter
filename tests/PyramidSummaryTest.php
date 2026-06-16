@@ -28,7 +28,6 @@ final class PyramidSummaryTest extends TestCase
         $this->assertEqualsWithDelta(20.0, $pyramidSummary->percentage(TestKind::Functional), PHP_FLOAT_EPSILON);
         $this->assertEqualsWithDelta(10.0, $pyramidSummary->percentage(TestKind::Integration), PHP_FLOAT_EPSILON);
         $this->assertEqualsWithDelta(0.0, $pyramidSummary->percentage(TestKind::E2E), PHP_FLOAT_EPSILON);
-        $this->assertEqualsWithDelta(0.0, $pyramidSummary->percentage(TestKind::Unknown), PHP_FLOAT_EPSILON);
     }
 
     public function testItBalancesRoundedPercentagesToOneHundred(): void

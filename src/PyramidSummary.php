@@ -32,7 +32,6 @@ final readonly class PyramidSummary
             TestKind::Functional->value  => 0,
             TestKind::Integration->value => 0,
             TestKind::E2E->value         => 0,
-            TestKind::Unknown->value     => 0,
         ];
 
         foreach ($records as $record) {
@@ -67,7 +66,6 @@ final readonly class PyramidSummary
                 TestKind::Functional->value  => 0.0,
                 TestKind::Integration->value => 0.0,
                 TestKind::E2E->value         => 0.0,
-                TestKind::Unknown->value     => 0.0,
             ];
         }
 

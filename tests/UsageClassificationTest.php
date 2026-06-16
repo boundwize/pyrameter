@@ -93,7 +93,7 @@ final class UsageClassificationTest extends TestCase
         yield 'Redis sentinel client' => ['RedisSentinel'];
     }
 
-    public function testUninspectableTestMeansUnknown(): void
+    public function testUninspectableTestHasNoConsumedClasses(): void
     {
         $scanResult = (new TestUsageScanner())->scan('Boundwize\Pyrameter\Tests\Fixtures\MissingFixture');
 

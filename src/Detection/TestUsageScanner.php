@@ -44,7 +44,7 @@ final readonly class TestUsageScanner
     private function scanUncached(string $testClassName): ScanResult
     {
         if (! class_exists($testClassName)) {
-            return ScanResult::unknown(sprintf('Test class "%s" could not be reflected.', $testClassName));
+            return ScanResult::uninspectable(sprintf('Test class "%s" could not be reflected.', $testClassName));
         }
 
         $reflectionClass = new ReflectionClass($testClassName);
@@ -52,7 +52,7 @@ final readonly class TestUsageScanner
         $fileName = $reflectionClass->getFileName();
 
         if ($fileName === false || ! is_file($fileName)) {
-            return ScanResult::unknown(sprintf('Source file for "%s" could not be found.', $testClassName));
+            return ScanResult::uninspectable(sprintf('Source file for "%s" could not be found.', $testClassName));
         }
 
         $source = $this->readFile instanceof Closure
@@ -60,14 +60,14 @@ final readonly class TestUsageScanner
             : file_get_contents($fileName);
 
         if ($source === false) {
-            return ScanResult::unknown(sprintf('Source file "%s" could not be read.', $fileName));
+            return ScanResult::uninspectable(sprintf('Source file "%s" could not be read.', $fileName));
         }
 
         try {
             $parser = (new ParserFactory())->createForHostVersion();
             $nodes  = $parser->parse($source);
         } catch (Throwable $throwable) {
-            return ScanResult::unknown(
+            return ScanResult::uninspectable(
                 sprintf(
                     'Source file "%s" could not be parsed: %s',
                     $fileName,
@@ -78,7 +78,7 @@ final readonly class TestUsageScanner
 
         // @codeCoverageIgnoreStart
         if ($nodes === null) {
-            return ScanResult::unknown(sprintf('Source file "%s" could not be parsed.', $fileName));
+            return ScanResult::uninspectable(sprintf('Source file "%s" could not be parsed.', $fileName));
         }
 
         // @codeCoverageIgnoreEnd
