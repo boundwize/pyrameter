@@ -14,6 +14,6 @@ final class IntegrationAndE2EFixture extends PantherTestCase
     {
         $connection = DriverManager::getConnection([]);
 
-        $this->assertSame(stdClass::class, $connection::class);
+        self::assertSame(stdClass::class, $connection::class);
     }
 }

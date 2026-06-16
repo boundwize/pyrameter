@@ -14,6 +14,6 @@ final class FunctionalAndIntegrationFixture extends WebTestCase
     {
         $connection = DriverManager::getConnection([]);
 
-        $this->assertSame(stdClass::class, $connection::class);
+        self::assertSame(stdClass::class, $connection::class);
     }
 }

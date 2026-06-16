@@ -11,6 +11,6 @@ final class ContainerGetHeavyFixture extends TestCase
 {
     public function testItRequestsARealContainerService(): void
     {
-        $this->assertSame(EntityManagerInterface::class, EntityManagerInterface::class);
+        self::assertSame(EntityManagerInterface::class, EntityManagerInterface::class);
     }
 }
