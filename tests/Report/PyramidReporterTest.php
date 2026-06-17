@@ -80,9 +80,9 @@ final class PyramidReporterTest extends TestCase
 
         $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
 
-        $integrationPosition = strpos($report, '▄▄▄▄▄▄▄▄▄▄▄▄▄  Integration');
-        $unitPosition        = strpos($report, '▄▄▄▄▄▄▄▄▄  Unit');
-        $functionalPosition  = strpos($report, '▄▄▄▄▄  Functional');
+        $integrationPosition = strpos($report, '▀▀▀▀▀▀▀▀▀▀▀▀▀  Integration');
+        $unitPosition        = strpos($report, '▀▀▀▀▀▀▀▀▀  Unit');
+        $functionalPosition  = strpos($report, '▀▀▀▀▀  Functional');
         $e2ePosition         = strpos($report, '▼  E2E');
 
         $this->assertStringContainsString('Shape:  Inverted Pyramid', $report);

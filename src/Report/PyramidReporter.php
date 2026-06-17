@@ -95,6 +95,7 @@ final readonly class PyramidReporter
         $isInverted  = $suiteShape->name === 'Inverted Pyramid';
         $levels      = $isInverted ? $this->invertedLevels($targetEvaluation) : $this->sortedLevels($targetEvaluation);
         $blockWidths = [1, 5, 9, 13];
+        $blockFill   = $isInverted ? '▀' : '▄';
         $maxBlock    = $blockWidths[3];
 
         $prefixes = [];
@@ -102,7 +103,7 @@ final readonly class PyramidReporter
         foreach ($levels as $index => $testKind) {
             $blockWidth = $isInverted ? $blockWidths[count($blockWidths) - 1 - $index] : $blockWidths[$index];
             $indent     = intdiv($maxBlock - $blockWidth, 2);
-            $block      = $blockWidth === 1 ? ($isInverted ? '▼' : '▲') : $this->repeat('▄', $blockWidth);
+            $block      = $blockWidth === 1 ? ($isInverted ? '▼' : '▲') : $this->repeat($blockFill, $blockWidth);
             $prefixes[] = $this->repeat(' ', $indent) . $block . '  ' . $testKind->label();
         }
 
