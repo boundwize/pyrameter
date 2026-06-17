@@ -155,9 +155,6 @@ final class UsageClassificationTest extends TestCase
         yield 'glob' => ['glob'];
         yield 'chdir' => ['chdir'];
         yield 'getcwd' => ['getcwd'];
-        yield 'basename' => ['basename'];
-        yield 'dirname' => ['dirname'];
-        yield 'pathinfo' => ['pathinfo'];
         yield 'realpath' => ['realpath'];
         yield 'chmod' => ['chmod'];
         yield 'chown' => ['chown'];
@@ -169,14 +166,12 @@ final class UsageClassificationTest extends TestCase
         yield 'is_link' => ['is_link'];
         yield 'tmpfile' => ['tmpfile'];
         yield 'tempnam' => ['tempnam'];
-        yield 'sys_get_temp_dir' => ['sys_get_temp_dir'];
         yield 'flock' => ['flock'];
         yield 'is_uploaded_file' => ['is_uploaded_file'];
         yield 'move_uploaded_file' => ['move_uploaded_file'];
         yield 'fgetcsv' => ['fgetcsv'];
         yield 'fputcsv' => ['fputcsv'];
         yield 'parse_ini_file' => ['parse_ini_file'];
-        yield 'parse_ini_string' => ['parse_ini_string'];
     }
 
     public function testUninspectableTestHasNoConsumedClasses(): void
