@@ -98,7 +98,12 @@ final readonly class PyramidReporter
     private function sortedPyramidLevels(PyramidSummary $pyramidSummary, TargetEvaluation $targetEvaluation): array
     {
         $levels    = $this->sortedLevels($targetEvaluation);
-        $positions = [];
+        $positions = [
+            TestKind::E2E->value         => 0,
+            TestKind::Integration->value => 1,
+            TestKind::Functional->value  => 2,
+            TestKind::Unit->value        => 3,
+        ];
 
         foreach ($levels as $position => $level) {
             $positions[$level->value] = $position;
