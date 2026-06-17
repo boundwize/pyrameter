@@ -111,11 +111,48 @@ final class UsageClassificationTest extends TestCase
      */
     public static function fileOperationFunctionCases(): iterable
     {
-        yield 'file_get_contents' => ['file_get_contents'];
         yield 'file_put_contents' => ['file_put_contents'];
         yield 'fopen' => ['fopen'];
-        yield 'fread' => ['fread'];
         yield 'fwrite' => ['fwrite'];
+        yield 'fflush' => ['fflush'];
+        yield 'ftruncate' => ['ftruncate'];
+        yield 'touch' => ['touch'];
+        yield 'copy' => ['copy'];
+        yield 'rename' => ['rename'];
+        yield 'unlink' => ['unlink'];
+        yield 'mkdir' => ['mkdir'];
+        yield 'rmdir' => ['rmdir'];
+        yield 'chmod' => ['chmod'];
+        yield 'chown' => ['chown'];
+        yield 'chgrp' => ['chgrp'];
+        yield 'umask' => ['umask'];
+        yield 'link' => ['link'];
+        yield 'symlink' => ['symlink'];
+        yield 'tmpfile' => ['tmpfile'];
+        yield 'tempnam' => ['tempnam'];
+        yield 'move_uploaded_file' => ['move_uploaded_file'];
+        yield 'fputcsv' => ['fputcsv'];
+    }
+
+    /**
+     * @param non-empty-string $functionName
+     */
+    #[DataProvider('readOnlyFileOperationFunctionCases')]
+    public function testDefaultRulesDoNotClassifyReadOnlyFileOperationFunctionsAsIntegration(string $functionName): void
+    {
+        $pyrameterConfig = PyrameterConfig::defaults();
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify([$functionName]));
+    }
+
+    /**
+     * @return iterable<string, array{non-empty-string}>
+     */
+    public static function readOnlyFileOperationFunctionCases(): iterable
+    {
+        yield 'file_get_contents' => ['file_get_contents'];
+        yield 'fread' => ['fread'];
         yield 'fgets' => ['fgets'];
         yield 'fgetc' => ['fgetc'];
         yield 'fclose' => ['fclose'];
@@ -123,8 +160,6 @@ final class UsageClassificationTest extends TestCase
         yield 'rewind' => ['rewind'];
         yield 'fseek' => ['fseek'];
         yield 'ftell' => ['ftell'];
-        yield 'fflush' => ['fflush'];
-        yield 'ftruncate' => ['ftruncate'];
         yield 'file_exists' => ['file_exists'];
         yield 'is_file' => ['is_file'];
         yield 'is_dir' => ['is_dir'];
@@ -141,12 +176,6 @@ final class UsageClassificationTest extends TestCase
         yield 'filetype' => ['filetype'];
         yield 'stat' => ['stat'];
         yield 'lstat' => ['lstat'];
-        yield 'touch' => ['touch'];
-        yield 'copy' => ['copy'];
-        yield 'rename' => ['rename'];
-        yield 'unlink' => ['unlink'];
-        yield 'mkdir' => ['mkdir'];
-        yield 'rmdir' => ['rmdir'];
         yield 'opendir' => ['opendir'];
         yield 'readdir' => ['readdir'];
         yield 'closedir' => ['closedir'];
@@ -156,21 +185,11 @@ final class UsageClassificationTest extends TestCase
         yield 'chdir' => ['chdir'];
         yield 'getcwd' => ['getcwd'];
         yield 'realpath' => ['realpath'];
-        yield 'chmod' => ['chmod'];
-        yield 'chown' => ['chown'];
-        yield 'chgrp' => ['chgrp'];
-        yield 'umask' => ['umask'];
-        yield 'link' => ['link'];
-        yield 'symlink' => ['symlink'];
         yield 'readlink' => ['readlink'];
         yield 'is_link' => ['is_link'];
-        yield 'tmpfile' => ['tmpfile'];
-        yield 'tempnam' => ['tempnam'];
         yield 'flock' => ['flock'];
         yield 'is_uploaded_file' => ['is_uploaded_file'];
-        yield 'move_uploaded_file' => ['move_uploaded_file'];
         yield 'fgetcsv' => ['fgetcsv'];
-        yield 'fputcsv' => ['fputcsv'];
         yield 'parse_ini_file' => ['parse_ini_file'];
     }
 

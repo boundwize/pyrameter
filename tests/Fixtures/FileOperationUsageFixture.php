@@ -6,12 +6,12 @@ namespace Boundwize\Pyrameter\Tests\Fixtures;
 
 use PHPUnit\Framework\TestCase;
 
-use function file_get_contents;
+use function tmpfile;
 
 final class FileOperationUsageFixture extends TestCase
 {
     public function testItConsumesAFileOperationFunction(): void
     {
-        self::assertIsString(file_get_contents(__FILE__));
+        self::assertIsResource(tmpfile());
     }
 }
