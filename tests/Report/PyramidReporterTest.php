@@ -97,6 +97,39 @@ final class PyramidReporterTest extends TestCase
         $this->assertLessThan($unitPosition, $integrationPosition);
     }
 
+    public function testItPreservesDefaultLayerOrderWhenFunctionalAndIntegrationHaveTheSameCount(): void
+    {
+        $pyramidSummary   = PyramidSummary::fromRecords([
+            ...$this->records(TestKind::Unit, 39),
+            ...$this->records(TestKind::Functional, 10),
+            ...$this->records(TestKind::Integration, 10),
+            ...$this->records(TestKind::E2E, 1),
+        ]);
+        $targetEvaluation = (new TargetEvaluator(PyrameterConfig::defaults()->targetPercentages()))
+            ->evaluate($pyramidSummary);
+        $suiteShape       = (new SuiteShapeResolver())->resolve($pyramidSummary, $targetEvaluation);
+
+        $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
+
+        $e2ePosition         = strpos($report, '▲  E2E');
+        $integrationPosition = strpos($report, '▄▄▄▄▄  Integration');
+        $functionalPosition  = strpos($report, '▄▄▄▄▄▄▄▄▄  Functional');
+        $unitPosition        = strpos($report, '▄▄▄▄▄▄▄▄▄▄▄▄▄  Unit');
+
+        $this->assertStringContainsString('Shape:  Integration Mountain', $report);
+        $this->assertStringContainsString('| Unit        |    39 |  65.0% | >= 70.0% ✗ |', $report);
+        $this->assertStringContainsString('| Functional  |    10 |  16.7% | <= 18.0% ✓ |', $report);
+        $this->assertStringContainsString('| Integration |    10 |  16.7% | <=  8.0% ✗ |', $report);
+        $this->assertStringContainsString('| E2E         |     1 |   1.6% | <=  2.0% ✓ |', $report);
+        $this->assertNotFalse($e2ePosition);
+        $this->assertNotFalse($integrationPosition);
+        $this->assertNotFalse($functionalPosition);
+        $this->assertNotFalse($unitPosition);
+        $this->assertLessThan($integrationPosition, $e2ePosition);
+        $this->assertLessThan($functionalPosition, $integrationPosition);
+        $this->assertLessThan($unitPosition, $functionalPosition);
+    }
+
     public function testItRendersInvertedPyramidShapeAsFlippedArt(): void
     {
         $pyramidSummary   = PyramidSummary::fromRecords([
