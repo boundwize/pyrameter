@@ -9,6 +9,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Attribute;
 use PhpParser\Node\ComplexType;
 use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\StaticCall;
@@ -31,10 +32,10 @@ use function in_array;
 use function ltrim;
 use function strtolower;
 
-final class ConsumedClassVisitor extends NodeVisitorAbstract
+final class ConsumedUsageVisitor extends NodeVisitorAbstract
 {
     /** @var array<string, true> */
-    private array $consumedClasses = [];
+    private array $consumedUsages = [];
 
     /** @var list<string> */
     private array $mockMethods = [
@@ -92,6 +93,10 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
             $this->addName($node->class);
         }
 
+        if ($node instanceof FuncCall && $node->name instanceof Name) {
+            $this->addFunctionName($node->name);
+        }
+
         if ($node instanceof Param) {
             $this->addType($node->type);
         }
@@ -114,9 +119,9 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
     /**
      * @return list<string>
      */
-    public function consumedClasses(): array
+    public function consumedUsages(): array
     {
-        return array_keys($this->consumedClasses);
+        return array_keys($this->consumedUsages);
     }
 
     private function addType(null|Identifier|Name|ComplexType $type): void
@@ -147,18 +152,29 @@ final class ConsumedClassVisitor extends NodeVisitorAbstract
         $resolvedName = $name->getAttribute('resolvedName');
         $className    = $resolvedName instanceof Name ? $resolvedName->toString() : $name->toString();
 
-        $this->add($className);
+        $this->addUsage($className);
     }
 
-    private function add(string $className): void
+    private function addFunctionName(Name $name): void
     {
-        $className = ltrim($className, '\\');
+        $functionName = strtolower(ltrim($name->toString(), '\\'));
 
-        if ($className === '' || in_array(strtolower($className), ['self', 'static', 'parent'], true)) {
+        if ($functionName === '') {
             return;
         }
 
-        $this->consumedClasses[$className] = true;
+        $this->consumedUsages[$functionName] = true;
+    }
+
+    private function addUsage(string $usage): void
+    {
+        $usage = ltrim($usage, '\\');
+
+        if ($usage === '' || in_array(strtolower($usage), ['self', 'static', 'parent'], true)) {
+            return;
+        }
+
+        $this->consumedUsages[$usage] = true;
     }
 
     private function isClassConstant(ClassConstFetch $classConstFetch): bool

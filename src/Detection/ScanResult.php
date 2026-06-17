@@ -7,7 +7,7 @@ namespace Boundwize\Pyrameter\Detection;
 final readonly class ScanResult
 {
     /**
-     * @param list<string> $consumedClasses
+     * @param list<string> $consumedClasses Consumed class, namespace, and function usages.
      */
     private function __construct(
         public bool $inspectable,

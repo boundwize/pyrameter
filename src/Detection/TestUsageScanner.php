@@ -18,7 +18,7 @@ use function sprintf;
 
 final readonly class TestUsageScanner
 {
-    private ConsumedClassExtractor $consumedClassExtractor;
+    private ConsumedUsageExtractor $consumedUsageExtractor;
 
     private ScanResultCache $scanResultCache;
 
@@ -28,11 +28,11 @@ final readonly class TestUsageScanner
      * @param null|Closure(string): (string|false) $readFile
      */
     public function __construct(
-        ?ConsumedClassExtractor $consumedClassExtractor = null,
+        ?ConsumedUsageExtractor $consumedUsageExtractor = null,
         ?ScanResultCache $scanResultCache = null,
         private ?Closure $readFile = null,
     ) {
-        $this->consumedClassExtractor = $consumedClassExtractor ?? new ConsumedClassExtractor();
+        $this->consumedUsageExtractor = $consumedUsageExtractor ?? new ConsumedUsageExtractor();
         $this->scanResultCache        = $scanResultCache ?? new ScanResultCache();
         $this->parser                 = (new ParserFactory())->createForNewestSupportedVersion();
     }
@@ -86,6 +86,6 @@ final readonly class TestUsageScanner
 
         // @codeCoverageIgnoreEnd
 
-        return ScanResult::inspectable($this->consumedClassExtractor->extract(array_values($nodes)));
+        return ScanResult::inspectable($this->consumedUsageExtractor->extract(array_values($nodes)));
     }
 }

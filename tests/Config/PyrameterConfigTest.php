@@ -50,4 +50,12 @@ final class PyrameterConfigTest extends TestCase
 
         $this->assertSame(TestKind::E2E, $usageClassifier->classify(['App\Tests\Browser\Checkout']));
     }
+
+    public function testUsesFunctionMatchesFunctionUsageCaseInsensitively(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()->usesFunction('file_get_contents', TestKind::Integration);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['FILE_GET_CONTENTS']));
+    }
 }

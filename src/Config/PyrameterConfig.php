@@ -16,6 +16,76 @@ use function sprintf;
 
 final class PyrameterConfig
 {
+    /** @var list<non-empty-string> */
+    private const FILE_OPERATION_FUNCTIONS = [
+        'file_get_contents',
+        'file_put_contents',
+        'fopen',
+        'fread',
+        'fwrite',
+        'fgets',
+        'fgetc',
+        'fclose',
+        'feof',
+        'rewind',
+        'fseek',
+        'ftell',
+        'fflush',
+        'ftruncate',
+        'file_exists',
+        'is_file',
+        'is_dir',
+        'is_readable',
+        'is_writable',
+        'is_executable',
+        'filesize',
+        'filemtime',
+        'filectime',
+        'fileatime',
+        'fileperms',
+        'fileowner',
+        'filegroup',
+        'filetype',
+        'stat',
+        'lstat',
+        'touch',
+        'copy',
+        'rename',
+        'unlink',
+        'mkdir',
+        'rmdir',
+        'opendir',
+        'readdir',
+        'closedir',
+        'rewinddir',
+        'scandir',
+        'glob',
+        'chdir',
+        'getcwd',
+        'basename',
+        'dirname',
+        'pathinfo',
+        'realpath',
+        'chmod',
+        'chown',
+        'chgrp',
+        'umask',
+        'link',
+        'symlink',
+        'readlink',
+        'is_link',
+        'tmpfile',
+        'tempnam',
+        'sys_get_temp_dir',
+        'flock',
+        'is_uploaded_file',
+        'move_uploaded_file',
+        'fgetcsv',
+        'fputcsv',
+        'parse_ini_file',
+        'parse_ini_string',
+    ];
+
     /** @var list<UsageRule> */
     private array $usageRules = [];
 
@@ -31,7 +101,7 @@ final class PyrameterConfig
 
     public static function defaults(): self
     {
-        return self::create()
+        $pyrameterConfig = self::create()
             ->usesClass(PDO::class, TestKind::Integration)
             ->usesClass(mysqli::class, TestKind::Integration)
             ->usesNamespace('Doctrine\DBAL\\', TestKind::Integration)
@@ -43,13 +113,18 @@ final class PyrameterConfig
             ->usesNamespace('Predis\\', TestKind::Integration)
             ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
             ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
-            ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E)
-            ->targetShape(
-                unit: ['min' => 70],
-                functional: ['max' => 18],
-                integration: ['max' => 8],
-                e2e: ['max' => 2],
-            );
+            ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E);
+
+        foreach (self::FILE_OPERATION_FUNCTIONS as $functionName) {
+            $pyrameterConfig->usesFunction($functionName, TestKind::Integration);
+        }
+
+        return $pyrameterConfig->targetShape(
+            unit: ['min' => 70],
+            functional: ['max' => 18],
+            integration: ['max' => 8],
+            e2e: ['max' => 2],
+        );
     }
 
     /**
@@ -65,6 +140,13 @@ final class PyrameterConfig
     public function usesNamespace(string $namespace, TestKind $testKind): self
     {
         $this->usageRules[] = new UsageRule(rtrim(ltrim($namespace, '\\'), '\\') . '\\', $testKind);
+
+        return $this;
+    }
+
+    public function usesFunction(string $functionName, TestKind $testKind): self
+    {
+        $this->usageRules[] = new UsageRule(ltrim($functionName, '\\'), $testKind, caseInsensitive: true);
 
         return $this;
     }

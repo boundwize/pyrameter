@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Tests\Detection;
 
-use Boundwize\Pyrameter\Detection\ConsumedClassExtractor;
+use Boundwize\Pyrameter\Detection\ConsumedUsageExtractor;
+use Boundwize\Pyrameter\Detection\ConsumedUsageVisitor;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Name;
 use PhpParser\ParserFactory;
 use PHPUnit\Framework\TestCase;
 
 use function array_values;
 use function sort;
 
-final class ConsumedClassExtractorTest extends TestCase
+final class ConsumedUsageExtractorTest extends TestCase
 {
     public function testItExtractsClassesFromLanguageConstructsAndTypes(): void
     {
-        $classes = $this->extract(<<<'PHP'
+        $usages = $this->extract(<<<'PHP'
 <?php
 
 namespace Boundwize\Pyrameter\Tests\Fixtures\Extractor;
@@ -56,7 +59,7 @@ interface ChildInterface extends \Vendor\Contracts\ParentA, \Vendor\Contracts\Pa
 }
 PHP);
 
-        sort($classes);
+        sort($usages);
 
         $this->assertSame([
             'Vendor\Attributes\ExampleAttribute',
@@ -80,12 +83,12 @@ PHP);
             'Vendor\Types\NullableType',
             'Vendor\Types\UnionA',
             'Vendor\Types\UnionB',
-        ], $classes);
+        ], $usages);
     }
 
     public function testItIgnoresNonClassImportsWithinAMixedGroupUse(): void
     {
-        $classes = $this->extract(<<<'PHP'
+        $usages = $this->extract(<<<'PHP'
 <?php
 
 use Vendor\MixedGroup\{GroupedClass, function helperInGroup};
@@ -93,12 +96,12 @@ use Vendor\MixedGroup\{GroupedClass, function helperInGroup};
 new GroupedClass();
 PHP);
 
-        $this->assertSame(['Vendor\MixedGroup\GroupedClass'], $classes);
+        $this->assertSame(['Vendor\MixedGroup\GroupedClass'], $usages);
     }
 
     public function testItIgnoresUnusedImports(): void
     {
-        $classes = $this->extract(<<<'PHP'
+        $usages = $this->extract(<<<'PHP'
 <?php
 
 use Vendor\Unused\Thing;
@@ -107,12 +110,12 @@ use Vendor\Used\Thing as UsedThing;
 new UsedThing();
 PHP);
 
-        $this->assertSame(['Vendor\Used\Thing'], $classes);
+        $this->assertSame(['Vendor\Used\Thing'], $usages);
     }
 
     public function testItHandlesClassConstantsThatAreNotMockTargets(): void
     {
-        $classes = $this->extract(<<<'PHP'
+        $usages = $this->extract(<<<'PHP'
 <?php
 
 final class Example
@@ -128,14 +131,55 @@ final class Example
 }
 PHP);
 
-        sort($classes);
+        sort($usages);
 
         $this->assertSame([
             'Vendor\ClassConstant\Direct',
             'Vendor\ClassConstant\DynamicMethod',
             'Vendor\ClassConstant\FunctionArgument',
             'Vendor\ClassConstant\NotFirstArgument',
-        ], $classes);
+            'function_call',
+        ], $usages);
+    }
+
+    public function testItExtractsFunctionCalls(): void
+    {
+        $usages = $this->extract(<<<'PHP'
+<?php
+
+namespace Boundwize\Pyrameter\Tests\Fixtures\Extractor;
+
+use function Vendor\Filesystem\ReadFixture as read_fixture;
+
+final class FunctionConsumer
+{
+    public function method(): void
+    {
+        File_Get_Contents(__FILE__);
+        \file_put_contents(__FILE__, '');
+        read_fixture(__FILE__);
+
+        $dynamic = 'file_exists';
+        $dynamic(__FILE__);
+    }
+}
+PHP);
+
+        sort($usages);
+
+        $this->assertSame([
+            'file_get_contents',
+            'file_put_contents',
+            'vendor\filesystem\readfixture',
+        ], $usages);
+    }
+
+    public function testItIgnoresEmptyFunctionNames(): void
+    {
+        $consumedUsageVisitor = new ConsumedUsageVisitor();
+        $consumedUsageVisitor->enterNode(new FuncCall(new Name([''])));
+
+        $this->assertSame([], $consumedUsageVisitor->consumedUsages());
     }
 
     /**
@@ -148,6 +192,6 @@ PHP);
 
         $this->assertIsArray($nodes);
 
-        return (new ConsumedClassExtractor())->extract(array_values($nodes));
+        return (new ConsumedUsageExtractor())->extract(array_values($nodes));
     }
 }
