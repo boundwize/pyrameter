@@ -102,7 +102,32 @@ return PyrameterConfig::defaults()
     );
 ```
 
-`PyrameterConfig::defaults()` includes rules for common database, cache, filesystem, Symfony functional test, Panther, and WebDriver usage. Use `PyrameterConfig::create()` instead when you want to start with no rules or targets and define everything yourself.
+`PyrameterConfig::defaults()` includes rules for common database, cache, filesystem, Symfony functional test, Panther, and WebDriver usage.
+
+Use `PyrameterConfig::create()` instead when you want to start with no rules or targets and define everything yourself:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\TestKind;
+
+return PyrameterConfig::create()
+    ->usesClass(PDO::class, TestKind::Integration)
+    ->usesNamespace('App\Controller\\', TestKind::Functional)
+    ->usesNamespace('App\Browser\\', TestKind::E2E)
+    ->usesFunction('file_put_contents', TestKind::Integration)
+    ->targetShape(
+        unit: ['min' => 70],
+        functional: ['max' => 20],
+        integration: ['max' => 8],
+        e2e: ['max' => 2],
+    );
+```
+
+With `create()`, only the rules you add are used for heavier classifications; all other executed tests stay `unit`.
 
 Use `usesClass()` for a specific class, `usesNamespace()` for a namespace prefix, and `usesFunction()` for a function call that should classify a test as a heavier kind. Function matching is case-insensitive and accepts names with or without a leading backslash.
 
