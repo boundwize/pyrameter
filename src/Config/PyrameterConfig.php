@@ -62,9 +62,6 @@ final class PyrameterConfig
         'glob',
         'chdir',
         'getcwd',
-        'basename',
-        'dirname',
-        'pathinfo',
         'realpath',
         'chmod',
         'chown',
@@ -76,14 +73,12 @@ final class PyrameterConfig
         'is_link',
         'tmpfile',
         'tempnam',
-        'sys_get_temp_dir',
         'flock',
         'is_uploaded_file',
         'move_uploaded_file',
         'fgetcsv',
         'fputcsv',
         'parse_ini_file',
-        'parse_ini_string',
     ];
 
     /** @var list<UsageRule> */
