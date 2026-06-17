@@ -18,6 +18,7 @@ use function max;
 use function preg_match_all;
 use function sprintf;
 use function strlen;
+use function usort;
 
 use const PHP_EOL;
 
@@ -47,7 +48,7 @@ final readonly class PyramidReporter
             sprintf('%-7s %s', 'Result:', $targetEvaluation->allPassed()
                 ? 'Passed ✓' : 'Violated ⚠'),
             '',
-            ...$this->renderPyramid($targetEvaluation, $this->visibleLength($statusTable[0])),
+            ...$this->renderPyramid($targetEvaluation, $this->visibleLength($statusTable[0]), $suiteShape),
             '',
             ...$statusTable,
         ];
@@ -89,17 +90,19 @@ final readonly class PyramidReporter
     /**
      * @return list<string>
      */
-    private function renderPyramid(TargetEvaluation $targetEvaluation, int $width): array
+    private function renderPyramid(TargetEvaluation $targetEvaluation, int $width, SuiteShape $suiteShape): array
     {
-        $levels      = $this->sortedLevels($targetEvaluation);
+        $isInverted  = $suiteShape->name === 'Inverted Pyramid';
+        $levels      = $isInverted ? $this->invertedLevels($targetEvaluation) : $this->sortedLevels($targetEvaluation);
         $blockWidths = [1, 5, 9, 13];
         $maxBlock    = $blockWidths[3];
 
         $prefixes = [];
 
         foreach ($levels as $index => $testKind) {
-            $indent     = intdiv($maxBlock - $blockWidths[$index], 2);
-            $block      = $index === 0 ? '▲' : $this->repeat('▄', $blockWidths[$index]);
+            $blockWidth = $isInverted ? $blockWidths[count($blockWidths) - 1 - $index] : $blockWidths[$index];
+            $indent     = intdiv($maxBlock - $blockWidth, 2);
+            $block      = $blockWidth === 1 ? ($isInverted ? '▼' : '▲') : $this->repeat('▄', $blockWidth);
             $prefixes[] = $this->repeat(' ', $indent) . $block . '  ' . $testKind->label();
         }
 
@@ -124,6 +127,30 @@ final readonly class PyramidReporter
         }
 
         return $lines;
+    }
+
+    /**
+     * @return list<TestKind>
+     */
+    private function invertedLevels(TargetEvaluation $targetEvaluation): array
+    {
+        $levels = TestKind::ordered();
+
+        usort(
+            $levels,
+            static function (TestKind $left, TestKind $right) use ($targetEvaluation): int {
+                $actualComparison = $targetEvaluation->status($right)->actual
+                    <=> $targetEvaluation->status($left)->actual;
+
+                if ($actualComparison !== 0) {
+                    return $actualComparison;
+                }
+
+                return $left->weight() <=> $right->weight();
+            },
+        );
+
+        return $levels;
     }
 
     /**
