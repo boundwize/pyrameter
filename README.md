@@ -93,6 +93,7 @@ use Boundwize\Pyrameter\TestKind;
 return PyrameterConfig::defaults()
     ->usesClass(App\Analyser\Analyser::class, TestKind::Integration)
     ->usesNamespace('App\Tests\Browser\\', TestKind::E2E)
+    ->usesFunction('app_writes_to_disk', TestKind::Integration)
     ->targetShape(
         unit: ['min' => 75],
         functional: ['max' => 15],
@@ -101,7 +102,9 @@ return PyrameterConfig::defaults()
     );
 ```
 
-`PyrameterConfig::defaults()` includes rules for common database, cache, Symfony functional test, Panther, and WebDriver usage. Use `PyrameterConfig::create()` instead when you want to start with no rules or targets and define everything yourself.
+`PyrameterConfig::defaults()` includes rules for common database, cache, filesystem, Symfony functional test, Panther, and WebDriver usage. Use `PyrameterConfig::create()` instead when you want to start with no rules or targets and define everything yourself.
+
+Use `usesClass()` for a specific class, `usesNamespace()` for a namespace prefix, and `usesFunction()` for a function call that should classify a test as a heavier kind. Function matching is case-insensitive and accepts names with or without a leading backslash.
 
 To load a config file from another path, pass the `config` parameter to the PHPUnit extension:
 
@@ -115,7 +118,7 @@ To load a config file from another path, pass the `config` parameter to the PHPU
 
 ## Classification
 
-Pyrameter scans the consumed classes and namespaces in each test file:
+Pyrameter scans the consumed classes, namespaces, and function calls in each test file:
 
 | Usage | Kind |
 | --- | --- |

@@ -9,6 +9,7 @@ use Boundwize\Pyrameter\Detection\TestUsageScanner;
 use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\Tests\Fixtures\ContainerGetHeavyFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\DoctrineUsageFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\FileOperationUsageFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\FunctionalAndIntegrationFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\IntegrationAndE2EFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\MockedHeavyFixture;
@@ -50,6 +51,7 @@ final class UsageClassificationTest extends TestCase
         yield 'PDO inside production class is ignored' => [ProductionClassOnlyFixture::class, TestKind::Unit];
         yield 'mysqli usage means integration' => [MysqliRealUsageFixture::class, TestKind::Integration];
         yield 'Doctrine DBAL usage means integration' => [DoctrineUsageFixture::class, TestKind::Integration];
+        yield 'file operation usage means integration' => [FileOperationUsageFixture::class, TestKind::Integration];
         yield 'Symfony WebTestCase means functional' => [SymfonyFunctionalFixture::class, TestKind::Functional];
         yield 'Panther usage means e2e' => [PantherE2EFixture::class, TestKind::E2E];
         yield 'WebDriver usage means e2e' => [WebDriverE2EFixture::class, TestKind::E2E];
@@ -90,6 +92,91 @@ final class UsageClassificationTest extends TestCase
         yield 'Redis client' => ['Redis'];
         yield 'Redis cluster client' => ['RedisCluster'];
         yield 'Redis sentinel client' => ['RedisSentinel'];
+    }
+
+    /**
+     * @param non-empty-string $functionName
+     */
+    #[DataProvider('fileOperationFunctionCases')]
+    public function testDefaultRulesClassifyFileOperationFunctionsAsIntegration(string $functionName): void
+    {
+        $pyrameterConfig = PyrameterConfig::defaults();
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify([$functionName]));
+    }
+
+    /**
+     * @return iterable<string, array{non-empty-string}>
+     */
+    public static function fileOperationFunctionCases(): iterable
+    {
+        yield 'file_get_contents' => ['file_get_contents'];
+        yield 'file_put_contents' => ['file_put_contents'];
+        yield 'fopen' => ['fopen'];
+        yield 'fread' => ['fread'];
+        yield 'fwrite' => ['fwrite'];
+        yield 'fgets' => ['fgets'];
+        yield 'fgetc' => ['fgetc'];
+        yield 'fclose' => ['fclose'];
+        yield 'feof' => ['feof'];
+        yield 'rewind' => ['rewind'];
+        yield 'fseek' => ['fseek'];
+        yield 'ftell' => ['ftell'];
+        yield 'fflush' => ['fflush'];
+        yield 'ftruncate' => ['ftruncate'];
+        yield 'file_exists' => ['file_exists'];
+        yield 'is_file' => ['is_file'];
+        yield 'is_dir' => ['is_dir'];
+        yield 'is_readable' => ['is_readable'];
+        yield 'is_writable' => ['is_writable'];
+        yield 'is_executable' => ['is_executable'];
+        yield 'filesize' => ['filesize'];
+        yield 'filemtime' => ['filemtime'];
+        yield 'filectime' => ['filectime'];
+        yield 'fileatime' => ['fileatime'];
+        yield 'fileperms' => ['fileperms'];
+        yield 'fileowner' => ['fileowner'];
+        yield 'filegroup' => ['filegroup'];
+        yield 'filetype' => ['filetype'];
+        yield 'stat' => ['stat'];
+        yield 'lstat' => ['lstat'];
+        yield 'touch' => ['touch'];
+        yield 'copy' => ['copy'];
+        yield 'rename' => ['rename'];
+        yield 'unlink' => ['unlink'];
+        yield 'mkdir' => ['mkdir'];
+        yield 'rmdir' => ['rmdir'];
+        yield 'opendir' => ['opendir'];
+        yield 'readdir' => ['readdir'];
+        yield 'closedir' => ['closedir'];
+        yield 'rewinddir' => ['rewinddir'];
+        yield 'scandir' => ['scandir'];
+        yield 'glob' => ['glob'];
+        yield 'chdir' => ['chdir'];
+        yield 'getcwd' => ['getcwd'];
+        yield 'basename' => ['basename'];
+        yield 'dirname' => ['dirname'];
+        yield 'pathinfo' => ['pathinfo'];
+        yield 'realpath' => ['realpath'];
+        yield 'chmod' => ['chmod'];
+        yield 'chown' => ['chown'];
+        yield 'chgrp' => ['chgrp'];
+        yield 'umask' => ['umask'];
+        yield 'link' => ['link'];
+        yield 'symlink' => ['symlink'];
+        yield 'readlink' => ['readlink'];
+        yield 'is_link' => ['is_link'];
+        yield 'tmpfile' => ['tmpfile'];
+        yield 'tempnam' => ['tempnam'];
+        yield 'sys_get_temp_dir' => ['sys_get_temp_dir'];
+        yield 'flock' => ['flock'];
+        yield 'is_uploaded_file' => ['is_uploaded_file'];
+        yield 'move_uploaded_file' => ['move_uploaded_file'];
+        yield 'fgetcsv' => ['fgetcsv'];
+        yield 'fputcsv' => ['fputcsv'];
+        yield 'parse_ini_file' => ['parse_ini_file'];
+        yield 'parse_ini_string' => ['parse_ini_string'];
     }
 
     public function testUninspectableTestHasNoConsumedClasses(): void

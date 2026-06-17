@@ -8,7 +8,7 @@ use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 
-final class ConsumedClassExtractor
+final class ConsumedUsageExtractor
 {
     /**
      * @param list<Node> $nodes
@@ -17,12 +17,12 @@ final class ConsumedClassExtractor
     public function extract(array $nodes): array
     {
         $nodeTraverser        = new NodeTraverser();
-        $consumedClassVisitor = new ConsumedClassVisitor();
+        $consumedUsageVisitor = new ConsumedUsageVisitor();
 
         $nodeTraverser->addVisitor(new NameResolver());
-        $nodeTraverser->addVisitor($consumedClassVisitor);
+        $nodeTraverser->addVisitor($consumedUsageVisitor);
         $nodeTraverser->traverse($nodes);
 
-        return $consumedClassVisitor->consumedClasses();
+        return $consumedUsageVisitor->consumedUsages();
     }
 }
