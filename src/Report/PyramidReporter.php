@@ -48,7 +48,12 @@ final readonly class PyramidReporter
             sprintf('%-7s %s', 'Result:', $targetEvaluation->allPassed()
                 ? 'Passed ✓' : 'Violated ⚠'),
             '',
-            ...$this->renderPyramid($targetEvaluation, $this->visibleLength($statusTable[0]), $suiteShape),
+            ...$this->renderPyramid(
+                $pyramidSummary,
+                $targetEvaluation,
+                $this->visibleLength($statusTable[0]),
+                $suiteShape,
+            ),
             '',
             ...$statusTable,
         ];
@@ -88,12 +93,51 @@ final readonly class PyramidReporter
     }
 
     /**
+     * @return list<TestKind>
+     */
+    private function sortedPyramidLevels(PyramidSummary $pyramidSummary, TargetEvaluation $targetEvaluation): array
+    {
+        $levels    = $this->sortedLevels($targetEvaluation);
+        $positions = [
+            TestKind::E2E->value         => 0,
+            TestKind::Integration->value => 1,
+            TestKind::Functional->value  => 2,
+            TestKind::Unit->value        => 3,
+        ];
+
+        foreach ($levels as $position => $level) {
+            $positions[$level->value] = $position;
+        }
+
+        usort(
+            $levels,
+            static function (TestKind $left, TestKind $right) use ($pyramidSummary, $positions): int {
+                $countComparison = $pyramidSummary->count($left) <=> $pyramidSummary->count($right);
+
+                if ($countComparison !== 0) {
+                    return $countComparison;
+                }
+
+                return $positions[$left->value] <=> $positions[$right->value];
+            },
+        );
+
+        return $levels;
+    }
+
+    /**
      * @return list<string>
      */
-    private function renderPyramid(TargetEvaluation $targetEvaluation, int $width, SuiteShape $suiteShape): array
-    {
+    private function renderPyramid(
+        PyramidSummary $pyramidSummary,
+        TargetEvaluation $targetEvaluation,
+        int $width,
+        SuiteShape $suiteShape
+    ): array {
         $isInverted  = $suiteShape->name === 'Inverted Pyramid';
-        $levels      = $isInverted ? $this->invertedLevels($targetEvaluation) : $this->sortedLevels($targetEvaluation);
+        $levels      = $isInverted
+            ? $this->invertedLevels($targetEvaluation)
+            : $this->sortedPyramidLevels($pyramidSummary, $targetEvaluation);
         $blockWidths = [1, 5, 9, 13];
         $blockFill   = $isInverted ? '▀' : '▄';
         $maxBlock    = $blockWidths[3];
