@@ -64,6 +64,39 @@ final class PyramidReporterTest extends TestCase
         $this->assertStringContainsString('Your test pyramid target passed.', $report);
     }
 
+    public function testItRendersFunctionalLayerAboveIntegrationWhenFunctionalHasFewerTests(): void
+    {
+        $pyramidSummary   = PyramidSummary::fromRecords([
+            ...$this->records(TestKind::Unit, 8),
+            ...$this->records(TestKind::Functional, 0),
+            ...$this->records(TestKind::Integration, 2),
+        ]);
+        $pyrameterConfig  = PyrameterConfig::create()
+            ->targetShape(
+                unit: ['min' => 80],
+                functional: ['max' => 18],
+                integration: ['max' => 20],
+                e2e: ['max' => 2],
+            );
+        $targetEvaluation = (new TargetEvaluator($pyrameterConfig->targetPercentages()))->evaluate($pyramidSummary);
+        $suiteShape       = (new SuiteShapeResolver())->resolve($pyramidSummary, $targetEvaluation);
+
+        $report = (new PyramidReporter())->render($pyramidSummary, $targetEvaluation, $suiteShape);
+
+        $e2ePosition         = strpos($report, '▲  E2E');
+        $functionalPosition  = strpos($report, '▄▄▄▄▄  Functional');
+        $integrationPosition = strpos($report, '▄▄▄▄▄▄▄▄▄  Integration');
+        $unitPosition        = strpos($report, '▄▄▄▄▄▄▄▄▄▄▄▄▄  Unit');
+
+        $this->assertNotFalse($e2ePosition);
+        $this->assertNotFalse($functionalPosition);
+        $this->assertNotFalse($integrationPosition);
+        $this->assertNotFalse($unitPosition);
+        $this->assertLessThan($functionalPosition, $e2ePosition);
+        $this->assertLessThan($integrationPosition, $functionalPosition);
+        $this->assertLessThan($unitPosition, $integrationPosition);
+    }
+
     public function testItRendersInvertedPyramidShapeAsFlippedArt(): void
     {
         $pyramidSummary   = PyramidSummary::fromRecords([
