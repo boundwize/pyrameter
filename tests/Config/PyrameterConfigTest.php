@@ -11,6 +11,8 @@ use InvalidArgumentException;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
+use function strtolower;
+
 final class PyrameterConfigTest extends TestCase
 {
     public function testTargetShapePercentagesMustNotBeNegative(): void
@@ -57,7 +59,7 @@ final class PyrameterConfigTest extends TestCase
         $pyrameterConfig = PyrameterConfig::create()->usesClass(PDO::class, TestKind::Integration);
         $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
 
-        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['pdo']));
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['\\' . strtolower(PDO::class)]));
     }
 
     public function testUsesNamespaceMatchesNamespaceUsageCaseInsensitively(): void
@@ -65,7 +67,7 @@ final class PyrameterConfigTest extends TestCase
         $pyrameterConfig = PyrameterConfig::create()->usesNamespace('App\Tests\Browser', TestKind::E2E);
         $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
 
-        $this->assertSame(TestKind::E2E, $usageClassifier->classify(['app\tests\browser\Checkout']));
+        $this->assertSame(TestKind::E2E, $usageClassifier->classify(['\aPp\tEsTs\bRoWsEr\Checkout']));
     }
 
     public function testUsesFunctionMatchesFunctionUsageCaseInsensitively(): void
@@ -73,6 +75,6 @@ final class PyrameterConfigTest extends TestCase
         $pyrameterConfig = PyrameterConfig::create()->usesFunction('file_get_contents', TestKind::Integration);
         $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
 
-        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['FILE_GET_CONTENTS']));
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['\FILE_GET_CONTENTS']));
     }
 }
