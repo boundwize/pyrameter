@@ -33,15 +33,11 @@ final readonly class UsageRule
             return false;
         }
 
-        if ($consumedUsage === $configuredUsage) {
-            return true;
-        }
-
         if (! str_ends_with($configuredUsage, '\\')) {
-            return false;
+            return $consumedUsage === $configuredUsage;
         }
 
-        return str_starts_with($consumedUsage, $configuredUsage);
+        return $this->matchesNamespacePrefix($consumedUsage, $configuredUsage);
     }
 
     public function normalizedUsage(): string
@@ -62,6 +58,13 @@ final readonly class UsageRule
     private function normalize(string $usage): string
     {
         return strtolower(ltrim($usage, '\\'));
+    }
+
+    private function matchesNamespacePrefix(string $consumedUsage, string $namespaceUsage): bool
+    {
+        return str_ends_with($namespaceUsage, '\\')
+            && strlen($consumedUsage) > strlen($namespaceUsage)
+            && str_starts_with($consumedUsage, $namespaceUsage);
     }
 
     /**

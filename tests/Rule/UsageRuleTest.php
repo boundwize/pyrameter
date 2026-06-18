@@ -30,6 +30,8 @@ final class UsageRuleTest extends TestCase
         $usageRule = new UsageRule('App\\', TestKind::Functional);
 
         $this->assertTrue($usageRule->matches('App\Service'));
+        $this->assertFalse($usageRule->matches('App\\'));
+        $this->assertFalse($usageRule->matches('Application\Service'));
         $this->assertFalse($usageRule->matches('Library\Service'));
     }
 

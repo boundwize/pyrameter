@@ -19,6 +19,7 @@ final class UsageClassifierTest extends TestCase
         ]);
 
         $this->assertSame(TestKind::E2E, $usageClassifier->classify(['App\Tests\Browser\CheckoutTest']));
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify(['class:App\Tests\Browser\\']));
         $this->assertSame(TestKind::Unit, $usageClassifier->classify(['App\Tests\Browsering\CheckoutTest']));
         $this->assertSame(TestKind::E2E, $usageClassifier->classify(['app\Tests\Browser\CheckoutTest']));
     }
@@ -41,6 +42,16 @@ final class UsageClassifierTest extends TestCase
 
         $this->assertSame(TestKind::E2E, $usageClassifier->classify(['\\APP\Tests\Browser\CheckoutTest']));
         $this->assertSame(TestKind::Unit, $usageClassifier->classify(['\\APP\Tests\Browsering\CheckoutTest']));
+    }
+
+    public function testNamespaceRulesRespectNamespaceSeparators(): void
+    {
+        $usageClassifier = new UsageClassifier([
+            new UsageRule('App\\', TestKind::Functional),
+        ]);
+
+        $this->assertSame(TestKind::Functional, $usageClassifier->classify(['App\Service']));
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify(['Application\Service']));
     }
 
     public function testExactRulesNormalizeConfiguredAndConsumedUsageButDoNotMatchPrefixes(): void

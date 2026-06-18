@@ -10,6 +10,7 @@ use Boundwize\Pyrameter\Rule\UsageType;
 use function ltrim;
 use function sprintf;
 use function str_contains;
+use function str_ends_with;
 use function str_starts_with;
 use function strlen;
 use function strtolower;
@@ -67,7 +68,7 @@ final readonly class UsageClassifier
             }
 
             foreach ($this->namespaceRules as $namespaceRule) {
-                if (! str_starts_with($normalizedConsumedUsage, $namespaceRule['usage'])) {
+                if (! $this->matchesNamespaceRule($normalizedConsumedUsage, $namespaceRule['usage'])) {
                     continue;
                 }
 
@@ -95,6 +96,13 @@ final readonly class UsageClassifier
     private function heaviest(TestKind $left, TestKind $right): TestKind
     {
         return $right->weight() > $left->weight() ? $right : $left;
+    }
+
+    private function matchesNamespaceRule(string $consumedUsage, string $namespaceUsage): bool
+    {
+        return str_ends_with($namespaceUsage, '\\')
+            && strlen($consumedUsage) > strlen($namespaceUsage)
+            && str_starts_with($consumedUsage, $namespaceUsage);
     }
 
     private function normalizeConsumedUsage(string $consumedUsage): string
