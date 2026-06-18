@@ -9,6 +9,7 @@ use Boundwize\Pyrameter\Detection\ConsumedUsageExtractor;
 use Boundwize\Pyrameter\Detection\TestUsageScanner;
 use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\Tests\Fixtures\CodeIgniterFunctionalFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\CodeIgniterIntegrationFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\ContainerGetHeavyFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\DoctrineUsageFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\FileOperationUsageFixture;
@@ -61,6 +62,10 @@ final class UsageClassificationTest extends TestCase
         yield 'CodeIgniter ControllerTestTrait means functional' => [
             CodeIgniterFunctionalFixture::class,
             TestKind::Functional,
+        ];
+        yield 'CodeIgniter DatabaseTestTrait means integration' => [
+            CodeIgniterIntegrationFixture::class,
+            TestKind::Integration,
         ];
         yield 'Panther usage means e2e' => [PantherE2EFixture::class, TestKind::E2E];
         yield 'WebDriver usage means e2e' => [WebDriverE2EFixture::class, TestKind::E2E];

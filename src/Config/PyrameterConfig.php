@@ -8,6 +8,7 @@ use Boundwize\Pyrameter\Rule\UsageRule;
 use Boundwize\Pyrameter\Rule\UsageType;
 use Boundwize\Pyrameter\TestKind;
 use CodeIgniter\Test\ControllerTestTrait;
+use CodeIgniter\Test\DatabaseTestTrait;
 use InvalidArgumentException;
 use mysqli;
 use PDO;
@@ -108,6 +109,7 @@ final class PyrameterConfig
             ->usesClass('RedisCluster', TestKind::Integration)
             ->usesClass('RedisSentinel', TestKind::Integration)
             ->usesNamespace('Predis\\', TestKind::Integration)
+            ->usesClass(DatabaseTestTrait::class, TestKind::Integration)
             ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
             ->usesClass(ControllerTestTrait::class, TestKind::Functional)
             ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
