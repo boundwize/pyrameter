@@ -90,12 +90,12 @@ final readonly class UsageClassifier
                 }
             }
 
-            foreach ($this->namespaceRules as $rule) {
-                if (! str_starts_with($consumedClass, $rule['usage'])) {
+            foreach ($this->namespaceRules as $namespaceRule) {
+                if (! str_starts_with($consumedClass, $namespaceRule['usage'])) {
                     continue;
                 }
 
-                $kind = $this->heaviest($kind, $rule['kind']);
+                $kind = $this->heaviest($kind, $namespaceRule['kind']);
 
                 if ($kind === TestKind::E2E) {
                     return $kind;
