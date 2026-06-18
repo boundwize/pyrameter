@@ -136,6 +136,11 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
         return array_keys($this->consumedUsages);
     }
 
+    public function reset(): void
+    {
+        $this->consumedUsages = [];
+    }
+
     private function addType(null|Identifier|Name|ComplexType $type): void
     {
         if ($type instanceof Name) {

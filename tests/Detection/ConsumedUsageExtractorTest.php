@@ -212,6 +212,28 @@ PHP);
         ], $usages);
     }
 
+    public function testItResetsConsumedUsagesBetweenExtractions(): void
+    {
+        $parser                 = (new ParserFactory())->createForNewestSupportedVersion();
+        $consumedUsageExtractor = new ConsumedUsageExtractor();
+
+        $firstNodes  = $parser->parse(<<<'PHP'
+<?php
+
+new Vendor\FirstUsage();
+PHP);
+        $secondNodes = $parser->parse(<<<'PHP'
+<?php
+
+new Vendor\SecondUsage();
+PHP);
+
+        $this->assertIsArray($firstNodes);
+        $this->assertIsArray($secondNodes);
+        $this->assertSame(['Vendor\FirstUsage'], $consumedUsageExtractor->extract(array_values($firstNodes)));
+        $this->assertSame(['Vendor\SecondUsage'], $consumedUsageExtractor->extract(array_values($secondNodes)));
+    }
+
     public function testItIgnoresEmptyFunctionNames(): void
     {
         $consumedUsageVisitor = new ConsumedUsageVisitor();
@@ -225,7 +247,7 @@ PHP);
      */
     private function extract(string $source): array
     {
-        $parser = (new ParserFactory())->createForHostVersion();
+        $parser = (new ParserFactory())->createForNewestSupportedVersion();
         $nodes  = $parser->parse($source);
 
         $this->assertIsArray($nodes);
