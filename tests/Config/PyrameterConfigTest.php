@@ -54,6 +54,24 @@ final class PyrameterConfigTest extends TestCase
         $this->assertSame(TestKind::E2E, $usageClassifier->classify(['App\Tests\Browser\Checkout']));
     }
 
+    public function testUsesNamespaceDoesNotMatchPartialNamespaceSegment(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()->usesNamespace('App', TestKind::Functional);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::Functional, $usageClassifier->classify(['App\Foo']));
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify(['Application\Foo']));
+    }
+
+    public function testUsesNamespaceWithTrailingBackslashDoesNotMatchPartialNamespaceSegment(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()->usesNamespace('App\\', TestKind::Functional);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::Functional, $usageClassifier->classify(['App\Foo']));
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify(['Application\Foo']));
+    }
+
     public function testUsesClassMatchesClassUsageCaseInsensitively(): void
     {
         $pyrameterConfig = PyrameterConfig::create()->usesClass(PDO::class, TestKind::Integration);
