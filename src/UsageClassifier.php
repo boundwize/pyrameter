@@ -31,6 +31,10 @@ final readonly class UsageClassifier
 
                 if ($rule->kind->weight() > $kind->weight()) {
                     $kind = $rule->kind;
+
+                    if ($kind === TestKind::E2E) {
+                        return $kind;
+                    }
                 }
             }
         }
