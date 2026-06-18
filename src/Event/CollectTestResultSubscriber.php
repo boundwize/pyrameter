@@ -17,12 +17,15 @@ use function is_string;
 use function method_exists;
 use function str_contains;
 
-final readonly class CollectTestResultSubscriber implements FinishedSubscriber
+final class CollectTestResultSubscriber implements FinishedSubscriber
 {
+    /** @var array<string, TestKind> */
+    private array $kindByTestClassName = [];
+
     public function __construct(
-        private TestCollector $testCollector,
-        private TestUsageScanner $testUsageScanner,
-        private UsageClassifier $usageClassifier,
+        private readonly TestCollector $testCollector,
+        private readonly TestUsageScanner $testUsageScanner,
+        private readonly UsageClassifier $usageClassifier,
     ) {
     }
 
@@ -38,9 +41,10 @@ final readonly class CollectTestResultSubscriber implements FinishedSubscriber
 
         $scanResult = $this->testUsageScanner->scan($testClassName);
 
-        $kind = $scanResult->inspectable
-            ? $this->usageClassifier->classify($scanResult->consumedClasses)
-            : TestKind::Unit;
+        $kind = $this->kindByTestClassName[$testClassName] ??=
+            $scanResult->inspectable
+                ? $this->usageClassifier->classify($scanResult->consumedClasses)
+                : TestKind::Unit;
 
         $this->testCollector->add(new TestRecord(
             testClassName: $testClassName,
