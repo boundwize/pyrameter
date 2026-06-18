@@ -7,21 +7,21 @@ namespace Boundwize\Pyrameter\Detection;
 final readonly class ScanResult
 {
     /**
-     * @param list<string> $consumedClasses Consumed class, namespace, and function usages.
+     * @param list<string> $consumedUsages Consumed class-like and function usages.
      */
     private function __construct(
         public bool $inspectable,
-        public array $consumedClasses,
+        public array $consumedUsages,
         public ?string $errorMessage = null,
     ) {
     }
 
     /**
-     * @param list<string> $consumedClasses
+     * @param list<string> $consumedUsages
      */
-    public static function inspectable(array $consumedClasses): self
+    public static function inspectable(array $consumedUsages): self
     {
-        return new self(true, $consumedClasses);
+        return new self(true, $consumedUsages);
     }
 
     public static function uninspectable(string $errorMessage): self

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boundwize\Pyrameter\Tests;
 
 use Boundwize\Pyrameter\Rule\UsageRule;
+use Boundwize\Pyrameter\Rule\UsageType;
 use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\UsageClassifier;
 use PHPUnit\Framework\TestCase;
@@ -45,21 +46,39 @@ final class UsageClassifierTest extends TestCase
     public function testExactRulesNormalizeConfiguredAndConsumedUsageButDoNotMatchPrefixes(): void
     {
         $usageClassifier = new UsageClassifier([
-            new UsageRule('file_get_contents', TestKind::Integration),
+            new UsageRule('file_get_contents', TestKind::Integration, UsageType::Function),
         ]);
 
-        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['FILE_GET_CONTENTS']));
-        $this->assertSame(TestKind::Unit, $usageClassifier->classify(['FILE_GET_CONTENTS_EXTRA']));
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['function:FILE_GET_CONTENTS']));
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify(['function:FILE_GET_CONTENTS_EXTRA']));
+    }
+
+    public function testFunctionRulesDoNotMatchClassLikeUsages(): void
+    {
+        $usageClassifier = new UsageClassifier([
+            new UsageRule('file_get_contents', TestKind::Integration, UsageType::Function),
+        ]);
+
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify(['class:file_get_contents']));
+    }
+
+    public function testUnknownTypedConsumedUsageFallsBackToClassLikeMatching(): void
+    {
+        $usageClassifier = new UsageClassifier([
+            new UsageRule('custom:file_get_contents', TestKind::Integration),
+        ]);
+
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['custom:FILE_GET_CONTENTS']));
     }
 
     public function testExactRulesCanShortCircuitOnE2EAfterNormalization(): void
     {
         $usageClassifier = new UsageClassifier([
-            new UsageRule('run_browser_session', TestKind::E2E),
-            new UsageRule('file_get_contents', TestKind::Integration),
+            new UsageRule('run_browser_session', TestKind::E2E, UsageType::Function),
+            new UsageRule('file_get_contents', TestKind::Integration, UsageType::Function),
         ]);
 
-        $this->assertSame(TestKind::E2E, $usageClassifier->classify(['RUN_BROWSER_SESSION']));
+        $this->assertSame(TestKind::E2E, $usageClassifier->classify(['function:RUN_BROWSER_SESSION']));
     }
 
     public function testDuplicateExactRulesUseTheHeaviestKind(): void

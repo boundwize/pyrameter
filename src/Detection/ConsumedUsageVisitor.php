@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Detection;
 
+use Boundwize\Pyrameter\Rule\UsageType;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Attribute;
@@ -25,6 +26,7 @@ use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Property;
+use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\UnionType;
 use PhpParser\NodeVisitorAbstract;
@@ -32,12 +34,16 @@ use PhpParser\NodeVisitorAbstract;
 use function array_keys;
 use function in_array;
 use function ltrim;
+use function sprintf;
 use function strtolower;
 
 final class ConsumedUsageVisitor extends NodeVisitorAbstract
 {
     /** @var array<string, true> */
     private array $consumedUsages = [];
+
+    /** @var array<string, true> */
+    private array $declaredUsages = [];
 
     /** @var list<string> */
     private array $mockMethods = [
@@ -50,6 +56,10 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
+        if ($node instanceof Class_ || $node instanceof Interface_ || $node instanceof Trait_) {
+            $this->addDeclaredUsage($node);
+        }
+
         if ($node instanceof Class_) {
             $this->addName($node->extends);
 
@@ -139,6 +149,7 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
     public function reset(): void
     {
         $this->consumedUsages = [];
+        $this->declaredUsages = [];
     }
 
     private function addType(null|Identifier|Name|ComplexType $type): void
@@ -180,7 +191,7 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
             return;
         }
 
-        $this->consumedUsages[$functionName] = true;
+        $this->consumedUsages[$this->usageKey(UsageType::Function, $functionName)] = true;
     }
 
     private function addUsage(string $usage): void
@@ -191,7 +202,24 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
             return;
         }
 
-        $this->consumedUsages[$usage] = true;
+        if (isset($this->declaredUsages[strtolower($usage)])) {
+            return;
+        }
+
+        $this->consumedUsages[$this->usageKey(UsageType::ClassLike, $usage)] = true;
+    }
+
+    private function addDeclaredUsage(Class_|Interface_|Trait_ $node): void
+    {
+        $namespacedName = $node->getAttribute('namespacedName');
+        $declaredUsage  = $namespacedName instanceof Name ? $namespacedName->toString() : (string) $node->name;
+
+        $this->declaredUsages[strtolower(ltrim($declaredUsage, '\\'))] = true;
+    }
+
+    private function usageKey(UsageType $usageType, string $usage): string
+    {
+        return sprintf('%s:%s', $usageType->value, $usage);
     }
 
     private function isClassConstant(ClassConstFetch $classConstFetch): bool

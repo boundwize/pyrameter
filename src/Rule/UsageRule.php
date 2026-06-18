@@ -7,22 +7,31 @@ namespace Boundwize\Pyrameter\Rule;
 use Boundwize\Pyrameter\TestKind;
 
 use function ltrim;
+use function sprintf;
+use function str_contains;
 use function str_ends_with;
 use function str_starts_with;
+use function strlen;
 use function strtolower;
+use function substr;
 
 final readonly class UsageRule
 {
     public function __construct(
-        public string $classOrNamespace,
+        public string $usage,
         public TestKind $kind,
+        private UsageType $usageType = UsageType::ClassLike,
     ) {
     }
 
     public function matches(string $consumedUsage): bool
     {
-        $configuredUsage = $this->normalizedUsage();
-        $consumedUsage   = $this->normalize($consumedUsage);
+        $configuredUsage                     = $this->normalizedUsage();
+        [$consumedUsageType, $consumedUsage] = $this->normalizeConsumedUsage($consumedUsage);
+
+        if ($consumedUsageType !== $this->usageType) {
+            return false;
+        }
 
         if ($consumedUsage === $configuredUsage) {
             return true;
@@ -37,16 +46,46 @@ final readonly class UsageRule
 
     public function normalizedUsage(): string
     {
-        return $this->normalize($this->classOrNamespace);
+        return $this->normalize($this->usage);
     }
 
     public function isNamespaceRule(): bool
     {
-        return str_ends_with($this->normalizedUsage(), '\\');
+        return $this->usageType === UsageType::ClassLike && str_ends_with($this->normalizedUsage(), '\\');
+    }
+
+    public function normalizedKey(): string
+    {
+        return $this->usageKey($this->usageType, $this->normalizedUsage());
     }
 
     private function normalize(string $usage): string
     {
         return strtolower(ltrim($usage, '\\'));
+    }
+
+    /**
+     * @return array{UsageType, string}
+     */
+    private function normalizeConsumedUsage(string $consumedUsage): array
+    {
+        if (! str_contains($consumedUsage, ':')) {
+            return [$this->usageType, $this->normalize($consumedUsage)];
+        }
+
+        foreach (UsageType::cases() as $usageType) {
+            $prefix = $usageType->value . ':';
+
+            if (str_starts_with($consumedUsage, $prefix)) {
+                return [$usageType, $this->normalize(substr($consumedUsage, strlen($prefix)))];
+            }
+        }
+
+        return [$this->usageType, $this->normalize($consumedUsage)];
+    }
+
+    private function usageKey(UsageType $usageType, string $normalizedUsage): string
+    {
+        return sprintf('%s:%s', $usageType->value, $normalizedUsage);
     }
 }

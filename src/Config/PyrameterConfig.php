@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boundwize\Pyrameter\Config;
 
 use Boundwize\Pyrameter\Rule\UsageRule;
+use Boundwize\Pyrameter\Rule\UsageType;
 use Boundwize\Pyrameter\TestKind;
 use InvalidArgumentException;
 use mysqli;
@@ -141,7 +142,7 @@ final class PyrameterConfig
 
     public function usesFunction(string $functionName, TestKind $testKind): self
     {
-        $this->usageRules[] = new UsageRule(ltrim($functionName, '\\'), $testKind);
+        $this->usageRules[] = new UsageRule(ltrim($functionName, '\\'), $testKind, UsageType::Function);
 
         return $this;
     }

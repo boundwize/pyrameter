@@ -7,12 +7,12 @@ namespace Boundwize\Pyrameter;
 final readonly class TestRecord
 {
     /**
-     * @param list<string> $consumedClasses Consumed class, namespace, and function usages.
+     * @param list<string> $consumedUsages Consumed class-like and function usages.
      */
     public function __construct(
         public string $testClassName,
         public string $testMethodName,
-        public array $consumedClasses,
+        public array $consumedUsages,
         public TestKind $kind,
     ) {
     }

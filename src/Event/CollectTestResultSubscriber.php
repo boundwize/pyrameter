@@ -43,13 +43,13 @@ final class CollectTestResultSubscriber implements FinishedSubscriber
 
         $kind = $this->kindByTestClassName[$testClassName] ??=
             $scanResult->inspectable
-                ? $this->usageClassifier->classify($scanResult->consumedClasses)
+                ? $this->usageClassifier->classify($scanResult->consumedUsages)
                 : TestKind::Unit;
 
         $this->testCollector->add(new TestRecord(
             testClassName: $testClassName,
             testMethodName: $testMethodName,
-            consumedClasses: $scanResult->consumedClasses,
+            consumedUsages: $scanResult->consumedUsages,
             kind: $kind,
         ));
     }

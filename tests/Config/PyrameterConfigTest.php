@@ -75,6 +75,6 @@ final class PyrameterConfigTest extends TestCase
         $pyrameterConfig = PyrameterConfig::create()->usesFunction('file_get_contents', TestKind::Integration);
         $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
 
-        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['\FILE_GET_CONTENTS']));
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['function:\FILE_GET_CONTENTS']));
     }
 }
