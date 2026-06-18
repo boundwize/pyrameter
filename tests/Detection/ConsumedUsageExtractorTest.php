@@ -214,7 +214,7 @@ PHP);
 
     public function testItResetsConsumedUsagesBetweenExtractions(): void
     {
-        $parser    = (new ParserFactory())->createForHostVersion();
+        $parser                 = (new ParserFactory())->createForHostVersion();
         $consumedUsageExtractor = new ConsumedUsageExtractor();
 
         $firstNodes  = $parser->parse(<<<'PHP'
