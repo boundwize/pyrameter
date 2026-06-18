@@ -10,6 +10,7 @@ use PhpParser\Node\Attribute;
 use PhpParser\Node\ComplexType;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\StaticCall;
@@ -20,6 +21,7 @@ use PhpParser\Node\IntersectionType;
 use PhpParser\Node\Name;
 use PhpParser\Node\NullableType;
 use PhpParser\Node\Param;
+use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Property;
@@ -70,6 +72,16 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
 
         if ($node instanceof New_ && $node->class instanceof Name) {
             $this->addName($node->class);
+        }
+
+        if ($node instanceof Instanceof_ && $node->class instanceof Name) {
+            $this->addName($node->class);
+        }
+
+        if ($node instanceof Catch_) {
+            foreach ($node->types as $type) {
+                $this->addName($type);
+            }
         }
 
         if (
