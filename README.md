@@ -102,7 +102,8 @@ return PyrameterConfig::defaults()
     );
 ```
 
-`PyrameterConfig::defaults()` includes rules for common database, cache, filesystem, Symfony functional test, Panther, and WebDriver usage.
+`PyrameterConfig::defaults()` includes rules for common database, cache, filesystem, Symfony and CodeIgniter
+functional tests, Panther, and WebDriver usage.
 
 Use `PyrameterConfig::create()` instead when you want to start with no rules or targets and define everything yourself:
 
