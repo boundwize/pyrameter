@@ -22,7 +22,7 @@ final readonly class UsageRule
 
     public function matches(string $consumedUsage): bool
     {
-        $configuredUsage = $this->normalize($this->classOrNamespace);
+        $configuredUsage = $this->normalizedUsage();
         $consumedUsage   = $this->normalize($consumedUsage);
 
         if ($consumedUsage === $configuredUsage) {
@@ -34,6 +34,21 @@ final readonly class UsageRule
         }
 
         return str_starts_with($consumedUsage, $configuredUsage);
+    }
+
+    public function normalizedUsage(): string
+    {
+        return $this->normalize($this->classOrNamespace);
+    }
+
+    public function isNamespaceRule(): bool
+    {
+        return str_ends_with($this->normalizedUsage(), '\\');
+    }
+
+    public function isCaseInsensitive(): bool
+    {
+        return $this->caseInsensitive;
     }
 
     private function normalize(string $usage): string
