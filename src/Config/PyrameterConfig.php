@@ -109,11 +109,16 @@ final class PyrameterConfig
             ->usesClass('RedisCluster', TestKind::Integration)
             ->usesClass('RedisSentinel', TestKind::Integration)
             ->usesNamespace('Predis\\', TestKind::Integration)
-            ->usesClass(DatabaseTestTrait::class, TestKind::Integration)
             ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
             ->usesClass(ControllerTestTrait::class, TestKind::Functional)
             ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
             ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E);
+
+        $pyrameterConfig->usageRules[] = new UsageRule(
+            DatabaseTestTrait::class,
+            TestKind::Integration,
+            unless: [ControllerTestTrait::class],
+        );
 
         foreach (self::FILE_OPERATION_FUNCTIONS as $functionName) {
             $pyrameterConfig->usesFunction($functionName, TestKind::Integration);

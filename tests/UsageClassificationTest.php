@@ -59,7 +59,7 @@ final class UsageClassificationTest extends TestCase
         yield 'Doctrine DBAL usage means integration' => [DoctrineUsageFixture::class, TestKind::Integration];
         yield 'file operation usage means integration' => [FileOperationUsageFixture::class, TestKind::Integration];
         yield 'Symfony WebTestCase means functional' => [SymfonyFunctionalFixture::class, TestKind::Functional];
-        yield 'CodeIgniter ControllerTestTrait means functional' => [
+        yield 'CodeIgniter controller and database traits mean functional' => [
             CodeIgniterFunctionalFixture::class,
             TestKind::Functional,
         ];
