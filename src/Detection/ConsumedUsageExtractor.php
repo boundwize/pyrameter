@@ -10,19 +10,28 @@ use PhpParser\NodeVisitor\NameResolver;
 
 final class ConsumedUsageExtractor
 {
+    private NodeTraverser $nodeTraverser;
+
+    private ConsumedUsageVisitor $consumedUsageVisitor;
+
+    public function __construct()
+    {
+        $this->nodeTraverser        = new NodeTraverser();
+        $this->consumedUsageVisitor = new ConsumedUsageVisitor();
+
+        $this->nodeTraverser->addVisitor(new NameResolver());
+        $this->nodeTraverser->addVisitor($this->consumedUsageVisitor);
+    }
+
     /**
      * @param list<Node> $nodes
      * @return list<string>
      */
     public function extract(array $nodes): array
     {
-        $nodeTraverser        = new NodeTraverser();
-        $consumedUsageVisitor = new ConsumedUsageVisitor();
+        $this->consumedUsageVisitor->reset();
+        $this->nodeTraverser->traverse($nodes);
 
-        $nodeTraverser->addVisitor(new NameResolver());
-        $nodeTraverser->addVisitor($consumedUsageVisitor);
-        $nodeTraverser->traverse($nodes);
-
-        return $consumedUsageVisitor->consumedUsages();
+        return $this->consumedUsageVisitor->consumedUsages();
     }
 }

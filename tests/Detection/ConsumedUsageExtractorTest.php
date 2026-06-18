@@ -212,6 +212,28 @@ PHP);
         ], $usages);
     }
 
+    public function testItResetsConsumedUsagesBetweenExtractions(): void
+    {
+        $parser    = (new ParserFactory())->createForHostVersion();
+        $extractor = new ConsumedUsageExtractor();
+
+        $firstNodes  = $parser->parse(<<<'PHP'
+<?php
+
+new Vendor\FirstUsage();
+PHP);
+        $secondNodes = $parser->parse(<<<'PHP'
+<?php
+
+new Vendor\SecondUsage();
+PHP);
+
+        $this->assertIsArray($firstNodes);
+        $this->assertIsArray($secondNodes);
+        $this->assertSame(['Vendor\FirstUsage'], $extractor->extract(array_values($firstNodes)));
+        $this->assertSame(['Vendor\SecondUsage'], $extractor->extract(array_values($secondNodes)));
+    }
+
     public function testItIgnoresEmptyFunctionNames(): void
     {
         $consumedUsageVisitor = new ConsumedUsageVisitor();
