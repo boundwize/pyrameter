@@ -215,7 +215,7 @@ PHP);
     public function testItResetsConsumedUsagesBetweenExtractions(): void
     {
         $parser    = (new ParserFactory())->createForHostVersion();
-        $extractor = new ConsumedUsageExtractor();
+        $consumedUsageExtractor = new ConsumedUsageExtractor();
 
         $firstNodes  = $parser->parse(<<<'PHP'
 <?php
@@ -230,8 +230,8 @@ PHP);
 
         $this->assertIsArray($firstNodes);
         $this->assertIsArray($secondNodes);
-        $this->assertSame(['Vendor\FirstUsage'], $extractor->extract(array_values($firstNodes)));
-        $this->assertSame(['Vendor\SecondUsage'], $extractor->extract(array_values($secondNodes)));
+        $this->assertSame(['Vendor\FirstUsage'], $consumedUsageExtractor->extract(array_values($firstNodes)));
+        $this->assertSame(['Vendor\SecondUsage'], $consumedUsageExtractor->extract(array_values($secondNodes)));
     }
 
     public function testItIgnoresEmptyFunctionNames(): void

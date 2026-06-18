@@ -8,7 +8,7 @@ use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 
-final class ConsumedUsageExtractor
+final readonly class ConsumedUsageExtractor
 {
     private NodeTraverser $nodeTraverser;
 
