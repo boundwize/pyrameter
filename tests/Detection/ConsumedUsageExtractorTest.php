@@ -113,6 +113,44 @@ PHP);
         $this->assertSame(['Vendor\Used\Thing'], $usages);
     }
 
+    public function testItExtractsClassesFromInstanceofAndCatchTypes(): void
+    {
+        $usages = $this->extract(<<<'PHP'
+<?php
+
+namespace Boundwize\Pyrameter\Tests\Fixtures\Extractor;
+
+use Vendor\Checks\ImportedCheck;
+use Vendor\Exceptions\AliasedException;
+
+final class ControlFlowConsumer
+{
+    public function method(object $value, string $className): void
+    {
+        $value instanceof \Vendor\Checks\DirectCheck;
+        $value instanceof ImportedCheck;
+        $value instanceof self;
+        $value instanceof $className;
+
+        try {
+        } catch (\Vendor\Exceptions\FirstException|AliasedException $exception) {
+        } catch (\Vendor\Exceptions\SecondException $exception) {
+        }
+    }
+}
+PHP);
+
+        sort($usages);
+
+        $this->assertSame([
+            'Vendor\Checks\DirectCheck',
+            'Vendor\Checks\ImportedCheck',
+            'Vendor\Exceptions\AliasedException',
+            'Vendor\Exceptions\FirstException',
+            'Vendor\Exceptions\SecondException',
+        ], $usages);
+    }
+
     public function testItHandlesClassConstantsThatAreNotMockTargets(): void
     {
         $usages = $this->extract(<<<'PHP'
