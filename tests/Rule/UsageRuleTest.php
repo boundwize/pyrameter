@@ -61,4 +61,15 @@ final class UsageRuleTest extends TestCase
         $this->assertSame('class', UsageType::ClassLike->value);
         $this->assertSame('function', UsageType::Function->value);
     }
+
+    public function testItNormalizesUnlessUsages(): void
+    {
+        $usageRule = new UsageRule(
+            'Framework\DatabaseTrait',
+            TestKind::Integration,
+            unless: ['\FRAMEWORK\ControllerTrait'],
+        );
+
+        $this->assertSame(['class:framework\controllertrait'], $usageRule->normalizedUnlessKeys());
+    }
 }

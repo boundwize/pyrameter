@@ -22,6 +22,7 @@
     "autoload-dev": {
         "psr-4": {
             "Boundwize\\Pyrameter\\Tests\\": "tests/",
+            "CodeIgniter\\Test\\": "tests/Fixtures/Stubs/CodeIgniter/Test/",
             "Doctrine\\DBAL\\": "tests/Fixtures/Stubs/Doctrine/DBAL/",
             "Facebook\\WebDriver\\": "tests/Fixtures/Stubs/Facebook/WebDriver/",
             "Symfony\\Bundle\\FrameworkBundle\\Test\\": "tests/Fixtures/Stubs/Symfony/Bundle/FrameworkBundle/Test/",

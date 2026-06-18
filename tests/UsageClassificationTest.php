@@ -8,6 +8,8 @@ use Boundwize\Pyrameter\Config\PyrameterConfig;
 use Boundwize\Pyrameter\Detection\ConsumedUsageExtractor;
 use Boundwize\Pyrameter\Detection\TestUsageScanner;
 use Boundwize\Pyrameter\TestKind;
+use Boundwize\Pyrameter\Tests\Fixtures\CodeIgniterFunctionalFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\CodeIgniterIntegrationFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\ContainerGetHeavyFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\DoctrineUsageFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\FileOperationUsageFixture;
@@ -57,6 +59,14 @@ final class UsageClassificationTest extends TestCase
         yield 'Doctrine DBAL usage means integration' => [DoctrineUsageFixture::class, TestKind::Integration];
         yield 'file operation usage means integration' => [FileOperationUsageFixture::class, TestKind::Integration];
         yield 'Symfony WebTestCase means functional' => [SymfonyFunctionalFixture::class, TestKind::Functional];
+        yield 'CodeIgniter controller and database traits mean functional' => [
+            CodeIgniterFunctionalFixture::class,
+            TestKind::Functional,
+        ];
+        yield 'CodeIgniter DatabaseTestTrait means integration' => [
+            CodeIgniterIntegrationFixture::class,
+            TestKind::Integration,
+        ];
         yield 'Panther usage means e2e' => [PantherE2EFixture::class, TestKind::E2E];
         yield 'WebDriver usage means e2e' => [WebDriverE2EFixture::class, TestKind::E2E];
         yield 'mocked heavy class stays unit' => [MockedHeavyFixture::class, TestKind::Unit];

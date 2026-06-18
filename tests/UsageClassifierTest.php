@@ -102,6 +102,24 @@ final class UsageClassifierTest extends TestCase
         $this->assertSame(TestKind::Integration, $usageClassifier->classify(['App\Service']));
     }
 
+    public function testRuleCanBeSuppressedByAnotherConsumedUsage(): void
+    {
+        $usageClassifier = new UsageClassifier([
+            new UsageRule('Framework\DatabaseTrait', TestKind::Integration, unless: ['Framework\ControllerTrait']),
+            new UsageRule('Framework\ControllerTrait', TestKind::Functional),
+        ]);
+
+        $this->assertSame(
+            TestKind::Functional,
+            $usageClassifier->classify(['Framework\ControllerTrait', 'Framework\DatabaseTrait']),
+        );
+        $this->assertSame(
+            TestKind::Functional,
+            $usageClassifier->classify(['Framework\DatabaseTrait', 'Framework\ControllerTrait']),
+        );
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['Framework\DatabaseTrait']));
+    }
+
     public function testHeaviestMatchingRuleWinsAfterRulesArePrecompiled(): void
     {
         $usageClassifier = new UsageClassifier([

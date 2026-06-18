@@ -7,6 +7,7 @@ namespace Boundwize\Pyrameter;
 use Boundwize\Pyrameter\Rule\UsageRule;
 use Boundwize\Pyrameter\Rule\UsageType;
 
+use function array_keys;
 use function ltrim;
 use function sprintf;
 use function str_contains;
@@ -18,10 +19,10 @@ use function substr;
 
 final readonly class UsageClassifier
 {
-    /** @var array<string, TestKind> */
+    /** @var array<string, list<array{kind: TestKind, unless: list<string>}>> */
     private array $exactRules;
 
-    /** @var list<array{usage: string, kind: TestKind}> */
+    /** @var list<array{usage: string, kind: TestKind, unless: list<string>}> */
     private array $namespaceRules;
 
     /**
@@ -35,14 +36,18 @@ final readonly class UsageClassifier
         foreach ($rules as $rule) {
             if ($rule->isNamespaceRule()) {
                 $namespaceRules[] = [
-                    'usage' => $rule->normalizedKey(),
-                    'kind'  => $rule->kind,
+                    'usage'  => $rule->normalizedKey(),
+                    'kind'   => $rule->kind,
+                    'unless' => $rule->normalizedUnlessKeys(),
                 ];
 
                 continue;
             }
 
-            $this->addExactRule($exactRules, $rule->normalizedKey(), $rule->kind);
+            $exactRules[$rule->normalizedKey()][] = [
+                'kind'   => $rule->kind,
+                'unless' => $rule->normalizedUnlessKeys(),
+            ];
         }
 
         $this->exactRules     = $exactRules;
@@ -54,13 +59,21 @@ final readonly class UsageClassifier
      */
     public function classify(array $consumedUsages): TestKind
     {
-        $kind = TestKind::Unit;
+        $kind                     = TestKind::Unit;
+        $normalizedConsumedUsages = [];
 
         foreach ($consumedUsages as $consumedUsage) {
-            $normalizedConsumedUsage = $this->normalizeConsumedUsage($consumedUsage);
+            $normalizedConsumedUsage                            = $this->normalizeConsumedUsage($consumedUsage);
+            $normalizedConsumedUsages[$normalizedConsumedUsage] = true;
+        }
 
-            if (isset($this->exactRules[$normalizedConsumedUsage])) {
-                $kind = $this->heaviest($kind, $this->exactRules[$normalizedConsumedUsage]);
+        foreach (array_keys($normalizedConsumedUsages) as $normalizedConsumedUsage) {
+            foreach ($this->exactRules[$normalizedConsumedUsage] ?? [] as $exactRule) {
+                if ($this->isSuppressed($exactRule['unless'], $normalizedConsumedUsages)) {
+                    continue;
+                }
+
+                $kind = $this->heaviest($kind, $exactRule['kind']);
 
                 if ($kind === TestKind::E2E) {
                     return $kind;
@@ -68,7 +81,10 @@ final readonly class UsageClassifier
             }
 
             foreach ($this->namespaceRules as $namespaceRule) {
-                if (! $this->matchesNamespaceRule($normalizedConsumedUsage, $namespaceRule['usage'])) {
+                if (
+                    ! $this->matchesNamespaceRule($normalizedConsumedUsage, $namespaceRule['usage'])
+                    || $this->isSuppressed($namespaceRule['unless'], $normalizedConsumedUsages)
+                ) {
                     continue;
                 }
 
@@ -84,13 +100,18 @@ final readonly class UsageClassifier
     }
 
     /**
-     * @param array<string, TestKind> $rules
+     * @param list<string> $unless
+     * @param array<string, true> $normalizedConsumedUsages
      */
-    private function addExactRule(array &$rules, string $usage, TestKind $testKind): void
+    private function isSuppressed(array $unless, array $normalizedConsumedUsages): bool
     {
-        $rules[$usage] = isset($rules[$usage])
-            ? $this->heaviest($rules[$usage], $testKind)
-            : $testKind;
+        foreach ($unless as $unlessUsage) {
+            if (isset($normalizedConsumedUsages[$unlessUsage])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function heaviest(TestKind $left, TestKind $right): TestKind

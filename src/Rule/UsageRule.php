@@ -17,10 +17,14 @@ use function substr;
 
 final readonly class UsageRule
 {
+    /**
+     * @param list<string> $unless
+     */
     public function __construct(
         public string $usage,
         public TestKind $kind,
         private UsageType $usageType = UsageType::ClassLike,
+        private array $unless = [],
     ) {
     }
 
@@ -53,6 +57,20 @@ final readonly class UsageRule
     public function normalizedKey(): string
     {
         return $this->usageKey($this->usageType, $this->normalizedUsage());
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function normalizedUnlessKeys(): array
+    {
+        $normalizedUnlessKeys = [];
+
+        foreach ($this->unless as $unlessUsage) {
+            $normalizedUnlessKeys[] = $this->usageKey($this->usageType, $this->normalize($unlessUsage));
+        }
+
+        return $normalizedUnlessKeys;
     }
 
     private function normalize(string $usage): string
