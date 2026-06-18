@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Tests;
 
-use Boundwize\Pyrameter\PyramidSummary;
 use Boundwize\Pyrameter\TestKind;
-use Boundwize\Pyrameter\TestRecord;
+use Boundwize\Pyrameter\ValueObject\PyramidSummary;
+use Boundwize\Pyrameter\ValueObject\TestRecord;
 use PHPUnit\Framework\TestCase;
 
 use function array_sum;

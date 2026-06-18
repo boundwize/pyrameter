@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Report;
 
-use Boundwize\Pyrameter\PyramidSummary;
 use Boundwize\Pyrameter\Target\TargetEvaluation;
 use Boundwize\Pyrameter\TestKind;
+use Boundwize\Pyrameter\ValueObject\PyramidSummary;
 
 final readonly class SuiteShapeResolver
 {

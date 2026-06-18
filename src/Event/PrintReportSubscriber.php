@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Event;
 
-use Boundwize\Pyrameter\PyramidSummary;
 use Boundwize\Pyrameter\Report\PyramidReporter;
 use Boundwize\Pyrameter\Report\SuiteShapeResolver;
 use Boundwize\Pyrameter\Target\TargetEvaluator;
@@ -38,7 +37,7 @@ final readonly class PrintReportSubscriber implements ExecutionFinishedSubscribe
 
     public function notify(ExecutionFinished $event): void
     {
-        $pyramidSummary   = PyramidSummary::fromRecords($this->testCollector->all());
+        $pyramidSummary   = $this->testCollector->summary();
         $targetEvaluation = $this->targetEvaluator->evaluate($pyramidSummary);
         $suiteShape       = $this->suiteShapeResolver->resolve($pyramidSummary, $targetEvaluation);
 

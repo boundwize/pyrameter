@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boundwize\Pyrameter;
+namespace Boundwize\Pyrameter\ValueObject;
+
+use Boundwize\Pyrameter\TestKind;
 
 final readonly class TestRecord
 {
