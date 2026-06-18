@@ -141,7 +141,7 @@ final class PyrameterConfig
 
     public function usesFunction(string $functionName, TestKind $testKind): self
     {
-        $this->usageRules[] = new UsageRule(ltrim($functionName, '\\'), $testKind, caseInsensitive: true);
+        $this->usageRules[] = new UsageRule(ltrim($functionName, '\\'), $testKind);
 
         return $this;
     }

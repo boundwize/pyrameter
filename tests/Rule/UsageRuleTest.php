@@ -32,9 +32,9 @@ final class UsageRuleTest extends TestCase
         $this->assertFalse($usageRule->matches('Library\Service'));
     }
 
-    public function testItMatchesCaseInsensitiveUsage(): void
+    public function testItNormalizesUsageCaseAndLeadingSlash(): void
     {
-        $usageRule = new UsageRule('\file_get_contents', TestKind::Integration, true);
+        $usageRule = new UsageRule('\file_get_contents', TestKind::Integration);
 
         $this->assertTrue($usageRule->matches('\FILE_GET_CONTENTS'));
     }

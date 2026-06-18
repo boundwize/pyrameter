@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class UsageClassifierTest extends TestCase
 {
-    public function testNamespaceRulesMatchOnlyConfiguredPrefix(): void
+    public function testNamespaceRulesMatchOnlyConfiguredPrefixCaseInsensitively(): void
     {
         $usageClassifier = new UsageClassifier([
             new UsageRule('App\Tests\Browser\\', TestKind::E2E),
@@ -19,7 +19,7 @@ final class UsageClassifierTest extends TestCase
 
         $this->assertSame(TestKind::E2E, $usageClassifier->classify(['App\Tests\Browser\CheckoutTest']));
         $this->assertSame(TestKind::Unit, $usageClassifier->classify(['App\Tests\Browsering\CheckoutTest']));
-        $this->assertSame(TestKind::Unit, $usageClassifier->classify(['app\Tests\Browser\CheckoutTest']));
+        $this->assertSame(TestKind::E2E, $usageClassifier->classify(['app\Tests\Browser\CheckoutTest']));
     }
 
     public function testExactRulesDoNotMatchNamespacePrefixes(): void
@@ -32,31 +32,31 @@ final class UsageClassifierTest extends TestCase
         $this->assertSame(TestKind::Unit, $usageClassifier->classify(['App\Tests\Browser\CheckoutTest']));
     }
 
-    public function testCaseInsensitiveNamespaceRulesNormalizeConfiguredAndConsumedUsage(): void
+    public function testNamespaceRulesNormalizeConfiguredAndConsumedUsage(): void
     {
         $usageClassifier = new UsageClassifier([
-            new UsageRule('App\Tests\Browser\\', TestKind::E2E, true),
+            new UsageRule('App\Tests\Browser\\', TestKind::E2E),
         ]);
 
         $this->assertSame(TestKind::E2E, $usageClassifier->classify(['\\APP\Tests\Browser\CheckoutTest']));
         $this->assertSame(TestKind::Unit, $usageClassifier->classify(['\\APP\Tests\Browsering\CheckoutTest']));
     }
 
-    public function testCaseInsensitiveExactRulesDoNotMatchPrefixes(): void
+    public function testExactRulesNormalizeConfiguredAndConsumedUsageButDoNotMatchPrefixes(): void
     {
         $usageClassifier = new UsageClassifier([
-            new UsageRule('file_get_contents', TestKind::Integration, true),
+            new UsageRule('file_get_contents', TestKind::Integration),
         ]);
 
         $this->assertSame(TestKind::Integration, $usageClassifier->classify(['FILE_GET_CONTENTS']));
         $this->assertSame(TestKind::Unit, $usageClassifier->classify(['FILE_GET_CONTENTS_EXTRA']));
     }
 
-    public function testCaseInsensitiveExactRulesCanShortCircuitOnE2E(): void
+    public function testExactRulesCanShortCircuitOnE2EAfterNormalization(): void
     {
         $usageClassifier = new UsageClassifier([
-            new UsageRule('run_browser_session', TestKind::E2E, true),
-            new UsageRule('file_get_contents', TestKind::Integration, true),
+            new UsageRule('run_browser_session', TestKind::E2E),
+            new UsageRule('file_get_contents', TestKind::Integration),
         ]);
 
         $this->assertSame(TestKind::E2E, $usageClassifier->classify(['RUN_BROWSER_SESSION']));

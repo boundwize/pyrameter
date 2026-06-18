@@ -8,6 +8,7 @@ use Boundwize\Pyrameter\Config\PyrameterConfig;
 use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\UsageClassifier;
 use InvalidArgumentException;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 final class PyrameterConfigTest extends TestCase
@@ -49,6 +50,22 @@ final class PyrameterConfigTest extends TestCase
         $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
 
         $this->assertSame(TestKind::E2E, $usageClassifier->classify(['App\Tests\Browser\Checkout']));
+    }
+
+    public function testUsesClassMatchesClassUsageCaseInsensitively(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()->usesClass(PDO::class, TestKind::Integration);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['pdo']));
+    }
+
+    public function testUsesNamespaceMatchesNamespaceUsageCaseInsensitively(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()->usesNamespace('App\Tests\Browser', TestKind::E2E);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::E2E, $usageClassifier->classify(['app\tests\browser\Checkout']));
     }
 
     public function testUsesFunctionMatchesFunctionUsageCaseInsensitively(): void

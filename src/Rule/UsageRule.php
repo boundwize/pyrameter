@@ -16,7 +16,6 @@ final readonly class UsageRule
     public function __construct(
         public string $classOrNamespace,
         public TestKind $kind,
-        private bool $caseInsensitive = false,
     ) {
     }
 
@@ -46,17 +45,8 @@ final readonly class UsageRule
         return str_ends_with($this->normalizedUsage(), '\\');
     }
 
-    public function isCaseInsensitive(): bool
-    {
-        return $this->caseInsensitive;
-    }
-
     private function normalize(string $usage): string
     {
-        if (! $this->caseInsensitive) {
-            return $usage;
-        }
-
         return strtolower(ltrim($usage, '\\'));
     }
 }
