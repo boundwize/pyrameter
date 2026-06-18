@@ -9,7 +9,7 @@ use Boundwize\Pyrameter\Event\PrintReportSubscriber;
 use Boundwize\Pyrameter\Report\PyramidReporter;
 use Boundwize\Pyrameter\TestCollector;
 use Boundwize\Pyrameter\TestKind;
-use Boundwize\Pyrameter\TestRecord;
+use Boundwize\Pyrameter\ValueObject\TestRecord;
 use PHPUnit\Event\Telemetry\Duration;
 use PHPUnit\Event\Telemetry\GarbageCollectorStatus;
 use PHPUnit\Event\Telemetry\HRTime;

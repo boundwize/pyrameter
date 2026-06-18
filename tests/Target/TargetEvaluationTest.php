@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Tests\Target;
 
-use Boundwize\Pyrameter\PyramidSummary;
 use Boundwize\Pyrameter\Target\TargetEvaluator;
 use Boundwize\Pyrameter\Target\TargetStatus;
 use Boundwize\Pyrameter\TestKind;
-use Boundwize\Pyrameter\TestRecord;
+use Boundwize\Pyrameter\ValueObject\PyramidSummary;
+use Boundwize\Pyrameter\ValueObject\TestRecord;
 use PHPUnit\Framework\TestCase;
 
 final class TargetEvaluationTest extends TestCase

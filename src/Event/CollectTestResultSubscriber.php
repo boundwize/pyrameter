@@ -7,8 +7,8 @@ namespace Boundwize\Pyrameter\Event;
 use Boundwize\Pyrameter\Detection\TestUsageScanner;
 use Boundwize\Pyrameter\TestCollector;
 use Boundwize\Pyrameter\TestKind;
-use Boundwize\Pyrameter\TestRecord;
 use Boundwize\Pyrameter\UsageClassifier;
+use Boundwize\Pyrameter\ValueObject\TestRecord;
 use PHPUnit\Event\Test\Finished;
 use PHPUnit\Event\Test\FinishedSubscriber;
 

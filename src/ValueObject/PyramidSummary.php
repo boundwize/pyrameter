@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Boundwize\Pyrameter;
+namespace Boundwize\Pyrameter\ValueObject;
+
+use Boundwize\Pyrameter\TestKind;
 
 use function array_keys;
-use function count;
+use function array_sum;
 use function intdiv;
 use function usort;
 
@@ -27,18 +29,22 @@ final readonly class PyramidSummary
      */
     public static function fromRecords(array $records): self
     {
-        $counts = [
-            TestKind::Unit->value        => 0,
-            TestKind::Functional->value  => 0,
-            TestKind::Integration->value => 0,
-            TestKind::E2E->value         => 0,
-        ];
+        $counts = self::emptyCounts();
 
         foreach ($records as $record) {
             ++$counts[$record->kind->value];
         }
 
-        $total       = count($records);
+        return self::fromCounts($counts);
+    }
+
+    /**
+     * @param array<string, int> $counts
+     */
+    public static function fromCounts(array $counts): self
+    {
+        $counts      = self::normalizeCounts($counts);
+        $total       = array_sum($counts);
         $percentages = self::percentagesFromCounts($counts, $total);
 
         return new self($total, $counts, $percentages);
@@ -52,6 +58,34 @@ final readonly class PyramidSummary
     public function percentage(TestKind $testKind): float
     {
         return $this->percentages[$testKind->value] ?? 0.0;
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private static function emptyCounts(): array
+    {
+        return [
+            TestKind::Unit->value        => 0,
+            TestKind::Functional->value  => 0,
+            TestKind::Integration->value => 0,
+            TestKind::E2E->value         => 0,
+        ];
+    }
+
+    /**
+     * @param array<string, int> $counts
+     * @return array<string, int>
+     */
+    private static function normalizeCounts(array $counts): array
+    {
+        $normalizedCounts = self::emptyCounts();
+
+        foreach (TestKind::ordered() as $testKind) {
+            $normalizedCounts[$testKind->value] = $counts[$testKind->value] ?? 0;
+        }
+
+        return $normalizedCounts;
     }
 
     /**

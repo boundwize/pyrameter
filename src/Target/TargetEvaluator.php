@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Target;
 
-use Boundwize\Pyrameter\PyramidSummary;
 use Boundwize\Pyrameter\TestKind;
+use Boundwize\Pyrameter\ValueObject\PyramidSummary;
 
 final readonly class TargetEvaluator
 {
