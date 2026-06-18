@@ -5,9 +5,7 @@
          colors="true"
          cacheDirectory=".phpunit.cache">
     <extensions>
-        <bootstrap class="Boundwize\Pyrameter\Extension">
-            <parameter name="config" value="pyrameter.php"/>
-        </bootstrap>
+        <bootstrap class="Boundwize\Pyrameter\Extension"/>
     </extensions>
     <testsuites>
         <testsuite name="Pyrameter">
