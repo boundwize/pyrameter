@@ -52,6 +52,26 @@ final class UsageClassifierTest extends TestCase
         $this->assertSame(TestKind::Unit, $usageClassifier->classify(['FILE_GET_CONTENTS_EXTRA']));
     }
 
+    public function testCaseInsensitiveExactRulesCanShortCircuitOnE2E(): void
+    {
+        $usageClassifier = new UsageClassifier([
+            new UsageRule('run_browser_session', TestKind::E2E, true),
+            new UsageRule('file_get_contents', TestKind::Integration, true),
+        ]);
+
+        $this->assertSame(TestKind::E2E, $usageClassifier->classify(['RUN_BROWSER_SESSION']));
+    }
+
+    public function testDuplicateExactRulesUseTheHeaviestKind(): void
+    {
+        $usageClassifier = new UsageClassifier([
+            new UsageRule('App\Service', TestKind::Functional),
+            new UsageRule('App\Service', TestKind::Integration),
+        ]);
+
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['App\Service']));
+    }
+
     public function testHeaviestMatchingRuleWinsAfterRulesArePrecompiled(): void
     {
         $usageClassifier = new UsageClassifier([
