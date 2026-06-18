@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Detection;
 
+use Boundwize\Pyrameter\Rule\UsageType;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Attribute;
@@ -32,6 +33,7 @@ use PhpParser\NodeVisitorAbstract;
 use function array_keys;
 use function in_array;
 use function ltrim;
+use function sprintf;
 use function strtolower;
 
 final class ConsumedUsageVisitor extends NodeVisitorAbstract
@@ -180,7 +182,7 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
             return;
         }
 
-        $this->consumedUsages[$functionName] = true;
+        $this->consumedUsages[$this->usageKey(UsageType::Function, $functionName)] = true;
     }
 
     private function addUsage(string $usage): void
@@ -191,7 +193,12 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
             return;
         }
 
-        $this->consumedUsages[$usage] = true;
+        $this->consumedUsages[$this->usageKey(UsageType::ClassLike, $usage)] = true;
+    }
+
+    private function usageKey(UsageType $usageType, string $usage): string
+    {
+        return sprintf('%s:%s', $usageType->value, $usage);
     }
 
     private function isClassConstant(ClassConstFetch $classConstFetch): bool

@@ -62,27 +62,27 @@ PHP);
         sort($usages);
 
         $this->assertSame([
-            'Vendor\Attributes\ExampleAttribute',
-            'Vendor\BaseClass',
-            'Vendor\Constructed\Thing',
-            'Vendor\Contracts\FirstContract',
-            'Vendor\Contracts\ParentA',
-            'Vendor\Contracts\ParentB',
-            'Vendor\Contracts\SecondContract',
-            'Vendor\Grouped\AnotherGroupedClass',
-            'Vendor\Grouped\GroupedClass',
-            'Vendor\ImportedThing',
-            'Vendor\Params\Input',
-            'Vendor\Returns\Output',
-            'Vendor\StaticCall\Thing',
-            'Vendor\StaticProperty\Thing',
-            'Vendor\Traits\FirstTrait',
-            'Vendor\Traits\SecondTrait',
-            'Vendor\Types\IntersectionA',
-            'Vendor\Types\IntersectionB',
-            'Vendor\Types\NullableType',
-            'Vendor\Types\UnionA',
-            'Vendor\Types\UnionB',
+            'class:Vendor\Attributes\ExampleAttribute',
+            'class:Vendor\BaseClass',
+            'class:Vendor\Constructed\Thing',
+            'class:Vendor\Contracts\FirstContract',
+            'class:Vendor\Contracts\ParentA',
+            'class:Vendor\Contracts\ParentB',
+            'class:Vendor\Contracts\SecondContract',
+            'class:Vendor\Grouped\AnotherGroupedClass',
+            'class:Vendor\Grouped\GroupedClass',
+            'class:Vendor\ImportedThing',
+            'class:Vendor\Params\Input',
+            'class:Vendor\Returns\Output',
+            'class:Vendor\StaticCall\Thing',
+            'class:Vendor\StaticProperty\Thing',
+            'class:Vendor\Traits\FirstTrait',
+            'class:Vendor\Traits\SecondTrait',
+            'class:Vendor\Types\IntersectionA',
+            'class:Vendor\Types\IntersectionB',
+            'class:Vendor\Types\NullableType',
+            'class:Vendor\Types\UnionA',
+            'class:Vendor\Types\UnionB',
         ], $usages);
     }
 
@@ -96,7 +96,7 @@ use Vendor\MixedGroup\{GroupedClass, function helperInGroup};
 new GroupedClass();
 PHP);
 
-        $this->assertSame(['Vendor\MixedGroup\GroupedClass'], $usages);
+        $this->assertSame(['class:Vendor\MixedGroup\GroupedClass'], $usages);
     }
 
     public function testItIgnoresUnusedImports(): void
@@ -110,7 +110,7 @@ use Vendor\Used\Thing as UsedThing;
 new UsedThing();
 PHP);
 
-        $this->assertSame(['Vendor\Used\Thing'], $usages);
+        $this->assertSame(['class:Vendor\Used\Thing'], $usages);
     }
 
     public function testItExtractsClassesFromInstanceofAndCatchTypes(): void
@@ -143,11 +143,11 @@ PHP);
         sort($usages);
 
         $this->assertSame([
-            'Vendor\Checks\DirectCheck',
-            'Vendor\Checks\ImportedCheck',
-            'Vendor\Exceptions\AliasedException',
-            'Vendor\Exceptions\FirstException',
-            'Vendor\Exceptions\SecondException',
+            'class:Vendor\Checks\DirectCheck',
+            'class:Vendor\Checks\ImportedCheck',
+            'class:Vendor\Exceptions\AliasedException',
+            'class:Vendor\Exceptions\FirstException',
+            'class:Vendor\Exceptions\SecondException',
         ], $usages);
     }
 
@@ -172,11 +172,11 @@ PHP);
         sort($usages);
 
         $this->assertSame([
-            'Vendor\ClassConstant\Direct',
-            'Vendor\ClassConstant\DynamicMethod',
-            'Vendor\ClassConstant\FunctionArgument',
-            'Vendor\ClassConstant\NotFirstArgument',
-            'function_call',
+            'class:Vendor\ClassConstant\Direct',
+            'class:Vendor\ClassConstant\DynamicMethod',
+            'class:Vendor\ClassConstant\FunctionArgument',
+            'class:Vendor\ClassConstant\NotFirstArgument',
+            'function:function_call',
         ], $usages);
     }
 
@@ -206,9 +206,9 @@ PHP);
         sort($usages);
 
         $this->assertSame([
-            'file_get_contents',
-            'file_put_contents',
-            'vendor\filesystem\readfixture',
+            'function:file_get_contents',
+            'function:file_put_contents',
+            'function:vendor\filesystem\readfixture',
         ], $usages);
     }
 
@@ -230,8 +230,8 @@ PHP);
 
         $this->assertIsArray($firstNodes);
         $this->assertIsArray($secondNodes);
-        $this->assertSame(['Vendor\FirstUsage'], $consumedUsageExtractor->extract(array_values($firstNodes)));
-        $this->assertSame(['Vendor\SecondUsage'], $consumedUsageExtractor->extract(array_values($secondNodes)));
+        $this->assertSame(['class:Vendor\FirstUsage'], $consumedUsageExtractor->extract(array_values($firstNodes)));
+        $this->assertSame(['class:Vendor\SecondUsage'], $consumedUsageExtractor->extract(array_values($secondNodes)));
     }
 
     public function testItIgnoresEmptyFunctionNames(): void

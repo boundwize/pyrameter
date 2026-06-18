@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boundwize\Pyrameter\Tests;
 
 use Boundwize\Pyrameter\Config\PyrameterConfig;
+use Boundwize\Pyrameter\Detection\ConsumedUsageExtractor;
 use Boundwize\Pyrameter\Detection\TestUsageScanner;
 use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\Tests\Fixtures\ContainerGetHeavyFixture;
@@ -21,8 +22,11 @@ use Boundwize\Pyrameter\Tests\Fixtures\SimpleUnitFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\SymfonyFunctionalFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\WebDriverE2EFixture;
 use Boundwize\Pyrameter\UsageClassifier;
+use PhpParser\ParserFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+
+use function array_values;
 
 final class UsageClassificationTest extends TestCase
 {
@@ -38,7 +42,7 @@ final class UsageClassificationTest extends TestCase
         $usageClassifier  = new UsageClassifier($pyrameterConfig->usageRules());
 
         $this->assertTrue($scanResult->inspectable, $scanResult->errorMessage ?? '');
-        $this->assertSame($testKind, $usageClassifier->classify($scanResult->consumedClasses));
+        $this->assertSame($testKind, $usageClassifier->classify($scanResult->consumedUsages));
     }
 
     /**
@@ -69,7 +73,7 @@ final class UsageClassificationTest extends TestCase
         $scanResult = (new TestUsageScanner())->scan(MockedHeavyFixture::class);
 
         $this->assertTrue($scanResult->inspectable);
-        $this->assertNotContains('PDO', $scanResult->consumedClasses);
+        $this->assertNotContains('class:PDO', $scanResult->consumedUsages);
     }
 
     /**
@@ -103,7 +107,7 @@ final class UsageClassificationTest extends TestCase
         $pyrameterConfig = PyrameterConfig::defaults();
         $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
 
-        $this->assertSame(TestKind::Integration, $usageClassifier->classify([$functionName]));
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['function:' . $functionName]));
     }
 
     /**
@@ -179,7 +183,61 @@ final class UsageClassificationTest extends TestCase
         $scanResult = (new TestUsageScanner())->scan('Boundwize\Pyrameter\Tests\Fixtures\MissingFixture');
 
         $this->assertFalse($scanResult->inspectable);
-        $this->assertSame([], $scanResult->consumedClasses);
+        $this->assertSame([], $scanResult->consumedUsages);
         $this->assertNotNull($scanResult->errorMessage);
+    }
+
+    public function testClassNamedLikeFileOperationFunctionStaysUnit(): void
+    {
+        $parser = (new ParserFactory())->createForNewestSupportedVersion();
+        $nodes  = $parser->parse(<<<'PHP'
+<?php
+
+class file_get_contents
+{
+}
+
+final class FileOperationNamedClassConsumer
+{
+    public function method(): void
+    {
+        $this->assertInstanceOf('file_get_contents', new file_get_contents());
+    }
+}
+PHP);
+
+        $this->assertIsArray($nodes);
+
+        $consumedUsages  = (new ConsumedUsageExtractor())->extract(array_values($nodes));
+        $pyrameterConfig = PyrameterConfig::defaults();
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(['class:file_get_contents'], $consumedUsages);
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify($consumedUsages));
+    }
+
+    public function testClassNamedLikeFileOperationFunctionDeclaredElsewhereStaysUnit(): void
+    {
+        $parser = (new ParserFactory())->createForNewestSupportedVersion();
+        $nodes  = $parser->parse(<<<'PHP'
+<?php
+
+final class FileOperationNamedClassConsumer
+{
+    public function method(): void
+    {
+        $this->assertInstanceOf('file_get_contents', new file_get_contents());
+    }
+}
+PHP);
+
+        $this->assertIsArray($nodes);
+
+        $consumedUsages  = (new ConsumedUsageExtractor())->extract(array_values($nodes));
+        $pyrameterConfig = PyrameterConfig::defaults();
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(['class:file_get_contents'], $consumedUsages);
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify($consumedUsages));
     }
 }

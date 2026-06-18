@@ -8,7 +8,10 @@ use Boundwize\Pyrameter\Config\PyrameterConfig;
 use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\UsageClassifier;
 use InvalidArgumentException;
+use PDO;
 use PHPUnit\Framework\TestCase;
+
+use function strtolower;
 
 final class PyrameterConfigTest extends TestCase
 {
@@ -51,11 +54,45 @@ final class PyrameterConfigTest extends TestCase
         $this->assertSame(TestKind::E2E, $usageClassifier->classify(['App\Tests\Browser\Checkout']));
     }
 
+    public function testUsesNamespaceDoesNotMatchPartialNamespaceSegment(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()->usesNamespace('App', TestKind::Functional);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::Functional, $usageClassifier->classify(['App\Foo']));
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify(['Application\Foo']));
+    }
+
+    public function testUsesNamespaceWithTrailingBackslashDoesNotMatchPartialNamespaceSegment(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()->usesNamespace('App\\', TestKind::Functional);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::Functional, $usageClassifier->classify(['App\Foo']));
+        $this->assertSame(TestKind::Unit, $usageClassifier->classify(['Application\Foo']));
+    }
+
+    public function testUsesClassMatchesClassUsageCaseInsensitively(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()->usesClass(PDO::class, TestKind::Integration);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['\\' . strtolower(PDO::class)]));
+    }
+
+    public function testUsesNamespaceMatchesNamespaceUsageCaseInsensitively(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()->usesNamespace('App\Tests\Browser', TestKind::E2E);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(TestKind::E2E, $usageClassifier->classify(['\aPp\tEsTs\bRoWsEr\Checkout']));
+    }
+
     public function testUsesFunctionMatchesFunctionUsageCaseInsensitively(): void
     {
         $pyrameterConfig = PyrameterConfig::create()->usesFunction('file_get_contents', TestKind::Integration);
         $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
 
-        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['FILE_GET_CONTENTS']));
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify(['function:\FILE_GET_CONTENTS']));
     }
 }

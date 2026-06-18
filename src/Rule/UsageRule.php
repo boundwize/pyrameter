@@ -7,41 +7,88 @@ namespace Boundwize\Pyrameter\Rule;
 use Boundwize\Pyrameter\TestKind;
 
 use function ltrim;
+use function sprintf;
+use function str_contains;
 use function str_ends_with;
 use function str_starts_with;
+use function strlen;
 use function strtolower;
+use function substr;
 
 final readonly class UsageRule
 {
     public function __construct(
-        public string $classOrNamespace,
+        public string $usage,
         public TestKind $kind,
-        private bool $caseInsensitive = false,
+        private UsageType $usageType = UsageType::ClassLike,
     ) {
     }
 
     public function matches(string $consumedUsage): bool
     {
-        $configuredUsage = $this->normalize($this->classOrNamespace);
-        $consumedUsage   = $this->normalize($consumedUsage);
+        $configuredUsage                     = $this->normalizedUsage();
+        [$consumedUsageType, $consumedUsage] = $this->normalizeConsumedUsage($consumedUsage);
 
-        if ($consumedUsage === $configuredUsage) {
-            return true;
-        }
-
-        if (! str_ends_with($configuredUsage, '\\')) {
+        if ($consumedUsageType !== $this->usageType) {
             return false;
         }
 
-        return str_starts_with($consumedUsage, $configuredUsage);
+        if (! str_ends_with($configuredUsage, '\\')) {
+            return $consumedUsage === $configuredUsage;
+        }
+
+        return $this->matchesNamespacePrefix($consumedUsage, $configuredUsage);
+    }
+
+    public function normalizedUsage(): string
+    {
+        return $this->normalize($this->usage);
+    }
+
+    public function isNamespaceRule(): bool
+    {
+        return $this->usageType === UsageType::ClassLike && str_ends_with($this->normalizedUsage(), '\\');
+    }
+
+    public function normalizedKey(): string
+    {
+        return $this->usageKey($this->usageType, $this->normalizedUsage());
     }
 
     private function normalize(string $usage): string
     {
-        if (! $this->caseInsensitive) {
-            return $usage;
+        return strtolower(ltrim($usage, '\\'));
+    }
+
+    private function matchesNamespacePrefix(string $consumedUsage, string $namespaceUsage): bool
+    {
+        return str_ends_with($namespaceUsage, '\\')
+            && strlen($consumedUsage) > strlen($namespaceUsage)
+            && str_starts_with($consumedUsage, $namespaceUsage);
+    }
+
+    /**
+     * @return array{UsageType, string}
+     */
+    private function normalizeConsumedUsage(string $consumedUsage): array
+    {
+        if (! str_contains($consumedUsage, ':')) {
+            return [$this->usageType, $this->normalize($consumedUsage)];
         }
 
-        return strtolower(ltrim($usage, '\\'));
+        foreach (UsageType::cases() as $usageType) {
+            $prefix = $usageType->value . ':';
+
+            if (str_starts_with($consumedUsage, $prefix)) {
+                return [$usageType, $this->normalize(substr($consumedUsage, strlen($prefix)))];
+            }
+        }
+
+        return [$this->usageType, $this->normalize($consumedUsage)];
+    }
+
+    private function usageKey(UsageType $usageType, string $normalizedUsage): string
+    {
+        return sprintf('%s:%s', $usageType->value, $normalizedUsage);
     }
 }

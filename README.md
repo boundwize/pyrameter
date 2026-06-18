@@ -129,7 +129,7 @@ return PyrameterConfig::create()
 
 With `create()`, only the rules you add are used for heavier classifications; all other executed tests stay `unit`.
 
-Use `usesClass()` for a specific class, `usesNamespace()` for a namespace prefix, and `usesFunction()` for a function call that should classify a test as a heavier kind. Function matching is case-insensitive and accepts names with or without a leading backslash.
+Use `usesClass()` for a specific class, `usesNamespace()` for a namespace prefix, and `usesFunction()` for a function call that should classify a test as a heavier kind. Names can be configured with or without a leading backslash.
 
 To load a config file from another path, pass the `config` parameter to the PHPUnit extension:
 
