@@ -212,7 +212,7 @@ PHP);
         $pyrameterConfig = PyrameterConfig::defaults();
         $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
 
-        $this->assertSame([], $consumedUsages);
+        $this->assertSame(['class:file_get_contents'], $consumedUsages);
         $this->assertSame(TestKind::Unit, $usageClassifier->classify($consumedUsages));
     }
 

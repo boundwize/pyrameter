@@ -26,7 +26,6 @@ use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Property;
-use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\UnionType;
 use PhpParser\NodeVisitorAbstract;
@@ -42,9 +41,6 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
     /** @var array<string, true> */
     private array $consumedUsages = [];
 
-    /** @var array<string, true> */
-    private array $declaredUsages = [];
-
     /** @var list<string> */
     private array $mockMethods = [
         'createMock',
@@ -56,10 +52,6 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
-        if ($node instanceof Class_ || $node instanceof Interface_ || $node instanceof Trait_) {
-            $this->addDeclaredUsage($node);
-        }
-
         if ($node instanceof Class_) {
             $this->addName($node->extends);
 
@@ -149,7 +141,6 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
     public function reset(): void
     {
         $this->consumedUsages = [];
-        $this->declaredUsages = [];
     }
 
     private function addType(null|Identifier|Name|ComplexType $type): void
@@ -202,19 +193,7 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
             return;
         }
 
-        if (isset($this->declaredUsages[strtolower($usage)])) {
-            return;
-        }
-
         $this->consumedUsages[$this->usageKey(UsageType::ClassLike, $usage)] = true;
-    }
-
-    private function addDeclaredUsage(Class_|Interface_|Trait_ $node): void
-    {
-        $namespacedName = $node->getAttribute('namespacedName');
-        $declaredUsage  = $namespacedName instanceof Name ? $namespacedName->toString() : (string) $node->name;
-
-        $this->declaredUsages[strtolower(ltrim($declaredUsage, '\\'))] = true;
     }
 
     private function usageKey(UsageType $usageType, string $usage): string
