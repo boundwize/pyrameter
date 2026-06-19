@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boundwize\Pyrameter\Tests;
+namespace Boundwize\Pyrameter\Tests\ValueObject;
 
 use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\ValueObject\PyramidSummary;
