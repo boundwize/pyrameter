@@ -9,13 +9,9 @@ use Boundwize\Pyrameter\Event\PrintReportSubscriber;
 use Boundwize\Pyrameter\Report\PyramidReporter;
 use Boundwize\Pyrameter\TestCollector;
 use Boundwize\Pyrameter\TestKind;
+use Boundwize\Pyrameter\Tests\Fixtures\TelemetryInfoFactory;
 use Boundwize\Pyrameter\ValueObject\TestRecord;
-use PHPUnit\Event\Telemetry\Duration;
-use PHPUnit\Event\Telemetry\GarbageCollectorStatus;
-use PHPUnit\Event\Telemetry\HRTime;
 use PHPUnit\Event\Telemetry\Info;
-use PHPUnit\Event\Telemetry\MemoryUsage;
-use PHPUnit\Event\Telemetry\Snapshot;
 use PHPUnit\Event\TestRunner\ExecutionFinished;
 use PHPUnit\Framework\TestCase;
 
@@ -64,15 +60,6 @@ final class PrintReportSubscriberTest extends TestCase
 
     private function telemetryInfo(): Info
     {
-        $duration    = Duration::fromSecondsAndNanoseconds(0, 0);
-        $memoryUsage = MemoryUsage::fromBytes(0);
-        $snapshot    = new Snapshot(
-            HRTime::fromSecondsAndNanoseconds(0, 0),
-            $memoryUsage,
-            $memoryUsage,
-            new GarbageCollectorStatus(0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, false, false, false, 0),
-        );
-
-        return new Info($snapshot, $duration, $memoryUsage, $duration, $memoryUsage);
+        return TelemetryInfoFactory::create();
     }
 }
