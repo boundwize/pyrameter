@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boundwize\Pyrameter\Tests\Detection;
 
 use Boundwize\Pyrameter\Detection\TestUsageScanner;
+use Boundwize\Pyrameter\Tests\Fixtures\MockedHeavyFixture;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use stdClass;
@@ -21,6 +22,23 @@ use const DIRECTORY_SEPARATOR;
 
 final class TestUsageScannerTest extends TestCase
 {
+    public function testItRemovesMockTargetsFromConsumedUsages(): void
+    {
+        $scanResult = (new TestUsageScanner())->scan(MockedHeavyFixture::class);
+
+        $this->assertTrue($scanResult->inspectable);
+        $this->assertNotContains('class:PDO', $scanResult->consumedUsages);
+    }
+
+    public function testItReturnsNoConsumedUsagesForAnUninspectableClass(): void
+    {
+        $scanResult = (new TestUsageScanner())->scan('Boundwize\Pyrameter\Tests\Fixtures\MissingFixture');
+
+        $this->assertFalse($scanResult->inspectable);
+        $this->assertSame([], $scanResult->consumedUsages);
+        $this->assertNotNull($scanResult->errorMessage);
+    }
+
     public function testItReportsUninspectableResultForInternalClassesWithoutSourceFiles(): void
     {
         $scanResult = (new TestUsageScanner())->scan(stdClass::class);
