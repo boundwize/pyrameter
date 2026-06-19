@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Event;
 
+use Boundwize\Pyrameter\Analysis\TestCollector;
+use Boundwize\Pyrameter\Analysis\UsageClassifier;
 use Boundwize\Pyrameter\Detection\TestUsageScanner;
-use Boundwize\Pyrameter\TestCollector;
 use Boundwize\Pyrameter\TestKind;
-use Boundwize\Pyrameter\UsageClassifier;
 use Boundwize\Pyrameter\ValueObject\TestRecord;
 use PHPUnit\Event\Test\Finished;
 use PHPUnit\Event\Test\FinishedSubscriber;

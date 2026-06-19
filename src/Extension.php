@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter;
 
+use Boundwize\Pyrameter\Analysis\TestCollector;
+use Boundwize\Pyrameter\Analysis\UsageClassifier;
 use Boundwize\Pyrameter\Config\PyrameterConfigLoader;
 use Boundwize\Pyrameter\Detection\TestUsageScanner;
 use Boundwize\Pyrameter\Event\CollectTestResultSubscriber;

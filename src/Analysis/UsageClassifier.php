@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Boundwize\Pyrameter;
+namespace Boundwize\Pyrameter\Analysis;
 
 use Boundwize\Pyrameter\Rule\UsageRule;
 use Boundwize\Pyrameter\Rule\UsageType;
+use Boundwize\Pyrameter\TestKind;
 
 use function array_keys;
 use function ltrim;

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Tests\Event;
 
+use Boundwize\Pyrameter\Analysis\TestCollector;
+use Boundwize\Pyrameter\Analysis\UsageClassifier;
 use Boundwize\Pyrameter\Config\PyrameterConfig;
 use Boundwize\Pyrameter\Detection\TestUsageScanner;
 use Boundwize\Pyrameter\Event\CollectTestResultSubscriber;
-use Boundwize\Pyrameter\TestCollector;
 use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\Tests\Fixtures\SimpleUnitFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\TelemetryInfoFactory;
-use Boundwize\Pyrameter\UsageClassifier;
 use PHPUnit\Event\Code\Phpt;
 use PHPUnit\Event\Code\TestDox;
 use PHPUnit\Event\Code\TestMethod;

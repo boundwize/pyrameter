@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Tests\Config;
 
+use Boundwize\Pyrameter\Analysis\UsageClassifier;
 use Boundwize\Pyrameter\Config\PyrameterConfig;
 use Boundwize\Pyrameter\TestKind;
-use Boundwize\Pyrameter\UsageClassifier;
 use InvalidArgumentException;
 use PDO;
 use PHPUnit\Framework\TestCase;
