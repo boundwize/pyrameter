@@ -111,14 +111,13 @@ final class PyrameterConfig
             ->usesNamespace('Predis\\', TestKind::Integration)
             ->usesNamespace('Symfony\Bundle\FrameworkBundle\Test\\', TestKind::Functional)
             ->usesClass(ControllerTestTrait::class, TestKind::Functional)
+            ->usesClass(
+                DatabaseTestTrait::class,
+                TestKind::Integration,
+                unless: [ControllerTestTrait::class],
+            )
             ->usesNamespace('Symfony\Component\Panther\\', TestKind::E2E)
             ->usesNamespace('Facebook\WebDriver\\', TestKind::E2E);
-
-        $pyrameterConfig->usageRules[] = new UsageRule(
-            DatabaseTestTrait::class,
-            TestKind::Integration,
-            unless: [ControllerTestTrait::class],
-        );
 
         foreach (self::FILE_OPERATION_FUNCTIONS as $functionName) {
             $pyrameterConfig->usesFunction($functionName, TestKind::Integration);
@@ -134,24 +133,40 @@ final class PyrameterConfig
 
     /**
      * @param class-string $className
+     * @param list<string> $unless
      */
-    public function usesClass(string $className, TestKind $testKind): self
+    public function usesClass(string $className, TestKind $testKind, array $unless = []): self
     {
-        $this->usageRules[] = new UsageRule(ltrim($className, '\\'), $testKind);
+        $this->usageRules[] = new UsageRule(ltrim($className, '\\'), $testKind, unless: $unless);
 
         return $this;
     }
 
-    public function usesNamespace(string $namespace, TestKind $testKind): self
+    /**
+     * @param list<string> $unless
+     */
+    public function usesNamespace(string $namespace, TestKind $testKind, array $unless = []): self
     {
-        $this->usageRules[] = new UsageRule(rtrim(ltrim($namespace, '\\'), '\\') . '\\', $testKind);
+        $this->usageRules[] = new UsageRule(
+            rtrim(ltrim($namespace, '\\'), '\\') . '\\',
+            $testKind,
+            unless: $unless,
+        );
 
         return $this;
     }
 
-    public function usesFunction(string $functionName, TestKind $testKind): self
+    /**
+     * @param list<string> $unless
+     */
+    public function usesFunction(string $functionName, TestKind $testKind, array $unless = []): self
     {
-        $this->usageRules[] = new UsageRule(ltrim($functionName, '\\'), $testKind, UsageType::Function);
+        $this->usageRules[] = new UsageRule(
+            ltrim($functionName, '\\'),
+            $testKind,
+            usageType: UsageType::Function,
+            unless: $unless,
+        );
 
         return $this;
     }

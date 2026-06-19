@@ -95,4 +95,22 @@ final class PyrameterConfigTest extends TestCase
 
         $this->assertSame(TestKind::Integration, $usageClassifier->classify(['function:\FILE_GET_CONTENTS']));
     }
+
+    public function testUsesClassCanBeSuppressedByAnotherConsumedClass(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()
+            ->usesClass(
+                PDO::class,
+                TestKind::Integration,
+                unless: [self::class],
+            )
+            ->usesClass(self::class, TestKind::Functional);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(
+            TestKind::Functional,
+            $usageClassifier->classify([PDO::class, self::class]),
+        );
+        $this->assertSame(TestKind::Integration, $usageClassifier->classify([PDO::class]));
+    }
 }

@@ -50,19 +50,17 @@ Total: 60 tests
 Your suite is getting heavier.
 ```
 
-Pyrameter is a PHPUnit extension that reports the shape of your test suite after PHPUnit runs. It classifies each executed test as `unit`, `functional`, `integration`, or `e2e`, compares the totals with your target shape, and can fail CI when the suite drifts too far.
-
-It works from the classes and namespaces used by your test files, so you can define what counts as "heavy" in your project instead of relying on test directory names.
+Pyrameter classifies executed tests as `unit`, `functional`, `integration`, or `e2e` from the code they use, then compares the totals with your target shape.
 
 ## Quick start
 
-Install Pyrameter as a dev dependency:
+1. Install via `composer`:
 
 ```bash
 composer require --dev boundwize/pyrameter
 ```
 
-Register the extension in `phpunit.xml`:
+2. Register extension to `phpunit.xml`:
 
 ```xml
 <extensions>
@@ -70,17 +68,44 @@ Register the extension in `phpunit.xml`:
 </extensions>
 ```
 
-Run PHPUnit:
+3. Run PHPUnit as usual:
 
 ```bash
 vendor/bin/phpunit
 ```
 
-Without extra configuration, Pyrameter uses its default rules and target shape. If a `pyrameter.php` file exists in the current working directory, it is loaded automatically.
+This uses the default rules and target shape.
 
 ## Configure
 
-Create `pyrameter.php` when you want to tune classification rules, target percentages, or CI behavior:
+### Defaults or an empty config
+
+Choose the starting point before adding rules:
+
+| Start with | Behavior |
+| --- | --- |
+| `PyrameterConfig::defaults()` | Starts with built-in rules for common database, cache, filesystem, Symfony, CodeIgniter, Panther, and WebDriver usage, plus the default target shape. Rule calls add more rules; `targetShape()` replaces the default targets. |
+| `PyrameterConfig::create()` | Starts with no rules and no targets. Only your chained rules classify tests as heavier than `unit`. |
+
+Extend the built-in configuration:
+
+```php
+return PyrameterConfig::defaults()
+    ->usesClass(App\Search\ExternalSearch::class, TestKind::Integration);
+```
+
+Define the complete configuration yourself:
+
+```php
+return PyrameterConfig::create()
+    ->usesClass(PDO::class, TestKind::Integration)
+    ->targetShape(
+        unit: ['min' => 80],
+        integration: ['max' => 20],
+    );
+```
+
+A complete `pyrameter.php` can then combine rules, targets, and CI behavior:
 
 ```php
 <?php
@@ -99,42 +124,52 @@ return PyrameterConfig::defaults()
         functional: ['max' => 15],
         integration: ['max' => 7],
         e2e: ['max' => 2],
-    );
+    )
+    ->failOnViolation();
 ```
 
-`PyrameterConfig::defaults()` includes rules for common database usage (including CodeIgniter database tests),
-cache, filesystem, Symfony and CodeIgniter controller functional tests, Panther, and WebDriver usage.
-CodeIgniter tests using both `ControllerTestTrait` and `DatabaseTestTrait` remain functional; database-only tests
-are integration tests.
+Rules can match a class or trait, a namespace prefix, or a function:
 
-Use `PyrameterConfig::create()` instead when you want to start with no rules or targets and define everything yourself:
+| Rule | Example |
+| --- | --- |
+| `usesClass()` | `->usesClass(PDO::class, TestKind::Integration)` |
+| `usesNamespace()` | `->usesNamespace('App\Tests\Browser\\', TestKind::E2E)` |
+| `usesFunction()` | `->usesFunction('file_put_contents', TestKind::Integration)` |
+
+### Rule exceptions
+
+Use `unless` to ignore a rule when the test also consumes another class:
 
 ```php
-<?php
-
-declare(strict_types=1);
-
-use Boundwize\Pyrameter\Config\PyrameterConfig;
-use Boundwize\Pyrameter\TestKind;
+use App\Tests\Concerns\InteractsWithDatabase;
+use App\Tests\Concerns\MakesHttpRequests;
 
 return PyrameterConfig::create()
-    ->usesClass(PDO::class, TestKind::Integration)
-    ->usesNamespace('App\Controller\\', TestKind::Functional)
-    ->usesNamespace('App\Browser\\', TestKind::E2E)
-    ->usesFunction('file_put_contents', TestKind::Integration)
-    ->targetShape(
-        unit: ['min' => 70],
-        functional: ['max' => 20],
-        integration: ['max' => 8],
-        e2e: ['max' => 2],
-    );
+    ->usesClass(
+        InteractsWithDatabase::class,
+        TestKind::Integration,
+        unless: [MakesHttpRequests::class],
+    )
+    ->usesClass(MakesHttpRequests::class, TestKind::Functional);
 ```
 
-With `create()`, only the rules you add are used for heavier classifications; all other executed tests stay `unit`.
+| Traits used by the test | Result |
+| --- | --- |
+| `InteractsWithDatabase` | `integration` |
+| `MakesHttpRequests` | `functional` |
+| Both traits | `functional` |
 
-Use `usesClass()` for a specific class, `usesNamespace()` for a namespace prefix, and `usesFunction()` for a function call that should classify a test as a heavier kind. Names can be configured with or without a leading backslash.
+The optional `unless` argument is also available on `usesNamespace()` and `usesFunction()`.
 
-To load a config file from another path, pass the `config` parameter to the PHPUnit extension:
+The equivalent CodeIgniter exception is already included in the defaults:
+
+```php
+return PyrameterConfig::defaults();
+```
+
+Tests using only `DatabaseTestTrait` are `integration`; tests that also use `ControllerTestTrait` remain `functional`.
+
+Load a config from another path:
 
 ```xml
 <extensions>
@@ -146,8 +181,6 @@ To load a config file from another path, pass the `config` parameter to the PHPU
 
 ## Classification
 
-Pyrameter scans the consumed classes, namespaces, and function calls in each test file:
-
 | Usage | Kind |
 | --- | --- |
 | No configured heavy usage | `unit` |
@@ -155,19 +188,21 @@ Pyrameter scans the consumed classes, namespaces, and function calls in each tes
 | Database, cache, queue, filesystem, or external boundary | `integration` |
 | Browser driver usage | `e2e` |
 
-When multiple rules match, the heaviest kind wins. Mocked heavy dependencies stay `unit` unless the test file also consumes a class or namespace you configured as heavier.
-
-Counts follow PHPUnit's executed test count, so data-provider datasets are counted separately.
+- The heaviest matching rule wins.
+- Mocked dependencies do not trigger a rule by themselves.
+- Data-provider datasets are counted separately.
 
 ## Targets and CI
 
-Targets are percentages. Missing `min` means `0`; missing `max` means `100`.
-
-By default, Pyrameter is report-only. To fail PHPUnit when the target shape is violated, enable `failOnViolation()`:
-
 ```php
 return PyrameterConfig::defaults()
+    ->targetShape(
+        unit: ['min' => 70],
+        functional: ['max' => 20],
+        integration: ['max' => 8],
+        e2e: ['max' => 2],
+    )
     ->failOnViolation();
 ```
 
-Pyrameter is a pressure gauge for suite shape, not a perfect taxonomy judge. Tune the rules to match how your team defines unit, functional, integration, and e2e tests.
+Targets are percentages. An omitted `min` is `0`; an omitted `max` is `100`. Without `failOnViolation()`, Pyrameter only reports violations.
