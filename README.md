@@ -50,17 +50,17 @@ Total: 60 tests
 Your suite is getting heavier.
 ```
 
-Pyrameter classifies executed tests as `unit`, `functional`, `integration`, or `e2e` from the code they use, then compares the totals with your target shape.
+Pyrameter classifies executed tests as `unit`, `functional`, `integration`, or `e2e` based on the code they use, then compares the totals with your target shape.
 
 ## Quick start
 
-1. Install via `composer`:
+1. Install with Composer:
 
 ```bash
 composer require --dev boundwize/pyrameter
 ```
 
-2. Register extension to `phpunit.xml`:
+2. Register the extension in `phpunit.xml`:
 
 ```xml
 <extensions>
@@ -78,14 +78,14 @@ This uses the default rules and target shape.
 
 ## Configure
 
-### Defaults or an empty config
+### Default or empty configuration
 
 Choose the starting point before adding rules:
 
 | Start with | Behavior |
 | --- | --- |
-| `PyrameterConfig::defaults()` | Starts with built-in rules for common database, cache, filesystem, Symfony, CodeIgniter, Panther, and WebDriver usage, plus the default target shape. Rule calls add more rules; `targetShape()` replaces the default targets. |
-| `PyrameterConfig::create()` | Starts with no rules and no targets. Only your chained rules classify tests as heavier than `unit`. |
+| `PyrameterConfig::defaults()` | Starts with built-in rules and the default target shape. The rules cover common database, cache, and filesystem usage; Symfony and CodeIgniter functional tests; and Panther and WebDriver browser tests. Classification methods add rules; `targetShape()` replaces the targets. |
+| `PyrameterConfig::create()` | Starts with no rules or targets. Only rules you add can classify tests as heavier than `unit`. |
 
 Extend the built-in configuration:
 
@@ -105,7 +105,7 @@ return PyrameterConfig::create()
     );
 ```
 
-A complete `pyrameter.php` can then combine rules, targets, and CI behavior:
+A complete `pyrameter.php` can combine rules, targets, and CI behavior:
 
 ```php
 <?php
@@ -138,7 +138,7 @@ Rules can match a class or trait, a namespace prefix, or a function:
 
 ### Rule exceptions
 
-Use `unless` to ignore a rule when the test also consumes another class:
+Use `unless` to ignore a rule when the test also consumes another class or trait:
 
 ```php
 use App\Tests\Concerns\InteractsWithDatabase;
@@ -161,15 +161,15 @@ return PyrameterConfig::create()
 
 The optional `unless` argument is also available on `usesNamespace()` and `usesFunction()`.
 
-The equivalent CodeIgniter exception is already included in the defaults:
+The equivalent CodeIgniter exception is already included in `defaults()`:
 
 ```php
 return PyrameterConfig::defaults();
 ```
 
-Tests using only `DatabaseTestTrait` are `integration`; tests that also use `ControllerTestTrait` remain `functional`.
+Tests that use only `DatabaseTestTrait` are classified as `integration`; tests that also use `ControllerTestTrait` remain `functional`.
 
-Load a config from another path:
+Load a configuration file from another path:
 
 ```xml
 <extensions>
@@ -183,7 +183,7 @@ Load a config from another path:
 
 | Usage | Kind |
 | --- | --- |
-| No configured heavy usage | `unit` |
+| No matching heavier rule | `unit` |
 | Framework test runtime | `functional` |
 | Database, cache, queue, filesystem, or external boundary | `integration` |
 | Browser driver usage | `e2e` |
@@ -205,4 +205,4 @@ return PyrameterConfig::defaults()
     ->failOnViolation();
 ```
 
-Targets are percentages. An omitted `min` is `0`; an omitted `max` is `100`. Without `failOnViolation()`, Pyrameter only reports violations.
+Targets are percentages. An omitted `min` defaults to `0`; an omitted `max` defaults to `100`. Without `failOnViolation()`, Pyrameter only reports violations.
