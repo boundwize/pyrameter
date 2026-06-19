@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Boundwize\Pyrameter\Tests;
+namespace Boundwize\Pyrameter\Tests\Analysis;
 
+use Boundwize\Pyrameter\Analysis\UsageClassifier;
 use Boundwize\Pyrameter\Rule\UsageRule;
 use Boundwize\Pyrameter\Rule\UsageType;
 use Boundwize\Pyrameter\TestKind;
-use Boundwize\Pyrameter\UsageClassifier;
 use PHPUnit\Framework\TestCase;
 
 final class UsageClassifierTest extends TestCase

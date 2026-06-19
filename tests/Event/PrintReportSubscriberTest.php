@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Tests\Event;
 
+use Boundwize\Pyrameter\Analysis\TestCollector;
 use Boundwize\Pyrameter\Config\PyrameterConfig;
 use Boundwize\Pyrameter\Event\PrintReportSubscriber;
 use Boundwize\Pyrameter\Report\PyramidReporter;
-use Boundwize\Pyrameter\TestCollector;
 use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\Tests\Fixtures\TelemetryInfoFactory;
 use Boundwize\Pyrameter\ValueObject\TestRecord;

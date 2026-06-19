@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boundwize\Pyrameter\Tests;
+namespace Boundwize\Pyrameter\Tests\Analysis;
 
-use Boundwize\Pyrameter\TestCollector;
+use Boundwize\Pyrameter\Analysis\TestCollector;
 use Boundwize\Pyrameter\TestKind;
 use Boundwize\Pyrameter\ValueObject\TestRecord;
 use PHPUnit\Framework\TestCase;

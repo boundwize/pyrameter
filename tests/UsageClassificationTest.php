@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boundwize\Pyrameter\Tests;
 
+use Boundwize\Pyrameter\Analysis\UsageClassifier;
 use Boundwize\Pyrameter\Config\PyrameterConfig;
 use Boundwize\Pyrameter\Detection\ConsumedUsageExtractor;
 use Boundwize\Pyrameter\Detection\TestUsageScanner;
@@ -23,7 +24,6 @@ use Boundwize\Pyrameter\Tests\Fixtures\ProductionClassOnlyFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\SimpleUnitFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\SymfonyFunctionalFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\WebDriverE2EFixture;
-use Boundwize\Pyrameter\UsageClassifier;
 use PhpParser\ParserFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
