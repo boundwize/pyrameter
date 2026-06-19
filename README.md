@@ -54,13 +54,13 @@ Pyrameter classifies executed tests as `unit`, `functional`, `integration`, or `
 
 ## Quick start
 
-1. Install with Composer:
+Install with Composer:
 
 ```bash
 composer require --dev boundwize/pyrameter
 ```
 
-2. Register the extension in `phpunit.xml`:
+Register the extension in `phpunit.xml`:
 
 ```xml
 <extensions>
@@ -68,7 +68,7 @@ composer require --dev boundwize/pyrameter
 </extensions>
 ```
 
-3. Run PHPUnit as usual:
+Run PHPUnit as usual:
 
 ```bash
 vendor/bin/phpunit
