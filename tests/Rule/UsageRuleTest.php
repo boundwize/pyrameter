@@ -72,4 +72,16 @@ final class UsageRuleTest extends TestCase
 
         $this->assertSame(['class:framework\controllertrait'], $usageRule->normalizedUnlessKeys());
     }
+
+    public function testItNormalizesFunctionRuleUnlessUsagesAsClassLike(): void
+    {
+        $usageRule = new UsageRule(
+            'file_put_contents',
+            TestKind::Integration,
+            UsageType::Function,
+            unless: ['\APP\Tests\UsesVirtualFilesystem'],
+        );
+
+        $this->assertSame(['class:app\tests\usesvirtualfilesystem'], $usageRule->normalizedUnlessKeys());
+    }
 }
