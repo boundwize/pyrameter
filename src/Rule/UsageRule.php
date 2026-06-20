@@ -67,7 +67,7 @@ final readonly class UsageRule
         $normalizedUnlessKeys = [];
 
         foreach ($this->unless as $unlessUsage) {
-            $normalizedUnlessKeys[] = $this->usageKey($this->usageType, $this->normalize($unlessUsage));
+            $normalizedUnlessKeys[] = $this->usageKey(UsageType::ClassLike, $this->normalize($unlessUsage));
         }
 
         return $normalizedUnlessKeys;

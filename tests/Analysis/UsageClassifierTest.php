@@ -224,6 +224,26 @@ final class UsageClassifierTest extends TestCase
         $this->assertSame(TestKind::Integration, $usageClassifier->classify(['Framework\DatabaseTrait']));
     }
 
+    public function testFunctionRuleCanBeSuppressedByClassLikeUsage(): void
+    {
+        $pyrameterConfig = PyrameterConfig::create()
+            ->usesFunction(
+                'file_put_contents',
+                TestKind::Integration,
+                unless: [self::class],
+            )
+            ->usesClass(self::class, TestKind::Functional);
+        $usageClassifier = new UsageClassifier($pyrameterConfig->usageRules());
+
+        $this->assertSame(
+            TestKind::Functional,
+            $usageClassifier->classify([
+                'function:file_put_contents',
+                'class:' . self::class,
+            ]),
+        );
+    }
+
     public function testHeaviestMatchingRuleWinsAfterRulesArePrecompiled(): void
     {
         $usageClassifier = new UsageClassifier([

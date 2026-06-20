@@ -159,7 +159,21 @@ return PyrameterConfig::create()
 | `MakesHttpRequests` | `functional` |
 | Both traits | `functional` |
 
-The optional `unless` argument is also available on `usesNamespace()` and `usesFunction()`.
+The optional `unless` argument is also available on `usesNamespace()` and `usesFunction()`. Its values always identify classes or traits, regardless of the rule type. For example, a filesystem function rule can be suppressed when a test uses a virtual-filesystem trait:
+
+```php
+use App\Tests\Concerns\UsesVirtualFilesystem;
+
+return PyrameterConfig::create()
+    ->usesFunction(
+        'file_put_contents',
+        TestKind::Integration,
+        unless: [UsesVirtualFilesystem::class],
+    )
+    ->usesClass(UsesVirtualFilesystem::class, TestKind::Functional);
+```
+
+A test that calls `file_put_contents()` and uses `UsesVirtualFilesystem` is classified as `functional`.
 
 The equivalent CodeIgniter exception is already included in `defaults()`:
 
