@@ -8,11 +8,8 @@ use Boundwize\Pyrameter\Analysis\TestCollector;
 use Boundwize\Pyrameter\Report\PyramidReporter;
 use Boundwize\Pyrameter\Report\SuiteShapeResolver;
 use Boundwize\Pyrameter\Target\TargetEvaluator;
-use Closure;
 use PHPUnit\Event\TestRunner\ExecutionFinished;
 use PHPUnit\Event\TestRunner\ExecutionFinishedSubscriber;
-
-use const PHP_EOL;
 
 final readonly class PrintReportSubscriber implements ExecutionFinishedSubscriber
 {
@@ -22,14 +19,11 @@ final readonly class PrintReportSubscriber implements ExecutionFinishedSubscribe
 
     /**
      * @param array<string, array{min: float, max: float}> $targets
-     * @param null|Closure(int): void $exit
      */
     public function __construct(
         private TestCollector $testCollector,
         array $targets,
         private PyramidReporter $pyramidReporter,
-        private bool $failOnViolation = false,
-        private ?Closure $exit = null,
     ) {
         $this->targetEvaluator    = new TargetEvaluator($targets);
         $this->suiteShapeResolver = new SuiteShapeResolver();
@@ -42,24 +36,5 @@ final readonly class PrintReportSubscriber implements ExecutionFinishedSubscribe
         $suiteShape       = $this->suiteShapeResolver->resolve($pyramidSummary, $targetEvaluation);
 
         $this->pyramidReporter->print($pyramidSummary, $targetEvaluation, $suiteShape);
-
-        if ($this->failOnViolation && ! $targetEvaluation->allPassed()) {
-            echo PHP_EOL . 'Pyrameter target shape violated.' . PHP_EOL;
-
-            $this->exit(1);
-        }
-    }
-
-    private function exit(int $status): void
-    {
-        if ($this->exit instanceof Closure) {
-            ($this->exit)($status);
-
-            return;
-        }
-
-        // @codeCoverageIgnoreStart
-        exit($status);
-        // @codeCoverageIgnoreEnd
     }
 }

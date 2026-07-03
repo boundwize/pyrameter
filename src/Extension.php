@@ -9,6 +9,7 @@ use Boundwize\Pyrameter\Analysis\UsageClassifier;
 use Boundwize\Pyrameter\Config\PyrameterConfigLoader;
 use Boundwize\Pyrameter\Detection\TestUsageScanner;
 use Boundwize\Pyrameter\Event\CollectTestResultSubscriber;
+use Boundwize\Pyrameter\Event\FailOnTargetViolationSubscriber;
 use Boundwize\Pyrameter\Event\PrintReportSubscriber;
 use Boundwize\Pyrameter\Report\PyramidReporter;
 use PHPUnit\Runner\Extension\Extension as PHPUnitExtension;
@@ -40,6 +41,11 @@ final class Extension implements PHPUnitExtension
             testCollector: $testCollector,
             targets: $pyrameterConfig->targetPercentages(),
             pyramidReporter: new PyramidReporter(),
+        ));
+
+        $facade->registerSubscriber(new FailOnTargetViolationSubscriber(
+            testCollector: $testCollector,
+            targets: $pyrameterConfig->targetPercentages(),
             failOnViolation: $pyrameterConfig->shouldFailOnViolation(),
         ));
     }
