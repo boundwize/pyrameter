@@ -40,6 +40,21 @@ final class ExtensionSmokeTest extends TestCase
         $this->assertStringNotContainsString('Exception in third-party event subscriber', $output);
     }
 
+    public function testFailOnViolationDoesNotHidePhpunitFailureDetails(): void
+    {
+        $configuration       = __DIR__ . '/Fixtures/SmokeProject/phpunit-failing-test.xml';
+        [$exitCode, $output] = $this->runPhpUnit($configuration);
+
+        $this->assertSame(1, $exitCode, $output);
+        $this->assertStringContainsString('Pyrameter', $output);
+        $this->assertStringContainsString('Result: Violated', $output);
+        $this->assertStringContainsString('Pyrameter target shape violated.', $output);
+        $this->assertStringContainsString('There was 1 failure', $output);
+        $this->assertStringContainsString('FailingPdoSmokeFixture::testFails', $output);
+        $this->assertStringContainsString('Failed asserting', $output);
+        $this->assertStringNotContainsString('Exception in third-party event subscriber', $output);
+    }
+
     /**
      * @return array{int, string}
      */

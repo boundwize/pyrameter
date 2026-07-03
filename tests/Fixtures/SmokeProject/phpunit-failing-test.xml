@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="../../../vendor/autoload.php"
+         colors="false"
+         cacheDirectory="../../../.phpunit-smoke-cache">
+    <extensions>
+        <bootstrap class="Boundwize\Pyrameter\Extension">
+            <parameter name="config" value="tests/Fixtures/SmokeProject/pyrameter-fail.php"/>
+        </bootstrap>
+    </extensions>
+    <testsuites>
+        <testsuite name="Smoke">
+            <file>FailingPdoSmokeFixture.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
