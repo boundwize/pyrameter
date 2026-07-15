@@ -50,6 +50,8 @@ Total: 60 tests
 Your suite is getting heavier.
 ```
 
+The [Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html) article explains tests at different levels and their practical trade-offs.
+
 Pyrameter classifies executed tests as `unit`, `functional`, `integration`, or `e2e` based on the code they use, then compares the totals with your target shape.
 
 ## Quick start
