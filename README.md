@@ -52,6 +52,8 @@ Your suite is getting heavier.
 
 Pyrameter classifies executed tests as `unit`, `functional`, `integration`, or `e2e` based on the code they use, then compares the totals with your target shape.
 
+The [Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html) article explains tests at different levels. Pyrameter helps you measure their distribution against the target shape you define.
+
 ## Quick start
 
 Install with Composer:
