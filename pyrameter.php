@@ -8,9 +8,9 @@ use Boundwize\Pyrameter\TestKind;
 return PyrameterConfig::defaults()
     ->usesNamespace('Boundwize\\Pyrameter\\Event\\', TestKind::Functional)
     ->targetShape(
-        unit: ['min' => 60],
-        functional: ['max' => 20],
+        unit: ['min' => 76],
+        functional: ['max' => 8],
         integration: ['max' => 16],
-        e2e: ['max' => 2],
+        e2e: ['max' => 0],
     )
     ->failOnViolation();

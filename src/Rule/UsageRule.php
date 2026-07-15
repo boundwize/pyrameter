@@ -17,6 +17,11 @@ use function substr;
 
 final readonly class UsageRule
 {
+    private string $normalizedUsage;
+
+    /** @var list<string> */
+    private array $normalizedUnlessKeys;
+
     /**
      * @param list<string> $unless
      */
@@ -24,13 +29,24 @@ final readonly class UsageRule
         public string $usage,
         public TestKind $kind,
         private UsageType $usageType = UsageType::ClassLike,
-        private array $unless = [],
+        array $unless = [],
     ) {
+        $normalizedUnlessKeys = [];
+
+        foreach ($unless as $unlessUsage) {
+            $normalizedUnlessKeys[] = $this->usageKey(
+                UsageType::ClassLike,
+                $this->normalize($unlessUsage),
+            );
+        }
+
+        $this->normalizedUsage      = $this->normalize($usage);
+        $this->normalizedUnlessKeys = $normalizedUnlessKeys;
     }
 
     public function matches(string $consumedUsage): bool
     {
-        $configuredUsage                     = $this->normalizedUsage();
+        $configuredUsage                     = $this->normalizedUsage;
         [$consumedUsageType, $consumedUsage] = $this->normalizeConsumedUsage($consumedUsage);
 
         if ($consumedUsageType !== $this->usageType) {
@@ -44,19 +60,14 @@ final readonly class UsageRule
         return $this->matchesNamespacePrefix($consumedUsage, $configuredUsage);
     }
 
-    public function normalizedUsage(): string
-    {
-        return $this->normalize($this->usage);
-    }
-
     public function isNamespaceRule(): bool
     {
-        return $this->usageType === UsageType::ClassLike && str_ends_with($this->normalizedUsage(), '\\');
+        return $this->usageType === UsageType::ClassLike && str_ends_with($this->normalizedUsage, '\\');
     }
 
     public function normalizedKey(): string
     {
-        return $this->usageKey($this->usageType, $this->normalizedUsage());
+        return $this->usageKey($this->usageType, $this->normalizedUsage);
     }
 
     /**
@@ -64,13 +75,7 @@ final readonly class UsageRule
      */
     public function normalizedUnlessKeys(): array
     {
-        $normalizedUnlessKeys = [];
-
-        foreach ($this->unless as $unlessUsage) {
-            $normalizedUnlessKeys[] = $this->usageKey(UsageType::ClassLike, $this->normalize($unlessUsage));
-        }
-
-        return $normalizedUnlessKeys;
+        return $this->normalizedUnlessKeys;
     }
 
     private function normalize(string $usage): string

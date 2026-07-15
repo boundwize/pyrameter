@@ -31,7 +31,6 @@ use PhpParser\Node\UnionType;
 use PhpParser\NodeVisitorAbstract;
 
 use function array_keys;
-use function in_array;
 use function ltrim;
 use function sprintf;
 use function strtolower;
@@ -41,13 +40,20 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
     /** @var array<string, true> */
     private array $consumedUsages = [];
 
-    /** @var list<string> */
-    private array $mockMethods = [
-        'createMock',
-        'createStub',
-        'createConfiguredMock',
-        'createPartialMock',
-        'getMockBuilder',
+    /** @var array<string, true> */
+    private const MOCK_METHODS = [
+        'createMock'           => true,
+        'createStub'           => true,
+        'createConfiguredMock' => true,
+        'createPartialMock'    => true,
+        'getMockBuilder'       => true,
+    ];
+
+    /** @var array<string, true> */
+    private const RESERVED_CLASS_NAMES = [
+        'self'   => true,
+        'static' => true,
+        'parent' => true,
     ];
 
     public function enterNode(Node $node): null
@@ -189,7 +195,7 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
     {
         $usage = ltrim($usage, '\\');
 
-        if ($usage === '' || in_array(strtolower($usage), ['self', 'static', 'parent'], true)) {
+        if ($usage === '' || isset(self::RESERVED_CLASS_NAMES[strtolower($usage)])) {
             return;
         }
 
@@ -209,7 +215,7 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
 
     private function markMockTarget(MethodCall|StaticCall $call): void
     {
-        if (! $call->name instanceof Identifier || ! in_array($call->name->toString(), $this->mockMethods, true)) {
+        if (! $call->name instanceof Identifier || ! isset(self::MOCK_METHODS[$call->name->toString()])) {
             return;
         }
 
