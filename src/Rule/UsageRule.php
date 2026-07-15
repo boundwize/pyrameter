@@ -60,11 +60,6 @@ final readonly class UsageRule
         return $this->matchesNamespacePrefix($consumedUsage, $configuredUsage);
     }
 
-    public function normalizedUsage(): string
-    {
-        return $this->normalizedUsage;
-    }
-
     public function isNamespaceRule(): bool
     {
         return $this->usageType === UsageType::ClassLike && str_ends_with($this->normalizedUsage, '\\');

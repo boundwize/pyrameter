@@ -42,13 +42,6 @@ final class UsageRuleTest extends TestCase
         $this->assertTrue($usageRule->matches('function:\FILE_GET_CONTENTS'));
     }
 
-    public function testItExposesNormalizedUsage(): void
-    {
-        $usageRule = new UsageRule('\APP\Service', TestKind::Integration);
-
-        $this->assertSame('app\service', $usageRule->normalizedUsage());
-    }
-
     public function testItDoesNotMatchDifferentUsageTypes(): void
     {
         $usageRule = new UsageRule('file_get_contents', TestKind::Integration, UsageType::Function);
