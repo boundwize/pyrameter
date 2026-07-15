@@ -78,6 +78,18 @@ vendor/bin/phpunit
 
 This uses the default rules and target shape.
 
+### Disable Pyrameter for one run
+
+Set `PYRAMETER_DISABLED` to `1` to run PHPUnit without Pyrameter collecting tests,
+printing a report, or enforcing target violations:
+
+```bash
+PYRAMETER_DISABLED=1 vendor/bin/phpunit
+```
+
+The extension remains configured in `phpunit.xml`, but it does not register any
+subscribers for that run. Other values do not disable Pyrameter.
+
 ## Configure
 
 ### Default or empty configuration

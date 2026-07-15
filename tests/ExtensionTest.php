@@ -16,12 +16,36 @@ use RuntimeException;
 
 use function class_exists;
 use function file_put_contents;
+use function getenv;
+use function putenv;
 use function str_replace;
 use function sys_get_temp_dir;
 use function unlink;
 
 final class ExtensionTest extends TestCase
 {
+    public function testItDoesNotBootstrapWhenDisabledByEnvironmentVariable(): void
+    {
+        $originalValue = getenv('PYRAMETER_DISABLED');
+        putenv('PYRAMETER_DISABLED=1');
+
+        try {
+            (new Extension())->bootstrap(
+                (new ReflectionClass(Configuration::class))->newInstanceWithoutConstructor(),
+                $this->extensionFacade(),
+                ParameterCollection::fromArray(['config' => '/missing/pyrameter.php']),
+            );
+        } finally {
+            if ($originalValue === false) {
+                putenv('PYRAMETER_DISABLED');
+            } else {
+                putenv('PYRAMETER_DISABLED=' . $originalValue);
+            }
+        }
+
+        self::addToAssertionCount(1);
+    }
+
     public function testItBootstrapsThePhpunitSubscribers(): void
     {
         $configFile = sys_get_temp_dir() . '/pyrameter-extension-test.php';

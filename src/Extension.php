@@ -17,6 +17,8 @@ use PHPUnit\Runner\Extension\Facade;
 use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\TextUI\Configuration\Configuration;
 
+use function getenv;
+
 final class Extension implements PHPUnitExtension
 {
     public function bootstrap(
@@ -24,6 +26,10 @@ final class Extension implements PHPUnitExtension
         Facade $facade,
         ParameterCollection $parameters,
     ): void {
+        if (getenv('PYRAMETER_DISABLED') === '1') {
+            return;
+        }
+
         $pyrameterConfig  = PyrameterConfigLoader::loadFromParametersOrDefaults($parameters);
         $testCollector    = new TestCollector();
         $testUsageScanner = new TestUsageScanner();
