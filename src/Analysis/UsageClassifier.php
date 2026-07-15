@@ -11,33 +11,40 @@ use Boundwize\Pyrameter\TestKind;
 use function array_keys;
 use function ltrim;
 use function sprintf;
-use function str_contains;
 use function str_ends_with;
 use function str_starts_with;
 use function strlen;
+use function strpos;
 use function strtolower;
 use function substr;
 
 final readonly class UsageClassifier
 {
+    /** @var array<string, UsageType> */
+    private const USAGE_TYPES_BY_PREFIX = [
+        'class:'    => UsageType::ClassLike,
+        'function:' => UsageType::Function,
+    ];
+
     /** @var array<string, list<array{kind: TestKind, unless: list<string>}>> */
     private array $exactRules;
 
-    /** @var list<array{usage: string, kind: TestKind, unless: list<string>}> */
-    private array $namespaceRules;
+    /** @var array<string, list<array{usage: string, kind: TestKind, unless: list<string>}>> */
+    private array $namespaceRulesByRoot;
 
     /**
      * @param list<UsageRule> $rules
      */
     public function __construct(array $rules)
     {
-        $exactRules     = [];
-        $namespaceRules = [];
+        $exactRules           = [];
+        $namespaceRulesByRoot = [];
 
         foreach ($rules as $rule) {
             if ($rule->isNamespaceRule()) {
-                $namespaceRules[] = [
-                    'usage'  => $rule->normalizedKey(),
+                $normalizedKey                                                = $rule->normalizedKey();
+                $namespaceRulesByRoot[$this->namespaceRoot($normalizedKey)][] = [
+                    'usage'  => $normalizedKey,
                     'kind'   => $rule->kind,
                     'unless' => $rule->normalizedUnlessKeys(),
                 ];
@@ -51,8 +58,8 @@ final readonly class UsageClassifier
             ];
         }
 
-        $this->exactRules     = $exactRules;
-        $this->namespaceRules = $namespaceRules;
+        $this->exactRules           = $exactRules;
+        $this->namespaceRulesByRoot = $namespaceRulesByRoot;
     }
 
     /**
@@ -81,7 +88,9 @@ final readonly class UsageClassifier
                 }
             }
 
-            foreach ($this->namespaceRules as $namespaceRule) {
+            $namespaceRoot = $this->namespaceRoot($normalizedConsumedUsage);
+
+            foreach ($this->namespaceRulesByRoot[$namespaceRoot] ?? [] as $namespaceRule) {
                 if (
                     ! $this->matchesNamespaceRule($normalizedConsumedUsage, $namespaceRule['usage'])
                     || $this->isSuppressed($namespaceRule['unless'], $normalizedConsumedUsages)
@@ -127,21 +136,31 @@ final readonly class UsageClassifier
             && str_starts_with($consumedUsage, $namespaceUsage);
     }
 
+    private function namespaceRoot(string $normalizedUsage): string
+    {
+        $separatorPosition = strpos($normalizedUsage, '\\');
+
+        return $separatorPosition === false
+            ? $normalizedUsage
+            : substr($normalizedUsage, 0, $separatorPosition + 1);
+    }
+
     private function normalizeConsumedUsage(string $consumedUsage): string
     {
-        if (! str_contains($consumedUsage, ':')) {
+        $separatorPosition = strpos($consumedUsage, ':');
+
+        if ($separatorPosition === false) {
             return $this->usageKey(UsageType::ClassLike, $this->normalizeUsageName($consumedUsage));
         }
 
-        foreach (UsageType::cases() as $usageType) {
-            $prefix = $usageType->value . ':';
+        $prefix    = substr($consumedUsage, 0, $separatorPosition + 1);
+        $usageType = self::USAGE_TYPES_BY_PREFIX[$prefix] ?? null;
 
-            if (str_starts_with($consumedUsage, $prefix)) {
-                return $this->usageKey(
-                    $usageType,
-                    $this->normalizeUsageName(substr($consumedUsage, strlen($prefix)))
-                );
-            }
+        if ($usageType !== null) {
+            return $this->usageKey(
+                $usageType,
+                $this->normalizeUsageName(substr($consumedUsage, $separatorPosition + 1))
+            );
         }
 
         return $this->usageKey(UsageType::ClassLike, $this->normalizeUsageName($consumedUsage));
