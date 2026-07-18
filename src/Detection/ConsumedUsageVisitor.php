@@ -174,10 +174,9 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
             return;
         }
 
-        $resolvedName = $name->getAttribute('resolvedName');
-        $className    = $resolvedName instanceof Name ? $resolvedName->toString() : $name->toString();
-
-        $this->addUsage($className);
+        // NameResolver runs with replaceNodes = true, so names are already resolved
+        // in place and toString() yields the fully-qualified name.
+        $this->addUsage($name->toString());
     }
 
     private function addFunctionName(Name $name): void

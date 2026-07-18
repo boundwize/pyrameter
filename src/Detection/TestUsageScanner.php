@@ -24,6 +24,9 @@ final readonly class TestUsageScanner
 
     private Parser $parser;
 
+    /** @var Closure(string): ScanResult */
+    private Closure $scanFactory;
+
     /**
      * @param null|Closure(string): (string|false) $readFile
      */
@@ -35,14 +38,12 @@ final readonly class TestUsageScanner
         $this->consumedUsageExtractor = $consumedUsageExtractor ?? new ConsumedUsageExtractor();
         $this->scanResultCache        = $scanResultCache ?? new ScanResultCache();
         $this->parser                 = (new ParserFactory())->createForNewestSupportedVersion();
+        $this->scanFactory            = fn (string $className): ScanResult => $this->scanUncached($className);
     }
 
     public function scan(string $testClassName): ScanResult
     {
-        return $this->scanResultCache->get(
-            $testClassName,
-            fn (string $className): ScanResult => $this->scanUncached($className)
-        );
+        return $this->scanResultCache->get($testClassName, $this->scanFactory);
     }
 
     private function scanUncached(string $testClassName): ScanResult
