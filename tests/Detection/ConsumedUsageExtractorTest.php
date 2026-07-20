@@ -6,7 +6,9 @@ namespace Boundwize\Pyrameter\Tests\Detection;
 
 use Boundwize\Pyrameter\Detection\ConsumedUsageExtractor;
 use Boundwize\Pyrameter\Detection\ConsumedUsageVisitor;
+use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\ParserFactory;
 use PHPUnit\Framework\TestCase;
@@ -308,6 +310,17 @@ PHP);
     {
         $consumedUsageVisitor = new ConsumedUsageVisitor();
         $consumedUsageVisitor->enterNode(new FuncCall(new Name([''])));
+
+        $this->assertSame([], $consumedUsageVisitor->consumedUsages());
+    }
+
+    public function testItIgnoresEmptyMockTargetClassNames(): void
+    {
+        $classConstFetch = new ClassConstFetch(new Name(['']), new Identifier('class'));
+        $classConstFetch->setAttribute('isMockTarget', true);
+
+        $consumedUsageVisitor = new ConsumedUsageVisitor();
+        $consumedUsageVisitor->enterNode($classConstFetch);
 
         $this->assertSame([], $consumedUsageVisitor->consumedUsages());
     }
