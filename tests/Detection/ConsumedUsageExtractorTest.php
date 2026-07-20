@@ -191,11 +191,13 @@ PHP);
         {
             private \Vendor\Mocked\TypedIntersection&MockObject $intersection;
             private \Vendor\Mocked\TypedOnly $typedOnly;
-        
+            private MockObject $mockObjectOnly;
+
             protected function setUp(): void
             {
-                $this->intersection = $this->createMock(\Vendor\Mocked\TypedIntersection::class);
-                $this->typedOnly    = $this->createMock(\Vendor\Mocked\TypedOnly::class);
+                $this->intersection   = $this->createMock(\Vendor\Mocked\TypedIntersection::class);
+                $this->typedOnly      = $this->createMock(\Vendor\Mocked\TypedOnly::class);
+                $this->mockObjectOnly = $this->createMock(\Vendor\Mocked\MockObjectOnlyTyped::class);
             }
         }
         PHP_WRAP);
