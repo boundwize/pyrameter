@@ -180,6 +180,72 @@ PHP);
         ], $usages);
     }
 
+    public function testItIgnoresTypeDeclarationsOfMockedClasses(): void
+    {
+        $usages = $this->extract(<<<'PHP_WRAP'
+        <?php
+        
+        use PHPUnit\Framework\MockObject\MockObject;
+        
+        final class Example
+        {
+            private \Vendor\Mocked\TypedIntersection&MockObject $intersection;
+            private \Vendor\Mocked\TypedOnly $typedOnly;
+        
+            protected function setUp(): void
+            {
+                $this->intersection = $this->createMock(\Vendor\Mocked\TypedIntersection::class);
+                $this->typedOnly    = $this->createMock(\Vendor\Mocked\TypedOnly::class);
+            }
+        }
+        PHP_WRAP);
+
+        $this->assertSame(['class:PHPUnit\Framework\MockObject\MockObject'], $usages);
+    }
+
+    public function testItIgnoresMockResultIntersectionTypesWithoutAMockCreationCall(): void
+    {
+        $usages = $this->extract(<<<'PHP_WRAP'
+        <?php
+        
+        use PHPUnit\Framework\MockObject\MockObject;
+        use PHPUnit\Framework\MockObject\Stub;
+        
+        final class Example
+        {
+            private \Vendor\Mocked\MockedDependency&MockObject $mock;
+            private \Vendor\Mocked\StubbedDependency&Stub $stub;
+        }
+        PHP_WRAP);
+
+        sort($usages);
+
+        $this->assertSame([
+            'class:PHPUnit\Framework\MockObject\MockObject',
+            'class:PHPUnit\Framework\MockObject\Stub',
+        ], $usages);
+    }
+
+    public function testItKeepsMockedClassesUsedOutsideTypeDeclarations(): void
+    {
+        $usages = $this->extract(<<<'PHP'
+<?php
+
+final class Example
+{
+    private \Vendor\Mocked\RealDependency $dependency;
+
+    public function method(): void
+    {
+        $this->createMock(\Vendor\Mocked\RealDependency::class);
+        new \Vendor\Mocked\RealDependency();
+    }
+}
+PHP);
+
+        $this->assertSame(['class:Vendor\Mocked\RealDependency'], $usages);
+    }
+
     public function testItExtractsFunctionCalls(): void
     {
         $usages = $this->extract(<<<'PHP'

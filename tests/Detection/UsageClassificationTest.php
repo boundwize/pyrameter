@@ -17,6 +17,7 @@ use Boundwize\Pyrameter\Tests\Fixtures\FileOperationUsageFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\FunctionalAndIntegrationFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\IntegrationAndE2EFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\MockedHeavyFixture;
+use Boundwize\Pyrameter\Tests\Fixtures\MockedHeavyTypedPropertyFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\MysqliRealUsageFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\PantherE2EFixture;
 use Boundwize\Pyrameter\Tests\Fixtures\PdoRealUsageFixture;
@@ -70,6 +71,10 @@ final class UsageClassificationTest extends TestCase
         yield 'Panther usage means e2e' => [PantherE2EFixture::class, TestKind::E2E];
         yield 'WebDriver usage means e2e' => [WebDriverE2EFixture::class, TestKind::E2E];
         yield 'mocked heavy class stays unit' => [MockedHeavyFixture::class, TestKind::Unit];
+        yield 'mocked heavy class in typed property stays unit' => [
+            MockedHeavyTypedPropertyFixture::class,
+            TestKind::Unit,
+        ];
         yield 'container class fetch is consumed' => [ContainerGetHeavyFixture::class, TestKind::Integration];
         yield 'functional plus integration chooses integration' => [
             FunctionalAndIntegrationFixture::class,
