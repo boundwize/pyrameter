@@ -6,7 +6,9 @@ namespace Boundwize\Pyrameter\Tests\Detection;
 
 use Boundwize\Pyrameter\Detection\ConsumedUsageExtractor;
 use Boundwize\Pyrameter\Detection\ConsumedUsageVisitor;
+use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\ParserFactory;
 use PHPUnit\Framework\TestCase;
@@ -180,6 +182,76 @@ PHP);
         ], $usages);
     }
 
+    public function testItIgnoresTypeDeclarationsOfMockedClasses(): void
+    {
+        $usages = $this->extract(<<<'PHP_WRAP'
+        <?php
+        
+        use PHPUnit\Framework\MockObject\MockObject;
+        
+        final class Example
+        {
+            private \Vendor\Mocked\TypedIntersection&MockObject $intersection;
+            private \Vendor\Mocked\TypedOnly $typedOnly;
+            private MockObject $mockObjectOnly;
+
+            protected function setUp(): void
+            {
+                $this->intersection   = $this->createMock(\Vendor\Mocked\TypedIntersection::class);
+                $this->typedOnly      = $this->createMock(\Vendor\Mocked\TypedOnly::class);
+                $this->mockObjectOnly = $this->createMock(\Vendor\Mocked\MockObjectOnlyTyped::class);
+            }
+        }
+        PHP_WRAP);
+
+        $this->assertSame(['class:PHPUnit\Framework\MockObject\MockObject'], $usages);
+    }
+
+    public function testItIgnoresMockResultCompositeTypesWithoutAMockCreationCall(): void
+    {
+        $usages = $this->extract(<<<'PHP_WRAP'
+        <?php
+
+        use PHPUnit\Framework\MockObject\MockObject;
+        use PHPUnit\Framework\MockObject\Stub;
+
+        final class Example
+        {
+            private \Vendor\Mocked\MockedDependency&MockObject $mock;
+            private \Vendor\Mocked\StubbedDependency&Stub $stub;
+            private \Vendor\Mocked\UnionDependency|MockObject $unionMock;
+            private \Vendor\Mocked\NullableUnionDependency|Stub|null $nullableUnionStub;
+        }
+        PHP_WRAP);
+
+        sort($usages);
+
+        $this->assertSame([
+            'class:PHPUnit\Framework\MockObject\MockObject',
+            'class:PHPUnit\Framework\MockObject\Stub',
+        ], $usages);
+    }
+
+    public function testItKeepsMockedClassesUsedOutsideTypeDeclarations(): void
+    {
+        $usages = $this->extract(<<<'PHP'
+<?php
+
+final class Example
+{
+    private \Vendor\Mocked\RealDependency $dependency;
+
+    public function method(): void
+    {
+        $this->createMock(\Vendor\Mocked\RealDependency::class);
+        new \Vendor\Mocked\RealDependency();
+    }
+}
+PHP);
+
+        $this->assertSame(['class:Vendor\Mocked\RealDependency'], $usages);
+    }
+
     public function testItExtractsFunctionCalls(): void
     {
         $usages = $this->extract(<<<'PHP'
@@ -238,6 +310,17 @@ PHP);
     {
         $consumedUsageVisitor = new ConsumedUsageVisitor();
         $consumedUsageVisitor->enterNode(new FuncCall(new Name([''])));
+
+        $this->assertSame([], $consumedUsageVisitor->consumedUsages());
+    }
+
+    public function testItIgnoresEmptyMockTargetClassNames(): void
+    {
+        $classConstFetch = new ClassConstFetch(new Name(['']), new Identifier('class'));
+        $classConstFetch->setAttribute('isMockTarget', true);
+
+        $consumedUsageVisitor = new ConsumedUsageVisitor();
+        $consumedUsageVisitor->enterNode($classConstFetch);
 
         $this->assertSame([], $consumedUsageVisitor->consumedUsages());
     }

@@ -29,6 +29,8 @@ use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\UnionType;
 use PhpParser\NodeVisitorAbstract;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 
 use function array_keys;
 use function ltrim;
@@ -39,6 +41,18 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
 {
     /** @var array<string, true> */
     private array $consumedUsages = [];
+
+    /** @var array<string, true> */
+    private array $typeOnlyUsages = [];
+
+    /** @var array<string, true> */
+    private array $mockTargetUsages = [];
+
+    /** @var array<string, true> */
+    private const MOCK_RESULT_TYPES = [
+        MockObject::class => true,
+        Stub::class       => true,
+    ];
 
     /** @var array<string, true> */
     private const MOCK_METHODS = [
@@ -96,9 +110,12 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
             $node instanceof ClassConstFetch
             && $node->class instanceof Name
             && $this->isClassConstant($node)
-            && $node->getAttribute('isMockTarget', false) !== true
         ) {
-            $this->addName($node->class);
+            if ($node->getAttribute('isMockTarget', false) === true) {
+                $this->addMockTarget($node->class);
+            } else {
+                $this->addName($node->class);
+            }
         }
 
         if ($node instanceof MethodCall || $node instanceof StaticCall) {
@@ -141,18 +158,30 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
      */
     public function consumedUsages(): array
     {
-        return array_keys($this->consumedUsages);
+        $consumedUsages = $this->consumedUsages;
+
+        // A mocked class only referenced by type declarations (`private PDO&MockObject $pdo`)
+        // is not a real dependency of the test, so it must not trigger heavier rules.
+        foreach (array_keys($this->mockTargetUsages) as $usageKey) {
+            if (isset($this->typeOnlyUsages[$usageKey])) {
+                unset($consumedUsages[$usageKey]);
+            }
+        }
+
+        return array_keys($consumedUsages);
     }
 
     public function reset(): void
     {
-        $this->consumedUsages = [];
+        $this->consumedUsages   = [];
+        $this->typeOnlyUsages   = [];
+        $this->mockTargetUsages = [];
     }
 
     private function addType(null|Identifier|Name|ComplexType $type): void
     {
         if ($type instanceof Name) {
-            $this->addName($type);
+            $this->addName($type, fromType: true);
             return;
         }
 
@@ -162,13 +191,21 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
         }
 
         if ($type instanceof UnionType || $type instanceof IntersectionType) {
+            if ($this->containsMockResultType($type)) {
+                foreach ($type->types as $innerType) {
+                    if ($innerType instanceof Name && ! $this->isMockResultType($innerType)) {
+                        $this->addMockTarget($innerType);
+                    }
+                }
+            }
+
             foreach ($type->types as $innerType) {
                 $this->addType($innerType);
             }
         }
     }
 
-    private function addName(?Name $name): void
+    private function addName(?Name $name, bool $fromType = false): void
     {
         if (! $name instanceof Name) {
             return;
@@ -176,7 +213,34 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
 
         // NameResolver runs with replaceNodes = true, so names are already resolved
         // in place and toString() yields the fully-qualified name.
-        $this->addUsage($name->toString());
+        $this->addUsage($name->toString(), $fromType);
+    }
+
+    private function addMockTarget(Name $name): void
+    {
+        $usage = ltrim($name->toString(), '\\');
+
+        if ($usage === '') {
+            return;
+        }
+
+        $this->mockTargetUsages[$this->usageKey(UsageType::ClassLike, $usage)] = true;
+    }
+
+    private function containsMockResultType(IntersectionType|UnionType $type): bool
+    {
+        foreach ($type->types as $innerType) {
+            if ($innerType instanceof Name && $this->isMockResultType($innerType)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isMockResultType(Name $name): bool
+    {
+        return isset(self::MOCK_RESULT_TYPES[ltrim($name->toString(), '\\')]);
     }
 
     private function addFunctionName(Name $name): void
@@ -190,7 +254,7 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
         $this->consumedUsages[$this->usageKey(UsageType::Function, $functionName)] = true;
     }
 
-    private function addUsage(string $usage): void
+    private function addUsage(string $usage, bool $fromType = false): void
     {
         $usage = ltrim($usage, '\\');
 
@@ -198,7 +262,17 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
             return;
         }
 
-        $this->consumedUsages[$this->usageKey(UsageType::ClassLike, $usage)] = true;
+        $usageKey = $this->usageKey(UsageType::ClassLike, $usage);
+
+        if ($fromType) {
+            if (! isset($this->consumedUsages[$usageKey])) {
+                $this->typeOnlyUsages[$usageKey] = true;
+            }
+        } else {
+            unset($this->typeOnlyUsages[$usageKey]);
+        }
+
+        $this->consumedUsages[$usageKey] = true;
     }
 
     private function usageKey(UsageType $usageType, string $usage): string
