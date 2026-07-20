@@ -191,7 +191,7 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
         }
 
         if ($type instanceof UnionType || $type instanceof IntersectionType) {
-            if ($type instanceof IntersectionType && $this->intersectsMockResultType($type)) {
+            if ($this->containsMockResultType($type)) {
                 foreach ($type->types as $innerType) {
                     if ($innerType instanceof Name && ! $this->isMockResultType($innerType)) {
                         $this->addMockTarget($innerType);
@@ -227,10 +227,10 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
         $this->mockTargetUsages[$this->usageKey(UsageType::ClassLike, $usage)] = true;
     }
 
-    private function intersectsMockResultType(IntersectionType $intersectionType): bool
+    private function containsMockResultType(IntersectionType|UnionType $type): bool
     {
-        foreach ($intersectionType->types as $type) {
-            if ($type instanceof Name && $this->isMockResultType($type)) {
+        foreach ($type->types as $innerType) {
+            if ($innerType instanceof Name && $this->isMockResultType($innerType)) {
                 return true;
             }
         }

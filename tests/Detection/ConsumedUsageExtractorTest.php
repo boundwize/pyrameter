@@ -203,18 +203,20 @@ PHP);
         $this->assertSame(['class:PHPUnit\Framework\MockObject\MockObject'], $usages);
     }
 
-    public function testItIgnoresMockResultIntersectionTypesWithoutAMockCreationCall(): void
+    public function testItIgnoresMockResultCompositeTypesWithoutAMockCreationCall(): void
     {
         $usages = $this->extract(<<<'PHP_WRAP'
         <?php
-        
+
         use PHPUnit\Framework\MockObject\MockObject;
         use PHPUnit\Framework\MockObject\Stub;
-        
+
         final class Example
         {
             private \Vendor\Mocked\MockedDependency&MockObject $mock;
             private \Vendor\Mocked\StubbedDependency&Stub $stub;
+            private \Vendor\Mocked\UnionDependency|MockObject $unionMock;
+            private \Vendor\Mocked\NullableUnionDependency|Stub|null $nullableUnionStub;
         }
         PHP_WRAP);
 
