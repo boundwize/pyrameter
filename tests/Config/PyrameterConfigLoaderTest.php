@@ -22,12 +22,12 @@ use function unlink;
 
 final class PyrameterConfigLoaderTest extends TestCase
 {
-    public function testItUsesDefaultConfigurationWhenFileIsMissing(): void
+    public function testItThrowsExceptionWhenConfigurationFileIsMissing(): void
     {
-        $pyrameterConfig = PyrameterConfigLoader::load(__DIR__ . '/missing-pyrameter.php');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageIs('Pyrameter config file "' . __DIR__ . '/missing-pyrameter.php" does not exist.');
 
-        $this->assertNotEmpty($pyrameterConfig->usageRules());
-        $this->assertSame(['min' => 70.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['unit']);
+        PyrameterConfigLoader::load(__DIR__ . '/missing-pyrameter.php');
     }
 
     public function testItLoadsAConfigurationFile(): void
@@ -123,8 +123,11 @@ PHP);
         $this->assertSame(['min' => 45.0, 'max' => 100.0], $config->targetPercentages()['unit']);
     }
 
-    public function testItUsesRelativeDefaultPathWhenCurrentWorkingDirectoryIsUnavailable(): void
+    public function testItThrowsExceptionWhenDefaultConfigurationFileIsMissing(): void
     {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageIs('Pyrameter config file "pyrameter.php" does not exist.');
+
         $previousDirectory = getcwd();
         $directory         = sys_get_temp_dir() . '/pyrameter-config-missing-cwd-' . uniqid();
 
@@ -135,13 +138,11 @@ PHP);
         @rmdir($directory);
 
         try {
-            $config = PyrameterConfigLoader::load();
+            PyrameterConfigLoader::load();
         } finally {
             chdir($previousDirectory);
             @rmdir($directory);
         }
-
-        $this->assertNotEmpty($config->usageRules());
     }
 
     public function testConfigurationFileMustReturnAPyrameterConfig(): void
@@ -156,7 +157,7 @@ return new stdClass();
 PHP);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('must return an instance of ' . PyrameterConfig::class);
+        $this->expectExceptionMessageIsOrContains('must return an instance of ' . PyrameterConfig::class);
 
         try {
             PyrameterConfigLoader::load($path);
