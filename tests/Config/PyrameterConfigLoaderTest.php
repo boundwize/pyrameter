@@ -163,7 +163,7 @@ return new stdClass();
 PHP);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageOrContains('must return an instance of ' . PyrameterConfig::class);
+        $this->expectExceptionMessage('must return an instance of ' . PyrameterConfig::class);
 
         try {
             PyrameterConfigLoader::load($path);
