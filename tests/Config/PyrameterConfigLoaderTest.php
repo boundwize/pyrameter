@@ -132,7 +132,9 @@ PHP);
     public function testItThrowsExceptionWhenDefaultConfigurationFileIsMissing(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Pyrameter config file "pyrameter.php" does not exist.');
+        // on Windows the current working directory cannot be removed, so getcwd() still
+        // succeeds and the message contains an absolute path ending in "pyrameter.php"
+        $this->expectExceptionMessage('pyrameter.php" does not exist.');
 
         $previousDirectory = getcwd();
         $directory         = sys_get_temp_dir() . '/pyrameter-config-missing-cwd-' . uniqid();
