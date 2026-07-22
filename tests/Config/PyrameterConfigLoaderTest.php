@@ -16,6 +16,7 @@ use function file_put_contents;
 use function getcwd;
 use function mkdir;
 use function rmdir;
+use function sprintf;
 use function sys_get_temp_dir;
 use function uniqid;
 use function unlink;
@@ -25,7 +26,12 @@ final class PyrameterConfigLoaderTest extends TestCase
     public function testItThrowsExceptionWhenConfigurationFileIsMissing(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageIs('Pyrameter config file "' . __DIR__ . '/missing-pyrameter.php" does not exist.');
+        $this->expectExceptionMessageIs(
+            sprintf(
+                'Pyrameter config file "%s" does not exist.',
+                __DIR__ . '/missing-pyrameter.php'
+            )
+        );
 
         PyrameterConfigLoader::load(__DIR__ . '/missing-pyrameter.php');
     }
