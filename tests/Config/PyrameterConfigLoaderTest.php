@@ -26,7 +26,7 @@ final class PyrameterConfigLoaderTest extends TestCase
     public function testItThrowsExceptionWhenConfigurationFileIsMissing(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageIs(
+        $this->expectExceptionMessage(
             sprintf(
                 'Pyrameter config file "%s" does not exist.',
                 __DIR__ . '/missing-pyrameter.php'
@@ -132,7 +132,7 @@ PHP);
     public function testItThrowsExceptionWhenDefaultConfigurationFileIsMissing(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageIs('Pyrameter config file "pyrameter.php" does not exist.');
+        $this->expectExceptionMessage('Pyrameter config file "pyrameter.php" does not exist.');
 
         $previousDirectory = getcwd();
         $directory         = sys_get_temp_dir() . '/pyrameter-config-missing-cwd-' . uniqid();
@@ -163,7 +163,7 @@ return new stdClass();
 PHP);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageIsOrContains('must return an instance of ' . PyrameterConfig::class);
+        $this->expectExceptionMessageOrContains('must return an instance of ' . PyrameterConfig::class);
 
         try {
             PyrameterConfigLoader::load($path);
