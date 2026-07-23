@@ -22,6 +22,10 @@ final class PyrameterConfigLoader
 
     public static function load(?string $path = null): PyrameterConfig
     {
+        if ($path !== null && ! is_file($path)) {
+            throw new RuntimeException(sprintf('Pyrameter config file "%s" does not exist.', $path));
+        }
+
         $path ??= self::defaultConfigPath();
 
         if (! is_file($path)) {
