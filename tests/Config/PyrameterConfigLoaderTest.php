@@ -22,12 +22,12 @@ use function unlink;
 
 final class PyrameterConfigLoaderTest extends TestCase
 {
-    public function testItUsesDefaultConfigurationWhenFileIsMissing(): void
+    public function testThrowRuntimeExceptionWhenConfigurationFileIsMissing(): void
     {
-        $pyrameterConfig = PyrameterConfigLoader::load(__DIR__ . '/missing-pyrameter.php');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Pyrameter config file "' . __DIR__ . '/missing-pyrameter.php" does not exist.');
 
-        $this->assertNotEmpty($pyrameterConfig->usageRules());
-        $this->assertSame(['min' => 70.0, 'max' => 100.0], $pyrameterConfig->targetPercentages()['unit']);
+        PyrameterConfigLoader::load(__DIR__ . '/missing-pyrameter.php');
     }
 
     public function testItLoadsAConfigurationFile(): void
