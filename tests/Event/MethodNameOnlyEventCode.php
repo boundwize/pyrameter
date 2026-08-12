@@ -36,6 +36,14 @@ final readonly class MethodNameOnlyEventCode extends EventTest
     }
 
     /**
+     * @return non-empty-string
+     */
+    public function sortId(): string
+    {
+        return $this->id();
+    }
+
+    /**
      * @return class-string
      */
     public function className(): string
