@@ -32,4 +32,12 @@ final readonly class IdOnlyEventCode extends EventTest
     {
         return $this->identifier;
     }
+
+    /**
+     * @return non-empty-string
+     */
+    public function sortId(): string
+    {
+        return $this->identifier;
+    }
 }
