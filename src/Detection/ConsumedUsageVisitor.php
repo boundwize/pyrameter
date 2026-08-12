@@ -78,76 +78,116 @@ final class ConsumedUsageVisitor extends NodeVisitorAbstract
             foreach ($node->implements as $interface) {
                 $this->addName($interface);
             }
+
+            return null;
         }
 
         if ($node instanceof Interface_) {
             foreach ($node->extends as $interface) {
                 $this->addName($interface);
             }
+
+            return null;
         }
 
         if ($node instanceof TraitUse) {
             foreach ($node->traits as $trait) {
                 $this->addName($trait);
             }
+
+            return null;
         }
 
-        if ($node instanceof New_ && $node->class instanceof Name) {
-            $this->addName($node->class);
+        if ($node instanceof New_) {
+            if ($node->class instanceof Name) {
+                $this->addName($node->class);
+            }
+
+            return null;
         }
 
-        if ($node instanceof Instanceof_ && $node->class instanceof Name) {
-            $this->addName($node->class);
+        if ($node instanceof Instanceof_) {
+            if ($node->class instanceof Name) {
+                $this->addName($node->class);
+            }
+
+            return null;
         }
 
         if ($node instanceof Catch_) {
             foreach ($node->types as $type) {
                 $this->addName($type);
             }
+
+            return null;
         }
 
-        if (
-            $node instanceof ClassConstFetch
-            && $node->class instanceof Name
-            && $this->isClassConstant($node)
-        ) {
-            if ($node->getAttribute('isMockTarget', false) === true) {
-                $this->addMockTarget($node->class);
-            } else {
+        if ($node instanceof ClassConstFetch) {
+            if ($node->class instanceof Name && $this->isClassConstant($node)) {
+                if ($node->getAttribute('isMockTarget', false) === true) {
+                    $this->addMockTarget($node->class);
+                } else {
+                    $this->addName($node->class);
+                }
+            }
+
+            return null;
+        }
+
+        if ($node instanceof StaticCall) {
+            $this->markMockTarget($node);
+
+            if ($node->class instanceof Name) {
                 $this->addName($node->class);
             }
+
+            return null;
         }
 
-        if ($node instanceof MethodCall || $node instanceof StaticCall) {
+        if ($node instanceof MethodCall) {
             $this->markMockTarget($node);
+
+            return null;
         }
 
-        if ($node instanceof StaticCall && $node->class instanceof Name) {
-            $this->addName($node->class);
+        if ($node instanceof StaticPropertyFetch) {
+            if ($node->class instanceof Name) {
+                $this->addName($node->class);
+            }
+
+            return null;
         }
 
-        if ($node instanceof StaticPropertyFetch && $node->class instanceof Name) {
-            $this->addName($node->class);
-        }
+        if ($node instanceof FuncCall) {
+            if ($node->name instanceof Name) {
+                $this->addFunctionName($node->name);
+            }
 
-        if ($node instanceof FuncCall && $node->name instanceof Name) {
-            $this->addFunctionName($node->name);
+            return null;
         }
 
         if ($node instanceof Param) {
             $this->addType($node->type);
+
+            return null;
         }
 
         if ($node instanceof Property) {
             $this->addType($node->type);
+
+            return null;
         }
 
         if ($node instanceof FunctionLike) {
             $this->addType($node->getReturnType());
+
+            return null;
         }
 
         if ($node instanceof Attribute) {
             $this->addName($node->name);
+
+            return null;
         }
 
         return null;
